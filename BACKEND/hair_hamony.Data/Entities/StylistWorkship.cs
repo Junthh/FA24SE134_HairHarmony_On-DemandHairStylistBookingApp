@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace hair_hamony.Data.Entities;
+
+public partial class StylistWorkship
+{
+    public Guid Id { get; set; }
+
+    public DateOnly? RegisterDate { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
+
+    public Guid? WorkshipId { get; set; }
+
+    public Guid? StylistId { get; set; }
+
+    public virtual Stylist? Stylist { get; set; }
+
+    public virtual Workship? Workship { get; set; }
+}
