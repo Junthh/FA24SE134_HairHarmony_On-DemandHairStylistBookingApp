@@ -6,5 +6,5 @@
 
 3. Running the following command
 ```
-Scaffold-DbContext "Data Source=hairhamony.database.windows.net;Initial Catalog=HairHamony;Persist Security Info=True;User ID=hairhamony;Password=abcd@1234;Encrypt=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -f
+Scaffold-DbContext "Data Source=hairhamony.database.windows.net;Initial Catalog=HairHamony;Persist Security Info=True;User ID=hairhamony;Password=abcd@1234;Encrypt=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -f
 ```

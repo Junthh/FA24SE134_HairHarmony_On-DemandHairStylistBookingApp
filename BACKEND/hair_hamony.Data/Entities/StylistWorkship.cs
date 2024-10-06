@@ -17,6 +17,8 @@ public partial class StylistWorkship
 
     public Guid? StylistId { get; set; }
 
+    public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
+
     public virtual Stylist? Stylist { get; set; }
 
     public virtual Workship? Workship { get; set; }

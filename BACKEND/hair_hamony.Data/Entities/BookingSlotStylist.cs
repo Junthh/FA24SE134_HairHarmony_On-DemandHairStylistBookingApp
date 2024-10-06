@@ -21,9 +21,13 @@ public partial class BookingSlotStylist
 
     public Guid? StylistId { get; set; }
 
+    public Guid? StylistWorkshipId { get; set; }
+
     public virtual BookingDetail? BookingDetail { get; set; }
 
     public virtual Stylist? Stylist { get; set; }
+
+    public virtual StylistWorkship? StylistWorkship { get; set; }
 
     public virtual TimeSlot? TimeSlot { get; set; }
 }
