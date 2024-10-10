@@ -66,7 +66,8 @@ export const SidebarStyled = styled(Box)<{ isopen: number }>(({ isopen }) => ({
       },
       '& .active': {
         // borderRight: '4px solid white',
-        background: colors.primary2,
+        // background: colors.primary2,
+        // border: '1px solid #2D3748',
       },
     },
   },

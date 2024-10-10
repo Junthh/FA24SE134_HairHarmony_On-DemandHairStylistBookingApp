@@ -40,8 +40,8 @@ export const ButtonPrimary = styled(Button)<{
     borderRadius: borderradius ? borderradius : '8px',
     border: border,
     '&:hover': {
-      color: colors.dark,
-      background: colors.white,
+      color: colors.white,
+      background: colors.dark,
     },
   }),
 );
