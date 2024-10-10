@@ -97,6 +97,7 @@ import { ReactComponent as IconTwitter } from 'assets/pics/icons/social/icon-twi
 import { ReactComponent as IconList } from 'assets/pics/icons/icon-list.svg';
 import { ReactComponent as IconHistory } from 'assets/pics/icons/icon-history.svg';
 import { ReactComponent as IconStylistUser } from 'assets/pics/icons/icon-stylist-user.svg';
+import { ReactComponent as IconFilter } from 'assets/pics/icons/icon-filter.svg';
 export const ICONS = {
   IconShare,
   IconPencilSimpleLine,
@@ -194,6 +195,7 @@ export const ICONS = {
   IconList,
   IconHistory,
   IconStylistUser,
+  IconFilter,
 };
 
 export const IMAGES_ICONS = {};

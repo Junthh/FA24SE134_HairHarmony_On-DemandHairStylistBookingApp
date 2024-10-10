@@ -5,22 +5,22 @@ import { AnimatePresence, motion } from 'framer-motion';
 import SidebarMenu from './SidebarMenu';
 import { SidebarStyled } from './styles';
 import { ICONS } from 'configurations/icons';
-import { ADMIN_PATH } from 'configurations/paths/paths';
+import { ADMIN_PATH, STAFF_PATH } from 'configurations/paths/paths';
 import { LOGO } from 'configurations/logo';
 
 const routes = [
   {
-    path: ADMIN_PATH.ARTICLE,
+    path: STAFF_PATH.SCHEDULE_LIST,
     name: 'Danh sách đặt lịch',
     icon: <ICONS.IconList />,
   },
   {
-    path: ADMIN_PATH.OUR_READER_STORIES,
+    path: STAFF_PATH.HISTORY,
     name: 'Lịch sử đặt lịch',
     icon: <ICONS.IconHistory />,
   },
   {
-    path: ADMIN_PATH.CATEGORY,
+    path: STAFF_PATH.STYLIST_STATUS,
     name: 'Tình trạng stylist',
     icon: <ICONS.IconStylistUser />,
   },
@@ -71,9 +71,9 @@ const SideBar = ({ children }) => {
                 </motion.div>
               )}
             </AnimatePresence>
-            <div className="bars">
+            {/* <div className="bars">
               <FaBars size={30} onClick={toggle} />
-            </div>
+            </div> */}
           </div>
           <section className="routes">
             {routes.map((route: any, index: number) => {

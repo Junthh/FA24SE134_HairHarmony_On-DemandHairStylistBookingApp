@@ -1,6 +1,7 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { STAFF_PATH, STATE } from 'configurations/paths/paths';
 import AuthProvider from 'pages/Auth/AuthProvider';
+import ScheduleList from 'pages/Staff/ScheduleList';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -23,7 +24,7 @@ const StaffPage = lazy(() => import('pages/Staff'));
 // const StaffWriterDetails = lazy(() => import('pages/Staff/Writer/WriterDetails'));
 // const StaffEmail = lazy(() => import('pages/Staff/Email'));
 export const StaffRouter = {
-  path: STAFF_PATH.SCHEDULE_LIST,
+  path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
       {/* <AuthProvider> */}
@@ -32,15 +33,15 @@ export const StaffRouter = {
     </React.Suspense>
   ),
   children: [
-    // {
-    //   path: ADMIN_PATH.ADMIN,
-    //   element: <Navigate to={`${ADMIN_PATH.ADMIN}/${ADMIN_PATH.ARTICLE}`} replace />,
-    // },
-    // // ARTICLE
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.ARTICLE}`,
-    //   element: <AdminArticle />,
-    // },
+    {
+      path: '/',
+      element: <Navigate to={`${STAFF_PATH.SCHEDULE_LIST}`} replace />,
+    },
+    //
+    {
+      path: `${STAFF_PATH.SCHEDULE_LIST}`,
+      element: <ScheduleList />,
+    },
     // {
     //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.ARTICLE}/${STATE.CREATE}`,
     //   element: <AdminArticleDetails />,

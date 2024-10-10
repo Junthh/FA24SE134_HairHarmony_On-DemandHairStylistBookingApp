@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Avatar, Box, Typography } from '@mui/material';
+import { Avatar, Box, Divider, Typography } from '@mui/material';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import SideBar from 'shared/Sidebar';
@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { selectCredentialInfo } from 'redux/Reducer';
 import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
+import { STAFF_PATH } from 'configurations/paths/paths';
 
 const HeaderStyled = styled(Box)({
   height: 80,
@@ -51,7 +52,7 @@ const EmailWrapper = styled(Box)({
 function Staff() {
   const location = useLocation();
   const credentialInfo = useSelector(selectCredentialInfo);
-  const [tabName, setTabName] = useState('Administrator');
+  const [tabName, setTabName] = useState('Danh sách đặt lịch');
   // const [email, setEmail] = useState('admin@gmail.com');
   const [toggle, setToggle] = useState(false);
   const buttonRef = useRef(null);
@@ -75,8 +76,14 @@ function Staff() {
 
   useEffect(() => {
     const arrUrl = location.pathname.split('/');
-    const name = arrUrl[2] ? arrUrl[2].toUpperCase() : '';
-    setTabName(name);
+    const name = arrUrl[1] ? arrUrl[1].toUpperCase() : '';
+    if (name === STAFF_PATH.SCHEDULE_LIST.split('/')[1]) {
+      setTabName('Danh sách đặt lịch');
+    } else if (name === STAFF_PATH.HISTORY.split('/')[1]) {
+      setTabName('Lịch sử đặt lịch');
+    } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
+      setTabName('Tình Trạng Stylist');
+    }
   }, [location]);
 
   useEffect(() => {
@@ -88,9 +95,7 @@ function Staff() {
   return (
     <SideBar>
       <HeaderStyled>
-        <Typography variant="h3" fontWeight={700}>
-          {tabName}
-        </Typography>
+        <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
           <Avatar src="" />
           {/* <EmailWrapper>
@@ -125,6 +130,10 @@ function Staff() {
         </InfoAccountStyled>
       </HeaderStyled>
       <MainContainerStyled>
+        <Typography paddingTop={3} paddingBottom={3} paddingLeft={5} variant="h4" fontWeight={400}>
+          {tabName}
+        </Typography>
+        <Divider variant="fullWidth"></Divider>
         <Outlet />
       </MainContainerStyled>
     </SideBar>
