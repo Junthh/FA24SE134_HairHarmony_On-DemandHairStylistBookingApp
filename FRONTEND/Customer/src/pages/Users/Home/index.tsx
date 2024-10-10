@@ -17,6 +17,7 @@ import { ProjectModel } from 'models/ProjectModel';
 import { theme } from 'theme';
 import { handleError } from 'utils/helper';
 import CardServices from './components/CardServices';
+import TopSylistSlider from './components/TopSylistSlider';
 export interface EcoPostsHome {
   ecoFilms: PostModel[];
   newest: PostModel[];
@@ -277,6 +278,17 @@ export default function Home() {
         <Box className="list-card-container">
           <CardServices />
         </Box>
+      </Box>
+      <Box className="top-stylist-in-month">
+        <Typography variant="h2" className="header">
+          TOP SYLIST TRONG THÁNG
+        </Typography>
+        <TopSylistSlider />
+      </Box>
+      <Box className="news-about-hairhamony">
+        <Typography variant="h2" className="header">
+          TIN TỨC MỚI NHẤT VỀ HAIRHAMONY
+        </Typography>
       </Box>
       <Box className="contact">
         <Typography variant="h1" className="header">

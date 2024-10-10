@@ -473,7 +473,7 @@ export default function SearchPage() {
 
             <Box className="filter-search-bottom">
               {filter.type !== `${PostTypeEnum.OurReaderStory}` ? (
-                  <Box width={'240px'} minWidth={'165px'}>
+                <Box width={'240px'} minWidth={'165px'}>
                   <SelectFilter
                     receivedValue={queryUrl.category}
                     options={catesOpts}
@@ -483,7 +483,7 @@ export default function SearchPage() {
               ) : (
                 <></>
               )}
-                <Box width={'240px'} minWidth={'165px'}>
+              <Box width={'240px'} minWidth={'165px'}>
                 <SelectFilter
                   receivedValue={queryUrl.sort}
                   options={sortByOptions}
@@ -493,7 +493,7 @@ export default function SearchPage() {
             </Box>
 
             <Box className="filter-search-bottom">
-                <Box width={'240px'} minWidth={'165px'}>
+              <Box width={'240px'} minWidth={'165px'}>
                 <SelectFilter
                   receivedValue={queryUrl.country}
                   options={countriesOpts}
@@ -501,13 +501,13 @@ export default function SearchPage() {
                 ></SelectFilter>
               </Box>
               {countryFilter && (
-                  <Box width={'240px'} minWidth={'165px'}>
-                    <AutocompleteFilter
+                <Box width={'240px'} minWidth={'165px'}>
+                  <AutocompleteFilter
                     reset={true}
                     receivedValue={queryUrl.project}
                     options={projectsOpts}
                     handleChangeFilter={handleChangeProject}
-                    ></AutocompleteFilter>
+                  ></AutocompleteFilter>
                 </Box>
               )}
             </Box>
@@ -517,11 +517,11 @@ export default function SearchPage() {
         <Grid container spacing={4}>
           {((posts?.data as PostModel[]) || []).map((p) => (
             <Grid item xs={!isMobile ? 4 : 12} key={p.id}>
-              <CardContentImage
+              {/* <CardContentImage
                 item={p}
                 onViewDetail={handleViewDetail}
                 showCategory={p.type === PostTypeEnum.Post ? true : false}
-              ></CardContentImage>
+              ></CardContentImage> */}
             </Grid>
           ))}
         </Grid>

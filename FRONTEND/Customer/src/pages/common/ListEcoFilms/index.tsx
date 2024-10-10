@@ -137,11 +137,11 @@ export default function ListEcoFilms({
               disabledClass: 'swiper-button-disabled',
             }}
           >
-            {data.map((p) => (
+            {/* {data.map((p) => (
               <SwiperSlide key={p.id} className="swiper-slide_custom">
                 <CardContentImage item={p} onViewDetail={handleViewDetail} />
               </SwiperSlide>
-            ))}
+            ))} */}
           </Swiper>
         </BoxCarouselStyled>
       ) : (
@@ -154,11 +154,11 @@ export default function ListEcoFilms({
               dynamicBullets: true,
             }}
           >
-            {data.map((p) => (
+            {/* {data.map((p) => (
               <SwiperSlide key={p.id} className="swiper-slide_custom">
                 <CardContentImage item={p} onViewDetail={handleViewDetail} />
               </SwiperSlide>
-            ))}
+            ))} */}
           </SwiperStyled>
         </>
       )}

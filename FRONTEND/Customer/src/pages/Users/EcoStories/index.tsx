@@ -168,13 +168,13 @@ export default function EcoStories() {
           )}
         </Box>
         <Box height={24}></Box>
-        <Grid container spacing={4}>
+        {/* <Grid container spacing={4}>
           {posts.mostViewed.map((p) => (
             <Grid key={p.id} item xs={!isMobile ? 4 : 12}>
               <CardContentImage item={p} onViewDetail={handleGetDetail} />
             </Grid>
           ))}
-        </Grid>
+        </Grid> */}
         {isMobile && (
           <>
             <Box height={44}></Box>
@@ -221,13 +221,13 @@ export default function EcoStories() {
                   : 'feature'
               }`}
             >
-              <CardContentImage
+              {/* <CardContentImage
                 item={p}
                 onViewDetail={handleGetDetail}
                 size={`${
                   !isMobile && index === 1 && posts.featured.length >= 3 ? 'large' : 'medium'
                 }`}
-              />
+              /> */}
             </Box>
           ))}
         </FeatureEcoStyled>

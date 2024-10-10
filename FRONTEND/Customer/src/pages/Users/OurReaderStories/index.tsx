@@ -107,7 +107,7 @@ export default function OurReaderStories() {
           Pitch us your story
         </ButtonPrimary>
         <Box className="item-list">
-          <Grid container spacing={4}>
+          {/* <Grid container spacing={4}>
             {((posts?.data as PostModel[]) || []).map((p) => (
               <Grid item xs={!isMobile ? 3 : 12} key={p.id}>
                 <CardContentImage
@@ -118,7 +118,7 @@ export default function OurReaderStories() {
                 ></CardContentImage>
               </Grid>
             ))}
-          </Grid>
+          </Grid> */}
         </Box>
         <PaginationComponent
           page={pageIndex || PaginationConfig.PageIndex}

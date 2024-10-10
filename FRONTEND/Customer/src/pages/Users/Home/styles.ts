@@ -21,6 +21,27 @@ export const HomeStyled = styled(Box)({
       marginBottom: '59px',
     },
   },
+
+  '& .top-stylist-in-month': {
+    padding: '40px 40px',
+    '& .header': {
+      textTransform: 'uppercase',
+      paddingLeft: '20px',
+      fontWeight: 700,
+      borderLeft: `9px solid ${colors.dark}`,
+      marginBottom: '59px',
+    },
+  },
+  '& .news-about-hairhamony': {
+    padding: '40px 40px',
+    '& .header': {
+      textTransform: 'uppercase',
+      paddingLeft: '20px',
+      fontWeight: 700,
+      borderLeft: `9px solid ${colors.dark}`,
+      marginBottom: '59px',
+    },
+  },
   '& .contact': {
     width: '100%',
     padding: '100px 25px',
