@@ -1,0 +1,94 @@
+body,
+html {
+  font-family: "Raleway", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  background-color: #f9faff;
+}
+.MuiTypography-root{
+  font-family: "Raleway", sans-serif !important;
+}
+.mea-culpa-regular {
+  font-family: "Mea Culpa", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+/* Override css */
+/* body::-webkit-scrollbar {
+ display: none;
+} */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 30px;
+  background-color: var(--scroll-color);
+}
+
+.MuiPopover-paper {
+  border-radius: 8px !important
+}
+
+.MuiPopover-paper .MuiList-root {
+  padding: 8px !important;
+}
+
+.MuiPopover-paper .MuiList-root .MuiMenuItem-root {
+  height: 45px !important;
+}
+
+.MuiPopover-paper .MuiList-root .MuiMenuItem-root:hover {
+  border-radius: 8px !important;
+}
+
+.MuiPopover-paper .MuiList-root .MuiMenuItem-root:focus {
+  border-radius: 8px !important;
+}
+
+.MuiPopover-paper .MuiList-root .Mui-selected {
+  border-radius: 8px !important;
+}
+
+.multiline-ellipsis {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  /* start showing ellipsis when 3rd line is reached */
+  white-space: pre-wrap;
+  /* let the text wrap preserving spaces */
+}
+
+.multiline-ellipsis-5 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  /* start showing ellipsis when 3rd line is reached */
+  white-space: pre-wrap;
+  /* let the text wrap preserving spaces */
+}
+
+.image-fit-center {
+  object-fit: cover;
+  object-position: center;
+}

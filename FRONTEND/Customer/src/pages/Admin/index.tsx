@@ -52,7 +52,7 @@ function Admin() {
   const location = useLocation();
   const credentialInfo = useSelector(selectCredentialInfo);
   const [tabName, setTabName] = useState('Administrator');
-  const [email, setEmail] = useState('admin@gmail.com');
+  // const [email, setEmail] = useState('admin@gmail.com');
   const [toggle, setToggle] = useState(false);
   const buttonRef = useRef(null);
   const authContext = AuthConsumer();
@@ -81,7 +81,7 @@ function Admin() {
 
   useEffect(() => {
     if (credentialInfo?.email) {
-      setEmail(credentialInfo.email);
+      // setEmail(credentialInfo.email);
     }
   }, [credentialInfo]);
 
@@ -93,7 +93,7 @@ function Admin() {
         </Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
           <Avatar src="" />
-          <EmailWrapper>
+          {/* <EmailWrapper>
             <Typography
               variant="body2"
               fontWeight={700}
@@ -106,7 +106,7 @@ function Admin() {
             >
               {email}
             </Typography>
-          </EmailWrapper>
+          </EmailWrapper> */}
           <ArrowDropDownIcon sx={{ color: '#F2FFE3' }} />
           {toggle && (
             <Box
