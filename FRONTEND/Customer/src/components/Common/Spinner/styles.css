@@ -42,7 +42,7 @@
     position: absolute;
     width: 10px;
     height: 10px;
-    background: var(--primary-color);
+    background: var(--darkBlue900-color);
     left: 0px;
     top: 0px;
     border-radius: 10px;

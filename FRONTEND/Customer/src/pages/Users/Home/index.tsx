@@ -1,41 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { BoxEcoHeroes, CustomPopper, FeatureCategoryStyled, HomeStyled } from './styles';
-import { Box, Fade, Paper, PopperPlacementType, Typography, useMediaQuery } from '@mui/material';
-import Home1 from 'assets/pics/home/home1.svg';
-import { ButtonPrimary } from 'pages/common/style/Button';
-import { ICONS } from 'configurations/icons';
-import * as colors from 'constants/colors';
-import CardSlider from './components/CardSlider';
-import CardContentImage from 'pages/common/CardContentImage';
-import { TextHeaderUnderlineStyled } from 'pages/common/style/TextHeaderUnderline';
-import ButtonSwitch from './components/ButtonSwitch';
-import PlayerComponent from 'pages/common/PlayerComponent/PlayerComponent';
+import { Box, PopperPlacementType, Typography, useMediaQuery } from '@mui/material';
 import { USER_PATH } from 'configurations/paths/paths';
 import { SortBy } from 'models/FilterOptions.model';
-import { setLoading } from 'redux/Reducer';
 import { PostModel, PostTypeEnum, PostsParams } from 'models/Posts.model';
+import { DataServiceSuccess, ListServiceSuccess } from 'models/ServiceResponse.model';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { setLoading } from 'redux/Reducer';
 import { postsService } from 'services/posts.service';
-import { DataServiceSuccess, ListServiceSuccess } from 'models/ServiceResponse.model';
-import NewestEcoStories from 'pages/common/NewestEcoStories';
+import { HomeStyled } from './styles';
 // import { ECO_HEROES_DATA } from './mock';
-import { TagTextStyled } from 'pages/common/style/TagContent';
-import ImageEcoMap from 'assets/pics/home/asian-map.svg';
-import CountUp from 'react-countup';
-import Badge from '@mui/material/Badge';
-import IconButton from '@mui/material/IconButton';
-import { IMAGES } from 'configurations/images';
-import { showToast } from 'components/Common/Toast';
-import { handleError } from 'utils/helper';
-import { theme } from 'theme';
-import { CountriesEnum } from 'models/Country.model';
-import ReadMoreReadLess from 'pages/common/ReadMoreReadLess/ReadMoreReadLess';
-import Default from 'assets/pics/default.jpeg';
-import { ProjectModel } from 'models/ProjectModel';
-import { isEmpty } from 'lodash';
-import { MAIN_VIDEO } from 'configurations/intro-video';
 import { ReactComponent as HairHarmonyHome } from 'assets/pics/home/hair-hamony-home.svg';
+import { showToast } from 'components/Common/Toast';
+import { CountriesEnum } from 'models/Country.model';
+import { ProjectModel } from 'models/ProjectModel';
+import { theme } from 'theme';
+import { handleError } from 'utils/helper';
+import CardServices from './components/CardServices';
 export interface EcoPostsHome {
   ecoFilms: PostModel[];
   newest: PostModel[];
@@ -290,8 +271,22 @@ export default function Home() {
         <HairHarmonyHome />
       </Box>
       <Box className="home-services">
-        <Typography variant="h3" className="header">
+        <Typography variant="h2" className="header">
           Dịch vụ
+        </Typography>
+        <Box className="list-card-container">
+          <CardServices />
+        </Box>
+      </Box>
+      <Box className="contact">
+        <Typography variant="h1" className="header">
+          LIÊN HỆ
+        </Typography>
+        <Typography variant="body2" className="body">
+          Luôn chào đón khách không hẹn trước!
+        </Typography>
+        <Typography variant="body2" className="body">
+          Hãy gọi điện hoặc ghé qua để đặt lịch hẹn.
         </Typography>
       </Box>
     </HomeStyled>

@@ -17,7 +17,22 @@ export const HomeStyled = styled(Box)({
       textTransform: 'uppercase',
       paddingLeft: '20px',
       fontWeight: 700,
-      borderLeft: `5px solid ${colors.dark}`,
+      borderLeft: `9px solid ${colors.dark}`,
+      marginBottom: '59px',
+    },
+  },
+  '& .contact': {
+    width: '100%',
+    padding: '100px 25px',
+    '& .header': {
+      textAlign: 'center',
+      fontFamily: 'GFS Didot !important',
+      fontSize: 50,
+    },
+    '& .body': {
+      textAlign: 'center',
+      fontFamily: 'GFS Didot  !important',
+      fontSize: 25,
     },
   },
 });
