@@ -18,6 +18,7 @@ import { theme } from 'theme';
 import { handleError } from 'utils/helper';
 import CardServices from './components/CardServices';
 import TopSylistSlider from './components/TopSylistSlider';
+import NewsAboutHairHamony from './components/NewsAboutHairHamony';
 export interface EcoPostsHome {
   ecoFilms: PostModel[];
   newest: PostModel[];
@@ -289,6 +290,7 @@ export default function Home() {
         <Typography variant="h2" className="header">
           TIN TỨC MỚI NHẤT VỀ HAIRHAMONY
         </Typography>
+        <NewsAboutHairHamony />
       </Box>
       <Box className="contact">
         <Typography variant="h1" className="header">

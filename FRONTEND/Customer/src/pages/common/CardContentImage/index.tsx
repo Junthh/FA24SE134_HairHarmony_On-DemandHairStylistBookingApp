@@ -1,4 +1,4 @@
-import { Avatar, Box, Rating, Typography, useMediaQuery } from '@mui/material';
+import { Avatar, Box, Divider, Rating, Typography, useMediaQuery } from '@mui/material';
 import React, { memo } from 'react';
 import Default from 'assets/pics/default.jpeg';
 import VN from 'assets/pics/VN.png';
@@ -15,9 +15,11 @@ import { theme } from 'theme';
 import { CountriesEnum, countriesFlag } from 'models/Country.model';
 import { ICONS } from 'configurations/icons';
 import styled from '@emotion/styled';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 interface CardContentImageProps {
-  item?: { image: string; name: string; star: number };
-  onViewDetail?: (p: PostModel) => void;
+  item?: { image: string; name?: string; star?: number; description?: string };
+  onViewDetail?: (p: any) => void;
+  type: string;
 }
 const CardContentImagesSyled = styled(Box)({
   '& .star': {
@@ -26,9 +28,36 @@ const CardContentImagesSyled = styled(Box)({
     alignItems: 'center',
   },
 });
+const CardContentAboutImagesSyled = styled(Box)({
+  borderRadius: '16px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'column',
+  width: 420,
+  backgroundColor: 'rgba(27, 77, 74, 0.06)',
+});
 function CardContentImage(props: CardContentImageProps) {
-  const { item, onViewDetail } = props;
-  return (
+  const { item, onViewDetail, type = '' } = props;
+  return type === 'NEWS' ? (
+    <CardContentAboutImagesSyled>
+      <img src={item.image} alt="" />
+      <Typography padding={2}>{item.description}</Typography>
+      <Divider variant="fullWidth" style={{ width: '100%' }} />
+      <Typography
+        display={'flex'}
+        justifyContent={'center'}
+        alignItems={'center'}
+        variant="h4"
+        padding={2}
+        style={{
+          cursor: 'pointer',
+        }}
+      >
+        Xem chi tiết &nbsp;&nbsp; <ArrowForwardIcon />
+      </Typography>
+    </CardContentAboutImagesSyled>
+  ) : (
     <CardContentImagesSyled>
       <Box className="content">
         <img src={item.image} alt="" />

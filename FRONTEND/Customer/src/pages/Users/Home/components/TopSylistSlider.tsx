@@ -104,7 +104,7 @@ export default function TopSylistSlider() {
           >
             {datas.map((item, index) => (
               <SwiperSlide key={index} className="swiper-slide_custom">
-                <CardContentImage item={item} onViewDetail={handleGetDetail} />
+                <CardContentImage type="" item={item} onViewDetail={handleGetDetail} />
               </SwiperSlide>
             ))}
           </SwiperStyled>
