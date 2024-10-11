@@ -3,7 +3,6 @@ import Root from 'layouts/Root';
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { AdminRouter } from './pages/AdminRouter';
 import { UsersRouter } from './pages/UsersRouter';
-import { EcoCupidComponentRouter } from './pages/EcoCupidUI';
 import { AuthRouter } from './pages/AuthRouter';
 
 export const router = createBrowserRouter([
@@ -21,8 +20,7 @@ export const router = createBrowserRouter([
       // ROUTE SELLER
       UsersRouter,
       //
-      EcoCupidComponentRouter,
-      
+
       AuthRouter,
     ],
   },

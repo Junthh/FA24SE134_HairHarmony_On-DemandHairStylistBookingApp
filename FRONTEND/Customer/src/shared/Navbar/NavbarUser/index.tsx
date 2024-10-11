@@ -28,7 +28,7 @@ import { BaseTextField } from 'components/Base/BaseTextField';
 import { ButtonPrimary } from 'pages/common/style/Button';
 import * as colors from 'constants/colors';
 import { useNavigate } from 'react-router-dom';
-import { USER_PATH } from 'configurations/paths/paths';
+import { AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import { theme } from 'theme';
 import { motion } from 'framer-motion';
 import { Navigation } from './components/Navigation';
@@ -220,7 +220,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
           <hr />
         </Link>
         <Link
-          onClick={() => navigate(`/${USER_PATH.ECOFILMS}`)}
+          onClick={() => navigate(`/${USER_PATH.ABOUTUS}`)}
           underline="none"
           sx={{ cursor: 'pointer' }}
         >
@@ -229,7 +229,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
           </Typography>
         </Link>
         <Link
-          onClick={() => navigate(`/${USER_PATH.ECO_STORIES}`)}
+          // onClick={() => navigate(`/${USER_PATH.ECO_STORIES}`)}
           sx={{ cursor: 'pointer' }}
           underline="none"
         >
@@ -238,7 +238,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
           </Typography>
         </Link>
         <Link
-          onClick={() => navigate(`/${USER_PATH.VOLUNTEERS}`)}
+          // onClick={() => navigate(`/${USER_PATH.VOLUNTEERS}`)}
           underline="none"
           sx={{ cursor: 'pointer' }}
         >
@@ -252,7 +252,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
           borderradius={'8px'}
           fontWeight={400}
           border={`1px solid ${colors.white}`}
-          onClick={() => navigate(`/${USER_PATH.PARTNER_WITH_US}`)}
+          onClick={() => navigate(`${AUTH_PATH.LOGIN}`)}
         >
           Đăng nhập
         </ButtonPrimary>

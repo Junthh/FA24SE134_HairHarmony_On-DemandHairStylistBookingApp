@@ -96,7 +96,7 @@ export default function EcoFilms() {
   return (
     <Box>
       <BreadscrumWrap>
-        <Breadscrumb
+        {/* <Breadscrumb
           options={[
             {
               label: 'Home',
@@ -107,7 +107,7 @@ export default function EcoFilms() {
               url: '',
             },
           ]}
-        />
+        /> */}
       </BreadscrumWrap>
       <EcoFilmsStyled>
         <HeaderEcoFilms data={posts.mostViewed} />

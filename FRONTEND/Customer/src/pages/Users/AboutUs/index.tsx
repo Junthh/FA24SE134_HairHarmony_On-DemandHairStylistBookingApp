@@ -41,7 +41,7 @@ export default function AboutUs() {
   return (
     <Box>
       <BreadscrumWrap>
-        <Breadscrumb
+        {/* <Breadscrumb
           options={[
             {
               label: 'Home',
@@ -52,7 +52,7 @@ export default function AboutUs() {
               url: '',
             },
           ]}
-        />
+        /> */}
       </BreadscrumWrap>
       <BodyAboutUsWrap1>
         <Box className="left">
@@ -85,7 +85,8 @@ export default function AboutUs() {
           </Box>
           <Box className="right-item">
             <Typography variant="h4">
-              Environmentalists may be saving the planet, but they’re not always good at selling themselves.
+              Environmentalists may be saving the planet, but they’re not always good at selling
+              themselves.
             </Typography>
           </Box>
           <Box className="right-item">
@@ -99,7 +100,8 @@ export default function AboutUs() {
               >
                 Southeast Asia
               </Typography>{' '}
-              risk losing their context, ambitions, and impact when translated to a wider and more generalised English-speaking audience.
+              risk losing their context, ambitions, and impact when translated to a wider and more
+              generalised English-speaking audience.
             </Typography>
           </Box>
         </Box>
@@ -262,7 +264,7 @@ export default function AboutUs() {
       </GuidingPrinciplesStyled>
       <TheNameEcoStyled>
         <Box className="content-left">
-          <img width={"100%"} height={"100%"} src={ImageAboutUs2} alt="" />
+          <img width={'100%'} height={'100%'} src={ImageAboutUs2} alt="" />
         </Box>
         <Box className="content">
           {!isMobile ? (
@@ -332,7 +334,7 @@ export default function AboutUs() {
         <Box height={16}></Box>
         <Box className="content-item">
           {/* <ICONS.IconSparkle /> */}
-          <Box className="image-bg" >
+          <Box className="image-bg">
             <ImageComponent src={IMAGES.DoForYou1} />
           </Box>
           <Box height={28}></Box>
@@ -341,11 +343,15 @@ export default function AboutUs() {
           </Typography>
           <Box height={8}></Box>
           <Typography variant="h4" lineHeight={1.8} color={colors.darkBlue600}>
-            We want to tell your environmental story through professional written and video media. Our professional video team consists of an international award-winning producer. We also have an environmental researcher that understands and cares deeply about science and the environment. So, EcoCupid media will have good production and accurate science. Guaranteed.
+            We want to tell your environmental story through professional written and video media.
+            Our professional video team consists of an international award-winning producer. We also
+            have an environmental researcher that understands and cares deeply about science and the
+            environment. So, EcoCupid media will have good production and accurate science.
+            Guaranteed.
           </Typography>
         </Box>
         <Box className="content-item">
-          <Box className="image-bg" >
+          <Box className="image-bg">
             <ImageComponent src={IMAGES.DoForYou2} />
           </Box>
           {/* <ICONS.IconSmiley /> */}
@@ -355,11 +361,13 @@ export default function AboutUs() {
           </Typography>
           <Box height={8}></Box>
           <Typography variant="h4" lineHeight={1.8} color={colors.darkBlue600}>
-            We can share our media skills with young environmental leaders across Southeast Asia. All of us at EcoCupid are leading environmentalists ourselves. We want to give back to society by guiding you there. We’ve all been there once.
+            We can share our media skills with young environmental leaders across Southeast Asia.
+            All of us at EcoCupid are leading environmentalists ourselves. We want to give back to
+            society by guiding you there. We’ve all been there once.
           </Typography>
         </Box>
         <Box className="content-item">
-          <Box className="image-bg" >
+          <Box className="image-bg">
             <ImageComponent src={IMAGES.DoForYou3} />
           </Box>
           {/* <ICONS.IconTree /> */}
@@ -369,7 +377,9 @@ export default function AboutUs() {
           </Typography>
           <Box height={8}></Box>
           <Typography variant="h4" lineHeight={1.8} color={colors.darkBlue600}>
-            Join us and get to know more people flighting for the environment just like you in other countries within Southeast Asia. Our network can help you to reach out to unlikely friends and partners that you can learn from and collaborate someday.
+            Join us and get to know more people flighting for the environment just like you in other
+            countries within Southeast Asia. Our network can help you to reach out to unlikely
+            friends and partners that you can learn from and collaborate someday.
           </Typography>
         </Box>
       </EcoCupidDoStyled>

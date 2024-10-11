@@ -46,7 +46,7 @@ export default function EcoFilmDetails() {
   return (
     <>
       <BreadscrumWrap>
-        <Breadscrumb
+        {/* <Breadscrumb
           options={[
             {
               label: 'Home',
@@ -57,7 +57,7 @@ export default function EcoFilmDetails() {
               url: '',
             },
           ]}
-        />
+        /> */}
       </BreadscrumWrap>
       <ContainerBodyWrap>
         <Box className="video-responsive">
@@ -79,7 +79,10 @@ export default function EcoFilmDetails() {
               {article?.title}
             </Typography>
             <Box className="content-tag">
-              <NationalTag label={article?.country} icon={countriesFlag[article?.country] || CountriesEnum.Vietnam} />
+              <NationalTag
+                label={article?.country}
+                icon={countriesFlag[article?.country] || CountriesEnum.Vietnam}
+              />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 {(article?.tags?.split('&#&') || []).map((a, index) => (
                   <TagTextStyled key={index}>{a}</TagTextStyled>
@@ -107,7 +110,7 @@ export default function EcoFilmDetails() {
               </Typography>
             </Box>
           </Box>
-          <Box className="content-body_right" >
+          <Box className="content-body_right">
             <ProjectDocument project={article?.project} type={PostTypeEnum.Video} />
           </Box>
         </Box>
