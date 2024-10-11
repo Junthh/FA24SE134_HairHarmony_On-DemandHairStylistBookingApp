@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Box,
+  IconButton,
   Pagination,
   Paper,
   Stack,
@@ -181,6 +182,7 @@ export default function BookingHistory() {
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Trạng thái
               </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -196,6 +198,11 @@ export default function BookingHistory() {
                 <StyledTableCell align="right">{row.paymentBy}</StyledTableCell>
                 <StyledTableCell align="right">{row.dateEnd}</StyledTableCell>
                 <StyledTableCell align="right">{row.status}</StyledTableCell>
+                <StyledTableCell align="right">
+                  <IconButton>
+                    <ICONS.IconThreeDot />
+                  </IconButton>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

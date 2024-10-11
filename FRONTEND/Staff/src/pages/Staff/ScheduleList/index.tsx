@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Box,
+  IconButton,
   Pagination,
   Paper,
   Stack,
@@ -170,6 +171,7 @@ export default function ScheduleList() {
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Tổng tiền
               </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -185,6 +187,11 @@ export default function ScheduleList() {
                 <StyledTableCell align="right">{row.service}</StyledTableCell>
                 <StyledTableCell align="right">{row.combo}</StyledTableCell>
                 <StyledTableCell align="right">{row.price}</StyledTableCell>
+                <StyledTableCell align="right">
+                  <IconButton>
+                    <ICONS.IconThreeDot />
+                  </IconButton>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
