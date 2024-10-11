@@ -76,7 +76,7 @@ function Staff() {
 
   useEffect(() => {
     const arrUrl = location.pathname.split('/');
-    const name = arrUrl[1] ? arrUrl[1].toUpperCase() : '';
+    const name = arrUrl[1] ? arrUrl[1] : '';
     if (name === STAFF_PATH.SCHEDULE_LIST.split('/')[1]) {
       setTabName('Danh sách đặt lịch');
     } else if (name === STAFF_PATH.HISTORY.split('/')[1]) {

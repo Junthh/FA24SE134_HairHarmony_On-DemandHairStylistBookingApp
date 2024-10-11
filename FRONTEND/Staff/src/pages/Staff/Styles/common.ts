@@ -67,6 +67,7 @@ export const BoxHeaderSearch = styled(Box)({
   justifyContent: 'space-between',
   '& .search-left': {
     display: 'flex',
+    alignItems: 'center',
     gap: '0px 8px',
     flex: '55%',
     '& > div:nth-of-type(1)': {

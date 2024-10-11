@@ -8,7 +8,9 @@ import { Navigate } from 'react-router-dom';
 //LAZY LOADING COMPONENT
 const StaffPage = lazy(() => import('pages/Staff'));
 //
-// const AdminArticle = lazy(() => import('pages/Staff/Article'));
+const BookingHistory = lazy(() => import('pages/Staff/BookingHistory'));
+const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
+
 // const StaffArticleDetails = lazy(() => import('pages/Staff/Article/ArticleDetails'));
 // const StaffOurReaderStories = lazy(() => import('pages/Staff/OurReaderStories'));
 // const StaffOurReaderStoriesDetails = lazy(
@@ -42,81 +44,13 @@ export const StaffRouter = {
       path: `${STAFF_PATH.SCHEDULE_LIST}`,
       element: <ScheduleList />,
     },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.ARTICLE}/${STATE.CREATE}`,
-    //   element: <AdminArticleDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.ARTICLE}/:id`,
-    //   element: <AdminArticleDetails />,
-    // },
-    // // OUR READER STORIES
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.OUR_READER_STORIES}`,
-    //   element: <AdminOurReaderStories />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.OUR_READER_STORIES}/${STATE.CREATE}`,
-    //   element: <AdminOurReaderStoriesDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.OUR_READER_STORIES}/:id`,
-    //   element: <AdminOurReaderStoriesDetails />,
-    // },
-    // // CATEGORY
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.CATEGORY}`,
-    //   element: <AdminCategory />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.CATEGORY}/${STATE.CREATE}`,
-    //   element: <AdminCategoryDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.CATEGORY}/:id`,
-    //   element: <AdminCategoryDetails />,
-    // },
-    // //VIDEO
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.VIDEO}`,
-    //   element: <AdminVideo />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.VIDEO}/${STATE.CREATE}`,
-    //   element: <AdminVideoDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.VIDEO}/:id`,
-    //   element: <AdminVideoDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.PROJECT}`,
-    //   element: <AdminProject />,
-    // },
-    // // PROJECT
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.PROJECT}/${STATE.CREATE}`,
-    //   element: <AdminProjectDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.PROJECT}/:id`,
-    //   element: <AdminProjectDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.WRITER}`,
-    //   element: <AdminWriter />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.WRITER}/${STATE.CREATE}`,
-    //   element: <AdminWriterDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.WRITER}/:id`,
-    //   element: <AdminWriterDetails />,
-    // },
-    // {
-    //   path: `${ADMIN_PATH.ADMIN}/${ADMIN_PATH.EMAIL}`,
-    //   element: <AdminEmail />,
-    // },
+    {
+      path: `${STAFF_PATH.HISTORY}`,
+      element: <BookingHistory />,
+    },
+    {
+      path: `${STAFF_PATH.STYLIST_STATUS}`,
+      element: <StylistStatus />,
+    },
   ],
 };
