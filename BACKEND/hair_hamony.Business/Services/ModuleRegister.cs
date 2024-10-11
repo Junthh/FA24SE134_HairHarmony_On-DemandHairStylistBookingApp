@@ -1,4 +1,5 @@
-﻿using hair_hamony.Business.Services.RoleServices;
+﻿using hair_hamony.Business.Services.BookingServices;
+using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.UserServices;
 using hair_hamony.Business.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ namespace hair_hamony.Business.Services
 
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IBookingService, BookingService>();
         }
     }
 }
