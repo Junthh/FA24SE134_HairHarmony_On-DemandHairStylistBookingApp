@@ -1,9 +1,9 @@
 export enum USER_PATH {
   HOME = '/home',
   STYLIST_DETAIL = 'stylist-detail',
-
-  SEARCH = 'search',
   ABOUTUS = 'about-us',
+  BOOKING = 'booking',
+  SEARCH = 'search',
   VOLUNTEERS = 'volunteers',
   PARTNER_WITH_US = 'partner-with-us',
   ECOFILMS = 'eco-films',
