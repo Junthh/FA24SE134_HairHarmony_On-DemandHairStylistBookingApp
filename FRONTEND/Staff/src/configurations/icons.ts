@@ -98,6 +98,7 @@ import { ReactComponent as IconList } from 'assets/pics/icons/icon-list.svg';
 import { ReactComponent as IconHistory } from 'assets/pics/icons/icon-history.svg';
 import { ReactComponent as IconStylistUser } from 'assets/pics/icons/icon-stylist-user.svg';
 import { ReactComponent as IconFilter } from 'assets/pics/icons/icon-filter.svg';
+import { ReactComponent as IconThreeDot } from 'assets/pics/icons/icon-three-dot.svg';
 export const ICONS = {
   IconShare,
   IconPencilSimpleLine,
@@ -196,6 +197,7 @@ export const ICONS = {
   IconHistory,
   IconStylistUser,
   IconFilter,
+  IconThreeDot,
 };
 
 export const IMAGES_ICONS = {};
