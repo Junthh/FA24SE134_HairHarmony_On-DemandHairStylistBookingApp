@@ -1,5 +1,6 @@
 ﻿using hair_hamony.Business.Services.BookingDetailServices;
 using hair_hamony.Business.Services.BookingServices;
+using hair_hamony.Business.Services.BookingSlotStylistServices;
 using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.UserServices;
 using hair_hamony.Business.Utilities;
@@ -17,6 +18,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingDetailService, BookingDetailService>();
+            services.AddScoped<IBookingSlotStylistService, BookingSlotStylistService>();
         }
     }
 }
