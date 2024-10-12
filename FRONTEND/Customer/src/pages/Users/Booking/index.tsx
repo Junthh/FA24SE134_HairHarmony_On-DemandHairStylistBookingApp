@@ -20,6 +20,7 @@ import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { ReactComponent as IconStylist } from 'assets/pics/icons/icon-stylist.svg';
+import { ICONS } from 'configurations/icons';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -397,6 +398,7 @@ export default function Booking() {
               <Typography variant="h2" fontWeight={700}>
                 Chọn thời gian
               </Typography>
+              <Box height={20}></Box>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <BoxStylistCard>
@@ -407,6 +409,37 @@ export default function Booking() {
                   </BoxStylistCard>
                 </Grid>
               </Grid>
+            </>
+          ) : currentStep === 3 ? (
+            <>
+              <Typography variant="h2" fontWeight={700}>
+                Xem lại và xác nhận
+              </Typography>
+              <Typography variant="body1" fontWeight={400}>
+                Phương thức thanh toán
+              </Typography>
+              <Box height={20}></Box>
+              <ButtonPrimary
+                padding={'14px 24px'}
+                severity="cancel"
+                sx={{ color: 'black !important' }}
+                border={'1px solid black'}
+                fullWidth
+              >
+                <ICONS.IconStore /> &nbsp; &nbsp; &nbsp; &nbsp; Thanh toán tại địa điểm
+              </ButtonPrimary>
+              <Box height={20}></Box>
+              <Typography variant="h6" fontWeight={600}>
+                Thông tin quan trọng
+              </Typography>
+              <Box height={20}></Box>
+              <Typography variant="body1">
+                Trong mọi trường hợp hủy, vui lòng thông báo cho chúng tôi càng sớm càng tốt trước
+                thời gian hẹn.Nếu bạn đến muộn <b>20 phút</b>, nhà tạo mẫu có thể không có đủ thời
+                gian để đáp ứng đầy đủ thiết kế mà bạn mong muốn. Và xin lưu ý rằng bất kỳ ai hủy
+                trong ngày hoặc thay đổi ba lần sẽ tự động bị chặn.Chúng tôi mong nhận được sự thông
+                cảm của bạn và rất mong được gặp bạn.
+              </Typography>
             </>
           ) : (
             <></>

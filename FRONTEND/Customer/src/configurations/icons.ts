@@ -93,6 +93,7 @@ import { ReactComponent as IconInstagram } from 'assets/pics/icons/social/icon-i
 import { ReactComponent as IconYoutube } from 'assets/pics/icons/social/icon-youtube.svg';
 import { ReactComponent as IconTiktok } from 'assets/pics/icons/social/icon-tiktok.svg';
 import { ReactComponent as IconTwitter } from 'assets/pics/icons/social/icon-twitter.svg';
+import { ReactComponent as IconStore } from 'assets/pics/icons/icon-store.svg';
 
 export const ICONS = {
   IconShare,
@@ -188,6 +189,7 @@ export const ICONS = {
   IconFacebook,
   IconQuote,
   IconMenu,
+  IconStore,
 };
 
 export const IMAGES_ICONS = {};
