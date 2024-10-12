@@ -15,6 +15,7 @@ public static class AutoMapperConfig
             mc.ConfigBooking();
             mc.ConfigBookingDetail();
             mc.ConfigBookingSlotStylist();
+            mc.ConfigCategory();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
