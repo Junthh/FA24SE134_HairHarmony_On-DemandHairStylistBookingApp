@@ -9,6 +9,7 @@ const UsersPage = lazy(() => import('pages/Users'));
 const UserHome = lazy(() => import('pages/Users/Home'));
 const StylistDetails = lazy(() => import('pages/Users/StylistDetails'));
 const Booking = lazy(() => import('pages/Users/Booking'));
+const Appointment = lazy(() => import('pages/Users/Appointment'));
 
 export const UsersRouter = {
   path: '',
@@ -34,6 +35,10 @@ export const UsersRouter = {
     {
       path: USER_PATH.BOOKING,
       element: <Booking />,
+    },
+    {
+      path: USER_PATH.APPOINTMENT,
+      element: <Appointment />,
     },
   ],
 };
