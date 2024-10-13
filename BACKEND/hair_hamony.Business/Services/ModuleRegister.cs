@@ -5,6 +5,7 @@ using hair_hamony.Business.Services.CategoryServices;
 using hair_hamony.Business.Services.ComboServices;
 using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.ServiceServices;
+using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.Services.UserServices;
 using hair_hamony.Business.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IComboService, ComboService>();
             services.AddScoped<IServiceService, ServiceService>();
+            services.AddScoped<IStylistService, StylistService>();
         }
     }
 }
