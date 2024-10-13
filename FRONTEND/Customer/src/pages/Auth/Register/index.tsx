@@ -19,7 +19,7 @@ import { authService } from 'services/auth.service';
 import { AuthConsumer } from '../AuthProvider';
 import { setLoading } from 'redux/Reducer';
 import { useNavigate } from 'react-router-dom';
-import { ADMIN_PATH, AUTH_PATH } from 'configurations/paths/paths';
+import { ADMIN_PATH, AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import { ResponseSuccessApi } from 'models/Response.model';
 import { Token } from 'models/CredentialInfo.model';
 import { LOGO } from 'configurations/logo';
@@ -79,7 +79,13 @@ function Register() {
     <FormContainer>
       <FormContent>
         <FormTitle>
-          <LOGO.Vector.EcocupidLarge />
+          <h1
+            className="mea-culpa-regular"
+            onClick={() => navigate(`${USER_PATH.HOME}`)}
+            style={{ cursor: 'pointer' }}
+          >
+            Hair Hamorny
+          </h1>
           <Typography
             sx={{
               fontSize: 38,
