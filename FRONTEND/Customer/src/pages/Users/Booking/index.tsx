@@ -10,6 +10,7 @@ import {
   Checkbox,
   SvgIcon,
   Stack,
+  Avatar,
 } from '@mui/material';
 import Breadscrumb from 'components/Common/Breadscrumb';
 import { ButtonPrimary } from 'pages/common/style/Button';
@@ -21,6 +22,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { ReactComponent as IconStylist } from 'assets/pics/icons/icon-stylist.svg';
 import { ICONS } from 'configurations/icons';
+import { useLocation, useNavigate } from 'react-router-dom';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -47,15 +49,17 @@ const BoxStylistCard = styled(Box)({
   flexDirection: 'column',
   borderRadius: '12px',
   border: '1px solid black',
-  width: '250px',
-  height: '275px',
-  gap: 50,
+  width: '200px',
+  height: '240px',
+  gap: 2,
 });
 //
 export default function Booking() {
   const [value, setValue] = React.useState<Dayjs | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const navigate = useNavigate();
   const handleChangeStep = () => {
+    if (currentStep === 3) navigate('/appointment');
     setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
   };
 
@@ -108,11 +112,11 @@ export default function Booking() {
           },
           {
             step: 1,
-            label: 'Stylist',
+            label: 'Thời gian',
           },
           {
             step: 2,
-            label: 'Thời gian',
+            label: 'Stylist',
           },
           {
             step: 3,
@@ -122,9 +126,9 @@ export default function Booking() {
       />
       <Box height={20}></Box>
       <Grid container spacing={2}>
-        <Grid item xs={5}>
+        <Grid item xs={7}>
           {currentStep === 0 ? (
-            <Box>
+            <Box paddingRight={20}>
               <Typography variant="h2" fontWeight={700}>
                 Chọn dịch vụ
               </Typography>
@@ -150,7 +154,7 @@ export default function Booking() {
 
               <FormControl fullWidth>
                 <FormGroup>
-                  <Box display={'flex'} flexDirection={'column'} gap={2}>
+                  <Box display={'flex'} flexDirection={'column'} gap={4}>
                     <BoxCardService>
                       <Box>
                         <Typography variant="h5" fontWeight={700}>
@@ -292,7 +296,7 @@ export default function Booking() {
               </FormControl>
             </Box>
           ) : currentStep === 1 ? (
-            <Box>
+            <Box paddingRight={20}>
               <Typography variant="h2" fontWeight={700}>
                 Chọn thời gian
               </Typography>
@@ -398,7 +402,7 @@ export default function Booking() {
               <Typography variant="h2" fontWeight={700}>
                 Chọn thời gian
               </Typography>
-              <Box height={20}></Box>
+              <Box height={25}></Box>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <BoxStylistCard>
@@ -408,10 +412,55 @@ export default function Booking() {
                     </Typography>
                   </BoxStylistCard>
                 </Grid>
+                <Grid item xs={4}>
+                  <BoxStylistCard>
+                    <Avatar sx={{ width: 70, height: 70 }} />
+                    <Box height={20}></Box>
+                    <Typography variant="h4" fontWeight={700}>
+                      John Alex
+                    </Typography>
+                    <Typography variant="body1" color={colors.grey2}>
+                      Chuyên viên
+                    </Typography>
+                    <Typography variant="body1" fontWeight={500}>
+                      Phí dịch vụ tăng 20%
+                    </Typography>
+                  </BoxStylistCard>
+                </Grid>
+                <Grid item xs={4}>
+                  <BoxStylistCard>
+                    <Avatar sx={{ width: 70, height: 70 }} />
+                    <Box height={20}></Box>
+                    <Typography variant="h4" fontWeight={700}>
+                      John Alex
+                    </Typography>
+                    <Typography variant="body1" color={colors.grey2}>
+                      Chuyên viên
+                    </Typography>
+                    <Typography variant="body1" fontWeight={500}>
+                      Phí dịch vụ tăng 20%
+                    </Typography>
+                  </BoxStylistCard>
+                </Grid>
+                <Grid item xs={4}>
+                  <BoxStylistCard>
+                    <Avatar sx={{ width: 70, height: 70 }} />
+                    <Box height={20}></Box>
+                    <Typography variant="h4" fontWeight={700}>
+                      John Alex
+                    </Typography>
+                    <Typography variant="body1" color={colors.grey2}>
+                      Chuyên viên
+                    </Typography>
+                    <Typography variant="body1" fontWeight={500}>
+                      Phí dịch vụ tăng 20%
+                    </Typography>
+                  </BoxStylistCard>
+                </Grid>
               </Grid>
             </>
           ) : currentStep === 3 ? (
-            <>
+            <Box paddingRight={20}>
               <Typography variant="h2" fontWeight={700}>
                 Xem lại và xác nhận
               </Typography>
@@ -440,13 +489,12 @@ export default function Booking() {
                 trong ngày hoặc thay đổi ba lần sẽ tự động bị chặn.Chúng tôi mong nhận được sự thông
                 cảm của bạn và rất mong được gặp bạn.
               </Typography>
-            </>
+            </Box>
           ) : (
             <></>
           )}
         </Grid>
-        <Grid item xs={2}></Grid>
-        <Grid item xs={5}>
+        <Grid item xs={4}>
           <BoxCardBill>
             {Object.keys(services).map((key) => {
               return services[key].checked ? (
