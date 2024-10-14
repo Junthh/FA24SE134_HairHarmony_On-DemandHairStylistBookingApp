@@ -13,6 +13,12 @@ public static class AutoMapperConfig
             mc.ConfigRole();
             mc.ConfigUser();
             mc.ConfigBooking();
+            mc.ConfigBookingDetail();
+            mc.ConfigBookingSlotStylist();
+            mc.ConfigCategory();
+            mc.ConfigCombo();
+            mc.ConfigService();
+            mc.ConfigStylist();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
