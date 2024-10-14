@@ -14,7 +14,7 @@ const RegisterPage = lazy(() => import('pages/Auth/Register'));
 
 const AuthContainer = styled(`div`)({
   height: '100vh',
-  background: colors.primary1,
+  background: colors.dark,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

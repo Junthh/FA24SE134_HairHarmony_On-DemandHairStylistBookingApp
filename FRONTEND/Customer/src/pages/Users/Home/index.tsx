@@ -34,8 +34,6 @@ export const initEcoPostsHome: EcoPostsHome = {
 };
 
 export default function Home() {
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isOtherScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -177,94 +175,11 @@ export default function Home() {
     setPosts((prev) => ({ ...prev, ourStories: ourStories }));
   };
 
-  // handle view all
-  const handleViewAll = (
-    status: SortBy,
-    type: PostTypeEnum = PostTypeEnum.Post,
-    isFeatured: boolean = false,
-  ) => {
-    let path = `/${USER_PATH.SEARCH}?type=${type}`;
-    if (status) {
-      path += `&sortBy=${status}`;
-    }
-    if (isFeatured) {
-      path += '&isFeature=true';
-    }
-    navigate(path);
-  };
-
-  // handle get detail
-  const handleGetDetail = (p: PostModel) => {
-    let path = `${USER_PATH.ECO_STORIES}`;
-    if (p.type === PostTypeEnum.Video) {
-      path = `${USER_PATH.ECOFILMS}`;
-    }
-    navigate(`/${path}/${p.id}`);
-  };
-
-  const getFeaturedCategories = async (id: any = '') => {
-    dispatch(setLoading(true));
-    if (!id) {
-      const res = (await postsService.getFeaturedCategories()) as any;
-      if (res.success) {
-        setFeaturedCategories(res.data);
-        id = res.data[0].id;
-      }
-    }
-
-    // featured categories posts
-    const featuredP = await getPosts({ isFeature: true, categoryId: id, page: 1, perPage: 3 });
-    setPosts((prev) => ({ ...prev, featuredCategories: featuredP }));
-
-    dispatch(setLoading(false));
-  };
-
-  const getFeaturedProjects = async () => {
-    dispatch(setLoading(true));
-    const res = (await postsService.getFeaturedProjects({ perPage: 4 })) as any;
-    if (res.success) {
-      setEcoHeros(res.data);
-    } else {
-      showToast('error', handleError(res.errors));
-    }
-    dispatch(setLoading(false));
-  };
-
-  // redirect to search page with params "country" for filtering all project belongs to it
-  const handleViewAllProject = () => {
-    navigate(`/${USER_PATH.SEARCH}?country=${currentCountry.country}`);
-  };
-
-  const openInNewTab = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleClickEcoHeros = (item: ProjectModel) => {
-    navigate(`/${USER_PATH.SEARCH}?country=${item.country}&project=${item.id}`);
-  };
-
-  // const getIntroVideo = async () => {
-  //   dispatch(setLoading(true));
-  //   const res = (await postsService.getIntroVideo()) as unknown as DataServiceSuccess;
-  //   if (res.success) {
-  //     setIntroVideo(res.data);
-  //   }
-  //   dispatch(setLoading(false));
-  // };
-
-  const handleWatch = () => {
-    setIsWatching(!isWatching);
-  };
-
   useEffect(() => {
     // Change title
-    document.title = 'Home - EcoCupid';
+    document.title = 'Home';
 
     // getIntroVideo();
-    getFeaturedCategories();
-    handleData();
-    getFeaturedProjects();
-    handleGetListCountries();
   }, []);
 
   return (
