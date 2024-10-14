@@ -1,17 +1,9 @@
-import { Box, Link, Typography, useMediaQuery } from '@mui/material';
-import { ICONS } from 'configurations/icons';
+import { Box, Link, Typography } from '@mui/material';
 import { AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import * as colors from 'constants/colors';
-import { useDimensions } from 'hooks/useDimensions';
-import { CategoryModel } from 'models/Category.model';
-import { ResponseSuccessApi } from 'models/Response.model';
 import { ButtonPrimary } from 'pages/common/style/Button';
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setLoading } from 'redux/Reducer';
-import { postsService } from 'services/posts.service';
-import { theme } from 'theme';
 import { NavbarStyled } from './styles';
 
 interface NavBarUserProps {
@@ -60,7 +52,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
           </Typography>
         </Link>
         <Link
-          // onClick={() => navigate(`/${USER_PATH.ECO_STORIES}`)}
+          onClick={() => navigate(`${USER_PATH.OUR_TEAMMATES}`)}
           sx={{ cursor: 'pointer' }}
           underline="none"
         >

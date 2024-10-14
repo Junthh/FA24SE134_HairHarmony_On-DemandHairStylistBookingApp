@@ -157,17 +157,13 @@ export default function Footer() {
         <Grid item sm={12} md={3}>
           <List>
             <ListItem>
-              <CustomListItemTextLink href={`${USER_PATH.ABOUTUS}`}>Liên hệ</CustomListItemTextLink>
+              <CustomListItemTextLink href={'#'}>Liên hệ</CustomListItemTextLink>
             </ListItem>
             <ListItem>
-              <CustomListItemTextLink href={`${USER_PATH.PARTNER_WITH_US}`}>
-                038-999-111{' '}
-              </CustomListItemTextLink>
+              <CustomListItemTextLink href={'#'}>038-999-111 </CustomListItemTextLink>
             </ListItem>
             <ListItem>
-              <CustomListItemTextLink href={`${USER_PATH.VOLUNTEERS}`}>
-                hairhamony@gmail.com
-              </CustomListItemTextLink>
+              <CustomListItemTextLink href={`#`}>hairhamony@gmail.com</CustomListItemTextLink>
             </ListItem>
           </List>
         </Grid>
@@ -177,12 +173,10 @@ export default function Footer() {
               <CustomItemTextHeader>Địa chỉ</CustomItemTextHeader>
             </ListItem>
             <ListItem>
-              <CustomListItemTextLink href={`${USER_PATH.VOLUNTEERS}`}>
-                77 Lê Văn Việt
-              </CustomListItemTextLink>
+              <CustomListItemTextLink href={`#`}>77 Lê Văn Việt</CustomListItemTextLink>
             </ListItem>
             <ListItem>
-              <CustomListItemTextLink href={`${USER_PATH.VOLUNTEERS}`}>
+              <CustomListItemTextLink href={`#`}>
                 Hiệp Phú, Quận 9, Hồ Chí Minh
               </CustomListItemTextLink>
             </ListItem>

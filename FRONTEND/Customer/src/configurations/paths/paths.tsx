@@ -4,13 +4,7 @@ export enum USER_PATH {
   ABOUTUS = '/about-us',
   BOOKING = '/booking',
   APPOINTMENT = '/appointment',
-  SEARCH = 'search',
-  VOLUNTEERS = 'volunteers',
-  PARTNER_WITH_US = 'partner-with-us',
-  ECOFILMS = 'eco-films',
-  OUR_READER_STORIES = 'our-reader-stories',
-  ECO_STORIES = 'eco-stories',
-  ARTICLE_DETAILS = 'article-details',
+  OUR_TEAMMATES = '/our-teammates',
 }
 
 export enum ADMIN_PATH {
