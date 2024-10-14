@@ -1,0 +1,55 @@
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 10px;
+    padding: 24px 0 12px;
+}
+
+.p-custom-btn {
+    width: 121px;
+    padding: 8px 0;
+}
+
+.custom-default {
+    border: 1px solid transparent;
+    outline: none;
+    padding: 10px;
+    border-radius: 14px;
+}
+
+.ant-picker:hover,
+.ant-picker:focus:hover,
+.ant-picker:visited,
+.ant-picker:active {
+    border: 1px solid var(--primary-color);
+}
+
+.ant-picker-focused {
+    box-shadow: 0 0 0 2px rgba(243, 111, 63, 0.1);
+}
+
+.ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+    border-color: var(--primary-color);
+}
+
+.ant-picker-range .ant-picker-active-bar {
+    background-color: var(--primary-color);
+}
+
+.ant-picker-cell-range-start .ant-picker-cell-inner {
+    background: var(--primary-color) !important;
+}
+
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+    background: var(--primary-color) !important;
+}
+
+:where(.css-dev-only-do-not-override-yp8pcc).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before,
+:where(.css-dev-only-do-not-override-yp8pcc).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before {
+    background: var(--primary-hight-color) !important;
+}
+
+:where(.css-dev-only-do-not-override-yp8pcc).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-in-range::before {
+    background: var(--primary-hight-color) !important;
+}
