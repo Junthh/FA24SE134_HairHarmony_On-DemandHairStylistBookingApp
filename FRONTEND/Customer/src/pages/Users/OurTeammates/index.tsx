@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import Image1 from './mock/image1.png';
 import * as colors from 'constants/colors';
 import { ButtonPrimary } from 'pages/common/style/Button';
@@ -15,10 +15,27 @@ const OurTeammatesStyled = styled(Box)({
     '& .content': {
       width: 500,
       position: 'absolute',
-      top: '27%',
-      left: '36%',
-      transform: 'transplate(-50%, -50%)',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
     },
+  },
+  '& .contact': {
+    width: '100%',
+    padding: '100px 25px',
+    '& .header': {
+      textAlign: 'center',
+      fontFamily: 'GFS Didot !important',
+      fontSize: 50,
+    },
+    '& .body': {
+      textAlign: 'center',
+      fontFamily: 'GFS Didot  !important',
+      fontSize: 25,
+    },
+  },
+  '& .stylist-list': {
+    padding: '20px 80px',
   },
 });
 //
@@ -57,6 +74,31 @@ export default function OurTeammates() {
             Đặt lịch ngay
           </Button>
         </Box>
+      </Box>
+      <Box className="stylist-list">
+        <Typography variant="h5" fontFamily={'GFS Didot !important'} fontSize={'1.5rem'}>
+          Stylist Expert
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={4}></Grid>
+        </Grid>
+        <Typography variant="h5" fontFamily={'GFS Didot !important'} fontSize={'1.5rem'}>
+          Stylist Regular
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={4}></Grid>
+        </Grid>
+      </Box>
+      <Box className="contact">
+        <Typography variant="h1" className="header">
+          LIÊN HỆ
+        </Typography>
+        <Typography variant="body2" className="body">
+          Luôn chào đón khách không hẹn trước!
+        </Typography>
+        <Typography variant="body2" className="body">
+          Hãy gọi điện hoặc ghé qua để đặt lịch hẹn.
+        </Typography>
       </Box>
     </OurTeammatesStyled>
   );
