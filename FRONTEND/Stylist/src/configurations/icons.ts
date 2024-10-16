@@ -102,6 +102,9 @@ import { ReactComponent as IconThreeDot } from 'assets/pics/icons/icon-three-dot
 import { ReactComponent as IconSchedule } from 'assets/pics/icons/icon-schedule.svg';
 import { ReactComponent as IconTimekeeping } from 'assets/pics/icons/icon-timekeeping.svg';
 import { ReactComponent as IconFeedback } from 'assets/pics/icons/icon-feedback.svg';
+import { ReactComponent as IconCalendar } from 'assets/pics/icons/icon-calendar.svg';
+import { ReactComponent as IconCombo } from 'assets/pics/icons/icon-combo.svg';
+
 export const ICONS = {
   IconShare,
   IconPencilSimpleLine,
@@ -204,6 +207,8 @@ export const ICONS = {
   IconFeedback,
   IconTimekeeping,
   IconSchedule,
+  IconCombo,
+  IconCalendar,
 };
 
 export const IMAGES_ICONS = {};
