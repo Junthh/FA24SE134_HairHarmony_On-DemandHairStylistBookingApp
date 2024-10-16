@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { selectCredentialInfo } from 'redux/Reducer';
 import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
-import { STAFF_PATH } from 'configurations/paths/paths';
+import { STAFF_PATH, STYLIST_PATH } from 'configurations/paths/paths';
 
 const HeaderStyled = styled(Box)({
   height: 80,
@@ -77,12 +77,12 @@ function Staff() {
   useEffect(() => {
     const arrUrl = location.pathname.split('/');
     const name = arrUrl[1] ? arrUrl[1] : '';
-    if (name === STAFF_PATH.SCHEDULE_LIST.split('/')[1]) {
+    if (name === STYLIST_PATH.SCHEDULE_LIST.split('/')[1]) {
       setTabName('Danh sách đặt lịch');
-    } else if (name === STAFF_PATH.HISTORY.split('/')[1]) {
-      setTabName('Lịch sử đặt lịch');
-    } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
-      setTabName('Tình Trạng Stylist');
+    } else if (name === STYLIST_PATH.FEEDBACK.split('/')[1]) {
+      setTabName('Feedback');
+    } else if (name === STYLIST_PATH.TIMEKEEPING.split('/')[1]) {
+      setTabName('Chấm công');
     }
   }, [location]);
 

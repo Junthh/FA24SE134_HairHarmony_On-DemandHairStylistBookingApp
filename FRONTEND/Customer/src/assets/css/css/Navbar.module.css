@@ -1,0 +1,46 @@
+.container {
+  background-color: var(--primary-color);
+  height: 77px;
+  padding: 0px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.container__logo {
+  height: 30px;
+  width: 140px;
+}
+.container__nav-tag {
+  margin-right: 42px;
+}
+.container__nav-tag a {
+  color: var(--white-color);
+}
+.container__navbar-toggle {
+  color: white;
+  width: 24px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container__attribute div {
+  display: inline;
+}
+.container__attribute div a {
+  text-decoration: none;
+  font-size: 18px;
+}
+.container__sign-in {
+  margin-right: 8px;
+  background-color: var(--white-color);
+  color: var(--primary-color);
+}
+.container__register {
+  border: 1px solid var(--white-color);
+  color: var(--white-color);
+}
+
+.inactive {
+  display: none;
+}/*# sourceMappingURL=Navbar.module.css.map */

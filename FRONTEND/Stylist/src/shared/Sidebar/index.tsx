@@ -1,34 +1,31 @@
-import { NavLink } from 'react-router-dom';
-import { FaBars } from 'react-icons/fa';
-import { useState } from 'react';
+import { ICONS } from 'configurations/icons';
+import { STYLIST_PATH } from 'configurations/paths/paths';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import SidebarMenu from './SidebarMenu';
 import { SidebarStyled } from './styles';
-import { ICONS } from 'configurations/icons';
-import { ADMIN_PATH, STAFF_PATH } from 'configurations/paths/paths';
-import { LOGO } from 'configurations/logo';
 
 const routes = [
   {
-    path: STAFF_PATH.SCHEDULE_LIST,
-    name: 'Danh sách đặt lịch',
-    icon: <ICONS.IconList />,
+    path: STYLIST_PATH.TIMEKEEPING,
+    name: 'Chấm công',
+    icon: <ICONS.IconTimekeeping />,
   },
   {
-    path: STAFF_PATH.HISTORY,
-    name: 'Lịch sử đặt lịch',
-    icon: <ICONS.IconHistory />,
+    path: STYLIST_PATH.SCHEDULE_LIST,
+    name: 'Lịch trình',
+    icon: <ICONS.IconSchedule />,
   },
   {
-    path: STAFF_PATH.STYLIST_STATUS,
-    name: 'Tình trạng stylist',
-    icon: <ICONS.IconStylistUser />,
+    path: STYLIST_PATH.FEEDBACK,
+    name: 'Feedback',
+    icon: <ICONS.IconFeedback />,
   },
 ];
 
 const SideBar = ({ children }) => {
   const [isOpen, setIsOpen] = useState(true);
-  const toggle = () => setIsOpen(!isOpen);
   const showAnimation = {
     hidden: {
       width: 0,

@@ -79,6 +79,9 @@ function Register() {
     <FormContainer>
       <FormContent>
         <FormTitle>
+          <h1 className="mea-culpa-regular" style={{ cursor: 'pointer' }}>
+            Hair Hamorny
+          </h1>{' '}
           <LOGO.Vector.EcocupidLarge />
           <Typography
             sx={{
