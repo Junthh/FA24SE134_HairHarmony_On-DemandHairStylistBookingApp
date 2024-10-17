@@ -48,7 +48,7 @@ function Register() {
     dispatch(setLoading(true));
     try {
       const payload: RegisterPayload = {
-        email: data.email,
+        phoneNumber: data.phoneNumber,
         password: data.password,
       };
       const res = (await authService.register(payload)) as unknown as ResponseSuccessApi;
@@ -97,10 +97,10 @@ function Register() {
         </FormTitle>
         <FormItem>
           <TextFieldElement
-            name={authProps.email.propertyName}
+            name={authProps.phoneNumber.propertyName}
             control={control}
-            label={authProps.email.propertyLabel}
-            placeholder="Your email"
+            label={authProps.phoneNumber.propertyLabel}
+            placeholder="Your phone number"
             onKeyDown={handleKeyDown}
             autoFocus
           />

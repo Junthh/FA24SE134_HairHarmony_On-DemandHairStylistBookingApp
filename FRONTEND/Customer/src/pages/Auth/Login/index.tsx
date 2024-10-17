@@ -49,7 +49,7 @@ function Login() {
     dispatch(setLoading(true));
     try {
       const payload: LoginPayLoad = {
-        email: data.email,
+        phoneNumber: data.phoneNumber,
         password: data.password,
       };
       const res = (await authService.login(payload)) as unknown as ResponseSuccessApi;
@@ -99,10 +99,10 @@ function Login() {
 
         <FormItem>
           <TextFieldElement
-            name={authProps.email.propertyName}
+            name={authProps.phoneNumber.propertyName}
             control={control}
-            label={authProps.email.propertyLabel}
-            placeholder="Your email"
+            label={authProps.phoneNumber.propertyLabel}
+            placeholder="Your phone number"
             onKeyDown={handleKeyDown}
             autoFocus
           />
