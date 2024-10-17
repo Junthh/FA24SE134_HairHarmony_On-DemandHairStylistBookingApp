@@ -27,7 +27,7 @@ export const StylistRouter = {
     //
     {
       path: `${STYLIST_PATH.TIMEKEEPING}`,
-      element: <TimeKeeping />,
+      element: <></>,
     },
     {
       path: `${STYLIST_PATH.SCHEDULE_LIST}`,
