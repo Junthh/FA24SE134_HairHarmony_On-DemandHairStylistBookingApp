@@ -1,15 +1,15 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { STAFF_PATH, STATE } from 'configurations/paths/paths';
 import AuthProvider from 'pages/Auth/AuthProvider';
-import ScheduleList from 'pages/Staff/ScheduleList';
+import ScheduleList from 'pages/Owner/ScheduleList';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
 //LAZY LOADING COMPONENT
-const StaffPage = lazy(() => import('pages/Staff'));
+const StaffPage = lazy(() => import('pages/Owner'));
 //
-const BookingHistory = lazy(() => import('pages/Staff/BookingHistory'));
-const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
+const BookingHistory = lazy(() => import('pages/Owner/BookingHistory'));
+const StylistStatus = lazy(() => import('pages/Owner/StylistStatus'));
 
 // const StaffArticleDetails = lazy(() => import('pages/Staff/Article/ArticleDetails'));
 // const StaffOurReaderStories = lazy(() => import('pages/Staff/OurReaderStories'));
