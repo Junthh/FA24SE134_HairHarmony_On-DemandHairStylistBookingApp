@@ -3,6 +3,7 @@ using hair_hamony.Business.Services.BookingServices;
 using hair_hamony.Business.Services.BookingSlotStylistServices;
 using hair_hamony.Business.Services.CategoryServices;
 using hair_hamony.Business.Services.ComboServices;
+using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.ServiceServices;
 using hair_hamony.Business.Services.StylistServices;
@@ -27,6 +28,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IComboService, ComboService>();
             services.AddScoped<IServiceService, ServiceService>();
             services.AddScoped<IStylistService, StylistService>();
+            services.AddScoped<IComboServiceService, ComboServiceService>();
         }
     }
 }
