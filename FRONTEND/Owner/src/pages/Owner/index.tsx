@@ -49,7 +49,7 @@ const EmailWrapper = styled(Box)({
   maxWidth: '200px',
 });
 
-function Staff() {
+function Owner() {
   const location = useLocation();
   const credentialInfo = useSelector(selectCredentialInfo);
   const [tabName, setTabName] = useState('Danh sách đặt lịch');
@@ -140,4 +140,4 @@ function Staff() {
   );
 }
 
-export default memo(Staff);
+export default memo(Owner);
