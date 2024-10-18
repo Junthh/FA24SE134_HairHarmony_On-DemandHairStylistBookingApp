@@ -19,6 +19,7 @@ public static class AutoMapperConfig
             mc.ConfigCombo();
             mc.ConfigService();
             mc.ConfigStylist();
+            mc.ConfigComboService();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
