@@ -21,6 +21,7 @@ public static class AutoMapperConfig
             mc.ConfigStylist();
             mc.ConfigComboService();
             mc.ConfigCustomer();
+            mc.ConfigStylistSalary();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
