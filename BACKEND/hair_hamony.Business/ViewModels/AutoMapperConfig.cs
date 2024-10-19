@@ -25,6 +25,7 @@ public static class AutoMapperConfig
             mc.ConfigStylistWorkship();
             mc.ConfigSystemConfig();
             mc.ConfigFeedback();
+            mc.ConfigLevel();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
