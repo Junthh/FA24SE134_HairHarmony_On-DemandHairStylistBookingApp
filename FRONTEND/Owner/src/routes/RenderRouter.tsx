@@ -1,13 +1,14 @@
 import ErrorPage from 'layouts/ErrorPage';
 import Root from 'layouts/Root';
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import { StaffRouter } from './pages/StaffRouter';
+import { OwnerRouter } from './pages/OwnerRouter';
 import { AuthRouter } from './pages/AuthRouter';
+import { OWNER_PATH } from 'configurations/paths/paths';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="home" replace />,
+    element: <Navigate to={OWNER_PATH.EMPLOYEE_WORK_SCHEDULE} replace />,
   },
   {
     path: '/',
@@ -15,7 +16,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       // ROUTE BUYER
-      StaffRouter,
+      OwnerRouter,
       // ROUTE SELLER
       //
       AuthRouter,

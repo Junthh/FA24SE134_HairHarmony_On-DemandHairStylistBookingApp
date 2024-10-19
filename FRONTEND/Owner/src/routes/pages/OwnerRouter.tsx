@@ -1,12 +1,14 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
-import { STAFF_PATH, STATE } from 'configurations/paths/paths';
+import { OWNER_PATH, STAFF_PATH, STATE } from 'configurations/paths/paths';
 import AuthProvider from 'pages/Auth/AuthProvider';
 import ScheduleList from 'pages/Owner/ScheduleList';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
 //LAZY LOADING COMPONENT
-const StaffPage = lazy(() => import('pages/Owner'));
+const OwnerPage = lazy(() => import('pages/Owner'));
+const EmployeeWorkSchedulePage = lazy(() => import('pages/Owner/EmployeeWorkSchedule'));
+
 //
 //
 export const OwnerRouter = {
@@ -14,20 +16,20 @@ export const OwnerRouter = {
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
       {/* <AuthProvider> */}
-      <StaffPage />
+      <OwnerPage />
       {/* </AuthProvider> */}
     </React.Suspense>
   ),
   children: [
     {
       path: '/',
-      element: <Navigate to={`${STAFF_PATH.SCHEDULE_LIST}`} replace />,
+      element: <Navigate to={`${OWNER_PATH.EMPLOYEE_WORK_SCHEDULE}`} replace />,
     },
-    //
-    // {
-    //   path: `${STAFF_PATH.SCHEDULE_LIST}`,
-    //   element: <ScheduleList />,
-    // },
+
+    {
+      path: `${OWNER_PATH.EMPLOYEE_WORK_SCHEDULE}`,
+      element: <EmployeeWorkSchedulePage />,
+    },
     // {
     //   path: `${STAFF_PATH.HISTORY}`,
     //   element: <BookingHistory />,
