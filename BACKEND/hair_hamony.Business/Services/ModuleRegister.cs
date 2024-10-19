@@ -17,6 +17,7 @@ using hair_hamony.Business.Services.TimeSlotServices;
 using hair_hamony.Business.Services.TransactionDetailServices;
 using hair_hamony.Business.Services.TransactionServices;
 using hair_hamony.Business.Services.UserServices;
+using hair_hamony.Business.Services.WorkshipServices;
 using hair_hamony.Business.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -47,6 +48,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<ITimeSlotService, TimeSlotService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionDetailService, TransactionDetailService>();
+            services.AddScoped<IWorkshipService, WorkshipService>();
         }
     }
 }

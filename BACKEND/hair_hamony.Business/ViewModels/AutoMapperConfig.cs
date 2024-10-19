@@ -29,6 +29,7 @@ public static class AutoMapperConfig
             mc.ConfigTimeSlot();
             mc.ConfigTransaction();
             mc.ConfigTransactionDetail();
+            mc.ConfigWorkship();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
