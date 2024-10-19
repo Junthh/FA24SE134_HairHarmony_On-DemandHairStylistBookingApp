@@ -26,6 +26,7 @@ public static class AutoMapperConfig
             mc.ConfigSystemConfig();
             mc.ConfigFeedback();
             mc.ConfigLevel();
+            mc.ConfigTimeSlot();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
