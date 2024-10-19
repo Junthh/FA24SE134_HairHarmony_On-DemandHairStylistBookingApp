@@ -14,6 +14,7 @@ using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.Services.StylistWorkshipServices;
 using hair_hamony.Business.Services.SystemConfigServices;
 using hair_hamony.Business.Services.TimeSlotServices;
+using hair_hamony.Business.Services.TransactionServices;
 using hair_hamony.Business.Services.UserServices;
 using hair_hamony.Business.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +44,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<ILevelService, LevelService>();
             services.AddScoped<ITimeSlotService, TimeSlotService>();
+            services.AddScoped<ITransactionService, TransactionService>();
         }
     }
 }
