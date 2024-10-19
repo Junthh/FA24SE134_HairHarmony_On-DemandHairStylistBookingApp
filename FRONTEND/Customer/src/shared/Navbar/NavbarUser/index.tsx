@@ -2,8 +2,8 @@ import { Box, Link, Typography } from '@mui/material';
 import { AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import * as colors from 'constants/colors';
 import { ButtonPrimary } from 'pages/common/style/Button';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { NavbarStyled } from './styles';
 
 interface NavBarUserProps {
@@ -12,13 +12,62 @@ interface NavBarUserProps {
 
 export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   // popover
   const [typePopover, setTypePopover] = useState<{
     type: string;
     open: boolean;
   }>();
-
+  const [navOptions] = useState([
+    {
+      link: USER_PATH.HOME,
+      name: 'Trang chủ',
+    },
+    {
+      link: USER_PATH.BOOKING,
+      name: 'Đặt lịch',
+    },
+    {
+      link: USER_PATH.ABOUTUS,
+      name: 'Về HairHamony',
+    },
+    {
+      link: USER_PATH.OUR_TEAMMATES,
+      name: 'Đội Ngũ Chúng Tôi',
+    },
+    {
+      link: '',
+      name: 'Liên hệ',
+    },
+  ]);
   // get categories options
+  const renderNav = useMemo(() => {
+    const arrUrl = location.pathname.split('/');
+    const name = arrUrl[1] ? arrUrl[1] : '';
+    return navOptions.map((item) => {
+      if (name === item.link.split('/')[1]) {
+        return (
+          <Link
+            onClick={() => navigate(`${item.link}`)}
+            underline="none"
+            sx={{ cursor: 'pointer' }}
+          >
+            <Typography variant="body2" fontWeight={700}>
+              {item.name}
+            </Typography>
+            <hr />
+          </Link>
+        );
+      }
+      return (
+        <Link onClick={() => navigate(`${item.link}`)} underline="none" sx={{ cursor: 'pointer' }}>
+          <Typography variant="body2" fontWeight={700}>
+            {item.name}
+          </Typography>
+        </Link>
+      );
+    });
+  }, [location]);
 
   return (
     <NavbarStyled typePopover={typePopover}>
@@ -32,43 +81,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
         </h1>
       </Box>
       <Box className="nav-right">
-        <Link
-          onClick={() => navigate(`/${USER_PATH.HOME}`)}
-          underline="none"
-          sx={{ cursor: 'pointer' }}
-        >
-          <Typography variant="body2" fontWeight={700}>
-            Trang chủ
-          </Typography>
-          <hr />
-        </Link>
-        <Link
-          onClick={() => navigate(`${USER_PATH.ABOUTUS}`)}
-          underline="none"
-          sx={{ cursor: 'pointer' }}
-        >
-          <Typography variant="body2" fontWeight={700}>
-            Về HairHamony
-          </Typography>
-        </Link>
-        <Link
-          onClick={() => navigate(`${USER_PATH.OUR_TEAMMATES}`)}
-          sx={{ cursor: 'pointer' }}
-          underline="none"
-        >
-          <Typography variant="body2" fontWeight={700}>
-            Đội Ngũ Chúng Tôi
-          </Typography>
-        </Link>
-        <Link
-          // onClick={() => navigate(`/${USER_PATH.VOLUNTEERS}`)}
-          underline="none"
-          sx={{ cursor: 'pointer' }}
-        >
-          <Typography variant="body2" fontWeight={700}>
-            Liên hệ
-          </Typography>
-        </Link>
+        {renderNav}
         <ButtonPrimary
           severity="primary"
           padding={'4px 12px'}

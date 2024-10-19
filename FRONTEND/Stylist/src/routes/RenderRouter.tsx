@@ -1,13 +1,13 @@
 import ErrorPage from 'layouts/ErrorPage';
 import Root from 'layouts/Root';
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import { StaffRouter } from './pages/StaffRouter';
+import { StylistRouter } from './pages/StylistRouter';
 import { AuthRouter } from './pages/AuthRouter';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="home" replace />,
+    element: <Navigate to="auth/login" replace />,
   },
   {
     path: '/',
@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       // ROUTE BUYER
-      StaffRouter,
+      StylistRouter,
       // ROUTE SELLER
       //
       AuthRouter,

@@ -99,6 +99,11 @@ import { ReactComponent as IconHistory } from 'assets/pics/icons/icon-history.sv
 import { ReactComponent as IconStylistUser } from 'assets/pics/icons/icon-stylist-user.svg';
 import { ReactComponent as IconFilter } from 'assets/pics/icons/icon-filter.svg';
 import { ReactComponent as IconThreeDot } from 'assets/pics/icons/icon-three-dot.svg';
+import { ReactComponent as IconSchedule } from 'assets/pics/icons/icon-schedule.svg';
+import { ReactComponent as IconTimekeeping } from 'assets/pics/icons/icon-timekeeping.svg';
+import { ReactComponent as IconFeedback } from 'assets/pics/icons/icon-feedback.svg';
+import { ReactComponent as IconCalendar } from 'assets/pics/icons/icon-calendar.svg';
+import { ReactComponent as IconCombo } from 'assets/pics/icons/icon-combo.svg';
 
 export const ICONS = {
   IconShare,
@@ -199,6 +204,11 @@ export const ICONS = {
   IconStylistUser,
   IconFilter,
   IconThreeDot,
+  IconFeedback,
+  IconTimekeeping,
+  IconSchedule,
+  IconCombo,
+  IconCalendar,
 };
 
 export const IMAGES_ICONS = {};
