@@ -18,6 +18,12 @@ export enum STAFF_PATH {
   STYLIST_STATUS = '/stylist-status',
 }
 
+export enum OWNER_PATH {
+  EMPLOYEE_WORK_SCHEDULE = '/employee-work-schedule',
+  HISTORY = '/history',
+  STYLIST_STATUS = '/stylist-status',
+}
+
 export enum ADMIN_PATH {
   ADMIN = '/admin',
   ARTICLE = 'article',
