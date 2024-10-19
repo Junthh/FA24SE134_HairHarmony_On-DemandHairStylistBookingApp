@@ -5,6 +5,7 @@ using hair_hamony.Business.Services.CategoryServices;
 using hair_hamony.Business.Services.ComboServices;
 using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
+using hair_hamony.Business.Services.FeedbackServices;
 using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.ServiceServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
@@ -37,6 +38,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IStylistSalaryService, StylistSalaryService>();
             services.AddScoped<IStylistWorkshipService, StylistWorkshipService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
         }
     }
 }
