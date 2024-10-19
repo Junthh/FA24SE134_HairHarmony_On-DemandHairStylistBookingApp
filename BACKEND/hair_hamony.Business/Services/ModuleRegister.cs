@@ -8,6 +8,7 @@ using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.Services.FeedbackServices;
 using hair_hamony.Business.Services.LevelServices;
 using hair_hamony.Business.Services.NewsServices;
+using hair_hamony.Business.Services.PaymentServices;
 using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.ServiceServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
@@ -51,6 +52,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<ITransactionDetailService, TransactionDetailService>();
             services.AddScoped<IWorkshipService, WorkshipService>();
             services.AddScoped<INewsService, NewsService>();
+            services.AddScoped<IPaymentService, PaymentService>();
         }
     }
 }
