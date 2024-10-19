@@ -10,6 +10,7 @@ using hair_hamony.Business.Services.ServiceServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.Services.StylistWorkshipServices;
+using hair_hamony.Business.Services.SystemConfigServices;
 using hair_hamony.Business.Services.UserServices;
 using hair_hamony.Business.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IStylistSalaryService, StylistSalaryService>();
             services.AddScoped<IStylistWorkshipService, StylistWorkshipService>();
+            services.AddScoped<ISystemConfigService, SystemConfigService>();
         }
     }
 }

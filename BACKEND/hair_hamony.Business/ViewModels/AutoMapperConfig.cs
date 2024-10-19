@@ -23,6 +23,7 @@ public static class AutoMapperConfig
             mc.ConfigCustomer();
             mc.ConfigStylistSalary();
             mc.ConfigStylistWorkship();
+            mc.ConfigSystemConfig();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
