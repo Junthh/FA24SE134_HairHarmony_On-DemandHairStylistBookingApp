@@ -30,6 +30,7 @@ public static class AutoMapperConfig
             mc.ConfigTransaction();
             mc.ConfigTransactionDetail();
             mc.ConfigWorkship();
+            mc.ConfigNew();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
