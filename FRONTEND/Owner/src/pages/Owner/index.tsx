@@ -6,9 +6,10 @@ import * as colors from 'constants/colors';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
 import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
 import { memo, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
-import { selectCredentialInfo } from 'redux/Reducer';
+import { selectCredentialInfo, setRoles } from 'redux/Reducer';
+import { rolesServices } from 'services/roles.service';
 import SideBar from 'shared/Sidebar';
 
 const HeaderStyled = styled(Box)({
@@ -55,6 +56,7 @@ const EmailWrapper = styled(Box)({
 function Owner() {
   const location = useLocation();
   const credentialInfo = useSelector(selectCredentialInfo);
+  const dispatch = useDispatch();
   const [tabName, setTabName] = useState('');
   // const [email, setEmail] = useState('admin@gmail.com');
   const [toggle, setToggle] = useState(false);
@@ -84,6 +86,19 @@ function Owner() {
       if (name === item.path.split('/')[1]) {
         setTabName(item.title);
       }
+    });
+    rolesServices.list().then((res: any) => {
+      let roles = {};
+      res.data.forEach((item) => {
+        roles = {
+          ...roles,
+          [item.id]: {
+            name: item.name,
+            createdDate: item.createdDate,
+          },
+        };
+      });
+      dispatch(setRoles(roles));
     });
   }, [location]);
 
