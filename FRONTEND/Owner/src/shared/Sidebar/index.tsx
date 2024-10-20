@@ -1,30 +1,11 @@
-import { NavLink } from 'react-router-dom';
-import { FaBars } from 'react-icons/fa';
-import { useState } from 'react';
+import { OWNER_PATH_SIDEBAR } from 'configurations/paths/paths';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import SidebarMenu from './SidebarMenu';
 import { SidebarStyled } from './styles';
-import { ICONS } from 'configurations/icons';
-import { ADMIN_PATH, STAFF_PATH } from 'configurations/paths/paths';
-import { LOGO } from 'configurations/logo';
 
-const routes = [
-  {
-    path: STAFF_PATH.SCHEDULE_LIST,
-    name: 'Danh sách đặt lịch',
-    icon: <ICONS.IconList />,
-  },
-  {
-    path: STAFF_PATH.HISTORY,
-    name: 'Lịch sử đặt lịch',
-    icon: <ICONS.IconHistory />,
-  },
-  {
-    path: STAFF_PATH.STYLIST_STATUS,
-    name: 'Tình trạng stylist',
-    icon: <ICONS.IconStylistUser />,
-  },
-];
+const routes = OWNER_PATH_SIDEBAR;
 
 const SideBar = ({ children }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -106,7 +87,7 @@ const SideBar = ({ children }) => {
                         exit="hidden"
                         className="link_text"
                       >
-                        {route.name}
+                        {route.title}
                       </motion.div>
                     )}
                   </AnimatePresence>

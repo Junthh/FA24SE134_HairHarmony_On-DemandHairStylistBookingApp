@@ -1,15 +1,15 @@
 import styled from '@emotion/styled';
-import { Avatar, Box, Divider, Typography } from '@mui/material';
-import React, { memo, useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import SideBar from 'shared/Sidebar';
-import * as colors from 'constants/colors';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useSelector } from 'react-redux';
-import { selectCredentialInfo } from 'redux/Reducer';
-import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
+import { Avatar, Box, Divider, Typography } from '@mui/material';
+import { OWNER_PATH_SIDEBAR } from 'configurations/paths/paths';
+import * as colors from 'constants/colors';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
-import { STAFF_PATH } from 'configurations/paths/paths';
+import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
+import { memo, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Outlet, useLocation } from 'react-router-dom';
+import { selectCredentialInfo } from 'redux/Reducer';
+import SideBar from 'shared/Sidebar';
 
 const HeaderStyled = styled(Box)({
   height: 80,
@@ -79,13 +79,11 @@ function Owner() {
   useEffect(() => {
     const arrUrl = location.pathname.split('/');
     const name = arrUrl[1] ? arrUrl[1] : '';
-    if (name === STAFF_PATH.SCHEDULE_LIST.split('/')[1]) {
-      setTabName('Danh sách đặt lịch');
-    } else if (name === STAFF_PATH.HISTORY.split('/')[1]) {
-      setTabName('Lịch sử đặt lịch');
-    } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
-      setTabName('Tình Trạng Stylist');
-    }
+    OWNER_PATH_SIDEBAR.forEach((item) => {
+      if (name === item.path.split('/')[1]) {
+        setTabName(item.title);
+      }
+    });
   }, [location]);
 
   useEffect(() => {
