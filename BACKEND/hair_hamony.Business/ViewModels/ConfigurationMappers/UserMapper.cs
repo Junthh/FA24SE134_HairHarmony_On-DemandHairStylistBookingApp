@@ -11,6 +11,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
             configuration.CreateMap<User, GetUserModel>().ReverseMap();
             configuration.CreateMap<User, CreateUserModel>().ReverseMap();
             configuration.CreateMap<User, UpdateUserModel>().ReverseMap();
+            configuration.CreateMap<User, GetUserDetailModel>().ReverseMap();
         }
     }
 }
