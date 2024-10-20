@@ -30,7 +30,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { employeeServices } from 'services/employee.services';
-import { ListEmployeeSuccess } from 'models/EmployeeResponse.model';
+import { DataEmployeeError, ListEmployeeSuccess } from 'models/EmployeeResponse.model';
+import { showToast } from 'components/Common/Toast';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -106,7 +107,7 @@ export default function EmployeeList() {
   const [rows, setRows] = useState([]);
   const [paging, setPaging] = useState({
     size: 10,
-    page: 1,
+    page: 0,
     total: 0,
   });
   //
@@ -114,7 +115,9 @@ export default function EmployeeList() {
   const id = open ? 'simple-popover' : undefined;
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
-    defaultValues: {},
+    defaultValues: {
+      username: '',
+    },
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
@@ -124,18 +127,34 @@ export default function EmployeeList() {
     setValue,
     getValues,
     formState: { errors },
+    handleSubmit,
   } = formSearch;
 
   useEffect(() => {
     getEmployeeList(paging);
   }, []);
-  const getEmployeeList = useCallback(({ size, page }) => {
-    employeeServices.list({ size, page }).then((resultList: ListEmployeeSuccess) => {
+  const getEmployeeList = useCallback(({ size, page, username = '' }) => {
+    employeeServices.list({ size, page, username }).then((resultList: ListEmployeeSuccess) => {
       console.log(resultList);
-      setPaging(resultList.paging);
+      setPaging((prev) => ({
+        ...prev,
+        total: resultList.paging.total,
+      }));
       setRows(resultList.data);
     });
   }, []);
+
+  const handleSearch = useCallback(
+    handleSubmit((data: any) => {
+      if (data) {
+        getEmployeeList({
+          ...paging,
+          username: data.username,
+        });
+      }
+    }),
+    [paging],
+  );
   const handleClick = (event, row) => {
     setAnchorEl(event.currentTarget);
     setSelectedRow(row); // Store the selected row data for popover content
@@ -155,17 +174,36 @@ export default function EmployeeList() {
   const handleDelete = useCallback(
     (row) => {
       setAnchorEl(null);
-      console.log(row);
+      employeeServices
+        .delete(row.id)
+        .then((res: ListEmployeeSuccess) => {
+          showToast('success', res.msg);
+        })
+        .catch((err) => {
+          showToast('error', err.message);
+        });
     },
     [selectedRow],
   );
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPaging((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
+  };
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
       <FormContainer formContext={formSearch}>
         <BoxHeaderSearch>
           <Box className="search-left">
             <TextFieldElement
-              name="keySearch"
+              name="username"
               control={control}
               placeholder="Search"
               InputProps={{
@@ -173,11 +211,7 @@ export default function EmployeeList() {
               }}
               //   onKeyUp={handleKeyup}
             />
-            <ButtonPrimary
-              severity="primary"
-              padding={'7px 14px'}
-              //   onClick={() => navigate(`${STATE.CREATE}`)}
-            >
+            <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={handleSearch}>
               <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
             </ButtonPrimary>
             <Box width={'50%'}></Box>
@@ -186,7 +220,7 @@ export default function EmployeeList() {
             <ButtonPrimary
               severity="primary"
               padding={'9px 14px'}
-              //   onClick={() => navigate(`${STATE.CREATE}`)}
+              //   onClick={() => handleSearch}
             >
               <ControlPointIcon />
               &nbsp; Thêm mới
@@ -257,11 +291,11 @@ export default function EmployeeList() {
       <Stack spacing={2} alignItems={'center'}>
         <TablePagination
           component="div"
-          count={paging.total / paging.size}
+          count={paging.total}
           page={paging.page}
           rowsPerPage={paging.size}
-          onPageChange={() => {}}
-          onRowsPerPageChange={() => {}}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Stack>
       <Popover

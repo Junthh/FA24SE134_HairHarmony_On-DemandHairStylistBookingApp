@@ -27,6 +27,7 @@ const MainContainerStyled = styled(Box)({
   height: '100%',
   overflow: 'scroll',
   maxHeight: 'calc(100% - 80px)',
+  paddingLeft: '20px',
 });
 
 const InfoAccountStyled = styled(Box)({
@@ -54,7 +55,7 @@ const EmailWrapper = styled(Box)({
 function Owner() {
   const location = useLocation();
   const credentialInfo = useSelector(selectCredentialInfo);
-  const [tabName, setTabName] = useState('Danh sách đặt lịch');
+  const [tabName, setTabName] = useState('');
   // const [email, setEmail] = useState('admin@gmail.com');
   const [toggle, setToggle] = useState(false);
   const buttonRef = useRef(null);
@@ -134,7 +135,9 @@ function Owner() {
           {tabName}
         </Typography>
         <Divider variant="fullWidth"></Divider>
-        <Outlet />
+        <Box className="body-content">
+          <Outlet />
+        </Box>
       </MainContainerStyled>
     </SideBar>
   );
