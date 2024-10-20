@@ -93,7 +93,7 @@ function createData(
   return { name, date, phone, nameStylist, time, service, combo, price };
 }
 
-export default function ScheduleList() {
+export default function PromotionList() {
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
     defaultValues: {},
