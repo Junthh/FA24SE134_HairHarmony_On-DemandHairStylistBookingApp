@@ -26,12 +26,53 @@ namespace hair_hamony.Business.Services.UserServices
 
         public async Task<GetUserModel> Create(CreateUserModel requestBody)
         {
-            var user = _mapper.Map<User>(requestBody);
-            user.CreatedDate = DateTime.Now;
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = _mapper.Map<User>(requestBody);
+                    var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
+                    user.Password = passwordHashed;
 
-            return _mapper.Map<GetUserModel>(user);
+                    user.Status = "Active";
+                    user.CreatedDate = DateTime.Now;
+
+                    await _context.Users.AddAsync(user);
+
+                    var role = await _context.Roles.FirstAsync(role => role.Id == requestBody.RoleId);
+
+                    await _context.SaveChangesAsync();
+
+                    if (role.Name == "Stylist")
+                    {
+                        await _context.Stylists.AddAsync(new Stylist
+                        {
+                            UserId = user.Id,
+                            CreatedDate = DateTime.Now,
+                            Rating = 0
+                        });
+                    }
+                    else if (role.Name == "Customer")
+                    {
+                        await _context.Customers.AddAsync(new Customer
+                        {
+                            UserId = user.Id,
+                            CreatedDate = DateTime.Now,
+                            LoyaltyPoints = 0
+                        });
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return _mapper.Map<GetUserModel>(user);
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
         }
 
         public async Task Delete(Guid id)
