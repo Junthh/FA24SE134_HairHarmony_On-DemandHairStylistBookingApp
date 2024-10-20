@@ -13,7 +13,7 @@ import { base64ToFile } from 'utils/helper';
 class EmployeeServices {
   async list(params = {}) {
     try {
-      const resData: ListEmployeeSuccess = await axios.get(`${ENDPOINTS.ApiPrefix}/Stylists`, {
+      const resData: ListEmployeeSuccess = await axios.get(`${ENDPOINTS.ApiPrefix}/Users`, {
         params,
       });
       return resData;
@@ -142,18 +142,10 @@ class EmployeeServices {
 
   async delete(id: string) {
     try {
-      const resData: DataEmployeeSuccess = await axios.delete(
-        `${ENDPOINTS.ApiPrefix}/articles/${id}`,
-      );
-      return {
-        success: resData.success,
-        data: resData.data,
-      };
+      const resData: ListEmployeeSuccess = await axios.delete(`${ENDPOINTS.ApiPrefix}/Users/${id}`);
+      return resData;
     } catch (error) {
-      return {
-        success: false,
-        errors: error.errors || errorDefault,
-      } as DataEmployeeError;
+      throw error;
     }
   }
 }
