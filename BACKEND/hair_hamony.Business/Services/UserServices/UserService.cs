@@ -117,11 +117,7 @@ namespace hair_hamony.Business.Services.UserServices
                 };
             }
             var user = _mapper.Map<User>(await GetById(id));
-            user.Username = requestBody.Username;
-            user.FullName = requestBody.FullName;
-            user.Email = requestBody.Email;
-            user.PhoneNumber = requestBody.PhoneNumber;
-            user.RoleId = requestBody.RoleId;
+            _mapper.Map(requestBody, user);
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
