@@ -1,53 +1,31 @@
 import axios from 'axios';
-import { ECOCUPID_ENDPOINTS } from 'configurations/constants/globalConstants';
-import { ArticleForm } from 'models/Article.model';
+import { ENDPOINTS } from 'configurations/constants/globalConstants';
+import { EmployeeForm } from 'models/Employee.model';
 import {
-  DataServiceError,
-  DataServiceSuccess,
-  ListServiceSuccess,
+  DataEmployeeError,
+  DataEmployeeSuccess,
   errorDefault,
-} from 'models/ServiceResponse.model';
+  ListEmployeeSuccess,
+} from 'models/EmployeeResponse.model';
 import { formatDate } from 'utils/datetime';
 import { base64ToFile } from 'utils/helper';
 
-class ArticleService {
+class EmployeeServices {
   async list(params = {}) {
     try {
-      const resData: ListServiceSuccess = await axios.get(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/articles`,
-        {
-          params,
-        },
-      );
-      const resArticles = resData.data;
-      let data = [];
-      if (resData.data.length !== 0) {
-        data = resArticles.reduce((accumulator: Array<any>, currentValue: any) => {
-          return [
-            ...accumulator,
-            {
-              ...currentValue,
-              createdAt: formatDate(currentValue.category.createdAt),
-              categoryName: currentValue.category.name,
-              actions: currentValue.id,
-            },
-          ];
-        }, []);
-      }
-      return {
-        success: resData.success,
-        data,
-        meta: resData.meta,
-      };
+      const resData: ListEmployeeSuccess = await axios.get(`${ENDPOINTS.ApiPrefix}/Stylists`, {
+        params,
+      });
+      return resData;
     } catch (error) {
       return {
         success: false,
         errors: error.errors || errorDefault,
-      } as DataServiceError;
+      } as DataEmployeeError;
     }
   }
 
-  async create(data: ArticleForm) {
+  async create(data: EmployeeForm) {
     try {
       let formData: any = new FormData();
       if (data.tags) {
@@ -67,8 +45,8 @@ class ArticleService {
         data = { ...rest };
       }
       formData = { ...data };
-      const resData: DataServiceSuccess = await axios.post(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/articles`,
+      const resData: DataEmployeeSuccess = await axios.post(
+        `${ENDPOINTS.ApiPrefix}/articles`,
         formData,
         {
           headers: {
@@ -84,11 +62,11 @@ class ArticleService {
       return {
         success: false,
         errors: error.errors || errorDefault,
-      } as DataServiceError;
+      } as DataEmployeeError;
     }
   }
 
-  async update(id: string, data: ArticleForm) {
+  async update(id: string, data: EmployeeForm) {
     try {
       let formData: any = new FormData();
       if (data.tags) {
@@ -108,8 +86,8 @@ class ArticleService {
         data = { ...rest };
       }
       formData = { ...data };
-      const resData: DataServiceSuccess = await axios.put(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/articles/${id}`,
+      const resData: DataEmployeeSuccess = await axios.put(
+        `${ENDPOINTS.ApiPrefix}/articles/${id}`,
         formData,
         {
           headers: {
@@ -133,15 +111,13 @@ class ArticleService {
       return {
         success: false,
         errors: error.errors || errorDefault,
-      } as DataServiceError;
+      } as DataEmployeeError;
     }
   }
 
   async find(id: string) {
     try {
-      const resData: DataServiceSuccess = await axios.get(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/articles/${id}`,
-      );
+      const resData: DataEmployeeSuccess = await axios.get(`${ENDPOINTS.ApiPrefix}/articles/${id}`);
       const articleData = resData.data;
       if (articleData.tags.length !== 0) {
         const cusTags = articleData.tags.reduce((accumulator: Array<any>, currentValue: any) => {
@@ -160,14 +136,14 @@ class ArticleService {
       return {
         success: false,
         errors: error.errors || errorDefault,
-      } as DataServiceError;
+      } as DataEmployeeError;
     }
   }
 
   async delete(id: string) {
     try {
-      const resData: DataServiceSuccess = await axios.delete(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/articles/${id}`,
+      const resData: DataEmployeeSuccess = await axios.delete(
+        `${ENDPOINTS.ApiPrefix}/articles/${id}`,
       );
       return {
         success: resData.success,
@@ -177,9 +153,9 @@ class ArticleService {
       return {
         success: false,
         errors: error.errors || errorDefault,
-      } as DataServiceError;
+      } as DataEmployeeError;
     }
   }
 }
 
-export const articleService = new ArticleService();
+export const employeeServices = new EmployeeServices();

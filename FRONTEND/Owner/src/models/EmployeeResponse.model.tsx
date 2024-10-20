@@ -1,32 +1,28 @@
-interface Meta {
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  nextPage: number | null;
+interface Paging {
+  size: number;
   page: number;
-  pagingCounter: number;
-  perPage: number;
-  prevPage: number | null;
   total: number;
-  totalPages: number;
 }
 
-export interface ListServiceSuccess {
+export interface ListEmployeeSuccess {
+  statusCode: 200;
   success: boolean;
+  msg: string;
   data: any[];
-  meta: Meta;
+  paging: Paging;
 }
 
-export interface DataServiceSuccess {
+export interface DataEmployeeSuccess {
   success: boolean;
   data: any;
 }
 
-export interface OptionServiceSuccess {
+export interface OptionsEmployeeSuccess {
   success: boolean;
   data: any[];
 }
 
-export interface DataServiceError {
+export interface DataEmployeeError {
   success: boolean;
   errors: any[];
 }
