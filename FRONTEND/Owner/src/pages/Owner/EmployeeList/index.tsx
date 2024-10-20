@@ -32,6 +32,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { employeeServices } from 'services/employee.services';
 import { DataEmployeeError, ListEmployeeSuccess } from 'models/EmployeeResponse.model';
 import { showToast } from 'components/Common/Toast';
+import { appSelector, selectRoles, setLoading } from 'redux/Reducer';
+import { useDispatch, useSelector } from 'react-redux';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -47,61 +49,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-// const rows = [
-//   createData(
-//     'Ánh Nguyên Nghị',
-//     '19/06/2024',
-//     '0392748419',
-//     'Jhon Alex',
-//     '14:00',
-//     '-',
-//     'Cắt Nhộm',
-//     '600,000 VND',
-//   ),
-//   createData(
-//     'Ánh Nguyên Nghị',
-//     '19/06/2024',
-//     '0392748419',
-//     'Jhon Alex',
-//     '14:00',
-//     '-',
-//     'Cắt Nhộm',
-//     '600,000 VND',
-//   ),
-//   createData(
-//     'Ánh Nguyên Nghị',
-//     '19/06/2024',
-//     '0392748419',
-//     'Jhon Alex',
-//     '14:00',
-//     '-',
-//     'Cắt Nhộm',
-//     '600,000 VND',
-//   ),
-//   createData(
-//     'Ánh Nguyên Nghị',
-//     '19/06/2024',
-//     '0392748419',
-//     'Jhon Alex',
-//     '14:00',
-//     '-',
-//     'Cắt Nhộm',
-//     '600,000 VND',
-//   ),
-// ];
-// function createData(
-//   name: string,
-//   date: string,
-//   phone: string,
-//   nameStylist: string,
-//   time: string,
-//   service: string,
-//   combo: string,
-//   price: string,
-// ) {
-//   return { name, date, phone, nameStylist, time, service, combo, price };
-// }
 export default function EmployeeList() {
+  const dispatch = useDispatch();
+  const roles = useSelector(selectRoles);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
@@ -134,6 +84,7 @@ export default function EmployeeList() {
     getEmployeeList(paging);
   }, []);
   const getEmployeeList = useCallback(({ size, page, username = '' }) => {
+    dispatch(setLoading(true));
     employeeServices.list({ size, page, username }).then((resultList: ListEmployeeSuccess) => {
       console.log(resultList);
       setPaging((prev) => ({
@@ -141,6 +92,7 @@ export default function EmployeeList() {
         total: resultList.paging.total,
       }));
       setRows(resultList.data);
+      dispatch(setLoading(false));
     });
   }, []);
 
@@ -173,14 +125,17 @@ export default function EmployeeList() {
   );
   const handleDelete = useCallback(
     (row) => {
+      dispatch(setLoading(true));
       setAnchorEl(null);
       employeeServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
+          dispatch(setLoading(false));
         })
         .catch((err) => {
           showToast('error', err.message);
+          dispatch(setLoading(false));
         });
     },
     [selectedRow],
@@ -234,45 +189,41 @@ export default function EmployeeList() {
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
               <StyledTableCell style={{ color: 'white' }} align="left">
+                Username
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Họ và tên
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Email
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Số điện thoại
               </StyledTableCell>{' '}
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày sinh
+                Role
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Giới tính
+                Trạng thái
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Mô tả
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Năm kinh nghiệm
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Level
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Image
+                Ngày tạo
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <StyledTableRow key={row.name}>
+              <StyledTableRow key={row.username}>
                 <StyledTableCell component="th" scope="row">
-                  {row.name}
+                  {row.username}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.date}</StyledTableCell>
-                <StyledTableCell align="right">{row.phone}</StyledTableCell>
-                <StyledTableCell align="right">{row.nameStylist}</StyledTableCell>
-                <StyledTableCell align="right">{row.time}</StyledTableCell>
-                <StyledTableCell align="right">{row.service}</StyledTableCell>
-                <StyledTableCell align="right">{row.combo}</StyledTableCell>
-                <StyledTableCell align="right">{row.price}</StyledTableCell>
+                <StyledTableCell align="right">{row.fullName}</StyledTableCell>
+                <StyledTableCell align="right">{row.email}</StyledTableCell>
+                <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
+                <StyledTableCell align="right">{roles[row?.roleId]?.name}</StyledTableCell>
+                <StyledTableCell align="right">{row.status}</StyledTableCell>
+                <StyledTableCell align="right">{row.createdDate}</StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
