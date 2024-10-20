@@ -34,6 +34,7 @@ import { DataEmployeeError, ListEmployeeSuccess } from 'models/EmployeeResponse.
 import { showToast } from 'components/Common/Toast';
 import { appSelector, selectRoles, setLoading } from 'redux/Reducer';
 import { useDispatch, useSelector } from 'react-redux';
+import { formatDate } from 'utils/datetime';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -223,7 +224,7 @@ export default function EmployeeList() {
                 <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="right">{roles[row?.roleId]?.name}</StyledTableCell>
                 <StyledTableCell align="right">{row.status}</StyledTableCell>
-                <StyledTableCell align="right">{row.createdDate}</StyledTableCell>
+                <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
