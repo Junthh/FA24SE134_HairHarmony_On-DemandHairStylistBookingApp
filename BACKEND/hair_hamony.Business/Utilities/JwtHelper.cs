@@ -23,7 +23,7 @@ namespace hair_hamony.Business.Utilities
         public string GenerateJwtToken(string role, Guid id, string? email = null, string? phoneNumber = null, string? username = null)
         {
             // symmetric security key
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]!));
 
             // signing credentials
             var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
@@ -33,6 +33,7 @@ namespace hair_hamony.Business.Utilities
                 new Claim("Email", email ?? ""),
                 new Claim("PhoneNumber", phoneNumber ?? ""),
                 new Claim("Id", id.ToString()),
+                new Claim("Role", role),
                 new Claim(ClaimTypes.Role, role)
             };
 

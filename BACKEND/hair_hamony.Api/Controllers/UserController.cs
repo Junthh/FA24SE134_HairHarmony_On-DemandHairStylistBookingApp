@@ -4,7 +4,6 @@ using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.UserServices;
 using hair_hamony.Business.ViewModels;
 using hair_hamony.Business.ViewModels.Users;
-using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace home_travel.API.Controllers
@@ -23,13 +22,13 @@ namespace home_travel.API.Controllers
         /// <returns>Token of user</returns>
         /// <response code="200">Returns a token of user</response>
         [HttpPost("login")]
-        [ProducesResponseType(typeof(ModelLoginResponse<User>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelLoginResponse<GetUserDetailModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> Login(UserLoginModel requestBody)
         {
             var (token, user) = await _userService.Login(requestBody);
-            return Ok(new ModelLoginResponse<User>(
-                new ModelDataLoginResponse<User>(token, user)
+            return Ok(new ModelLoginResponse<GetUserDetailModel>(
+                new ModelDataLoginResponse<GetUserDetailModel>(token, user)
             ));
         }
 

@@ -128,7 +128,7 @@ namespace hair_hamony.Business.Services.UserServices
             return _mapper.Map<GetUserModel>(user);
         }
 
-        public async Task<(string token, User user)> Login(UserLoginModel requestBody)
+        public async Task<(string token, GetUserDetailModel user)> Login(UserLoginModel requestBody)
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => requestBody.Username == user.Username)
                 ?? throw new CException
@@ -150,7 +150,7 @@ namespace hair_hamony.Business.Services.UserServices
             var roleName = _context.Roles.FirstOrDefaultAsync(role => role.Id == user.RoleId)!.Result!.Name;
 
             var token = _jwtHelper.GenerateJwtToken(role: roleName!, id: user.Id, email: user.Email, phoneNumber: user.PhoneNumber, username: user.Username);
-            return (token, user);
+            return (token, _mapper.Map<GetUserDetailModel>(user));
         }
 
         public async Task<GetUserModel> ChangePassword(Guid id, string oldPassword, string newPassword)
