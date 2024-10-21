@@ -30,7 +30,7 @@ import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled'
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectRoles, setLoading } from 'redux/Reducer';
+import { selectCategorys, setLoading } from 'redux/Reducer';
 import { servicesService } from 'services/services.service';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
@@ -38,7 +38,7 @@ import { BoxHeaderSearch } from '../Styles/common';
 export default function ServicesList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
-  const roles = useSelector(selectRoles);
+  const categorys = useSelector(selectCategorys);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
@@ -227,10 +227,10 @@ export default function ServicesList() {
                 control={control}
                 name="categoryId"
                 options={
-                  roles &&
-                  Object.keys(roles).map((id) => ({
+                  categorys &&
+                  Object.keys(categorys).map((id) => ({
                     value: id,
-                    label: roles[id].name,
+                    label: categorys[id].name,
                   }))
                 }
                 placeholder="Chọn loại dịch vụ"
