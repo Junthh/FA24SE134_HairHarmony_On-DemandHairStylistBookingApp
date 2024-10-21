@@ -12,6 +12,6 @@ export const CredentialInfoDefault = {
 };
 
 export interface Token {
-  accessToken: string;
+  token: string;
   refreshToken: string;
 }
