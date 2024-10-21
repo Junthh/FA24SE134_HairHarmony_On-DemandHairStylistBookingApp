@@ -8,7 +8,8 @@ import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
-import { selectCredentialInfo, setRoles } from 'redux/Reducer';
+import { selectCredentialInfo, setCategorys, setRoles } from 'redux/Reducer';
+import { categorysServices } from 'services/categorys.service';
 import { rolesServices } from 'services/roles.service';
 import SideBar from 'shared/Sidebar';
 
@@ -79,21 +80,33 @@ function Owner() {
     };
   }, [buttonRef]);
 
-  useEffect(() => {
-    rolesServices.list().then((res: any) => {
-      let roles = {};
-      res.data.forEach((item) => {
-        roles = {
-          ...roles,
-          [item.id]: {
-            name: item.name,
-            createdDate: item.createdDate,
-          },
+  const fetchAndSetData = async (service, setter, dispatch) => {
+    try {
+      const res = await service.list();
+      const data = res.data.reduce((acc, item) => {
+        acc[item.id] = {
+          name: item.name,
+          createdDate: item.createdDate,
         };
-      });
-      dispatch(setRoles(roles));
-    });
-  }, []);
+        return acc;
+      }, {});
+      dispatch(setter(data));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await Promise.all([
+        fetchAndSetData(rolesServices, setRoles, dispatch),
+        fetchAndSetData(categorysServices, setCategorys, dispatch),
+      ]);
+    };
+
+    fetchData();
+  }, [dispatch]);
+
   useEffect(() => {
     const arrUrl = location.pathname.split('/');
     const name = arrUrl[1] ? arrUrl[1] : '';
