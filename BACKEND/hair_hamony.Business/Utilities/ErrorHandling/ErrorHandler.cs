@@ -24,7 +24,7 @@ namespace hair_hamony.Business.Utilities.ErrorHandling
                 return null;
             }
 
-            ErrorResponse errorResponse = new(msg: exception.Message, detail: exception.StackTrace);
+            ErrorResponse errorResponse = new(msg: exception.Message, detail: exception.InnerException?.ToString());
 
             return errorResponse;
         }

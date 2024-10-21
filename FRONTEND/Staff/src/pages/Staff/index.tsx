@@ -118,7 +118,7 @@ function Staff() {
               sx={{
                 position: 'absolute',
                 top: 60,
-                width: '100%',
+                width: '200px',
                 zIndex: 200,
                 right: 0,
                 boxShadow: colors.boxShadowCard,

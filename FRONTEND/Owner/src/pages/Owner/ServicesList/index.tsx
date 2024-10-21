@@ -83,13 +83,13 @@ export default function ServicesList() {
   } = formUser;
 
   useEffect(() => {
-    getEmployeeList({
+    getServicesList({
       size: paging.size,
       page: paging.page,
       name: formSearch.getValues('name'),
     });
   }, [paging.size, paging.page]);
-  const getEmployeeList = useCallback(({ size, page, name = '' }) => {
+  const getServicesList = useCallback(({ size, page, name = '' }) => {
     dispatch(setLoading(true));
     servicesService
       .list({ pageSize: size, pageIndex: page + 1, name })
@@ -106,7 +106,7 @@ export default function ServicesList() {
   const handleSearch = useCallback(
     handleSubmitSearch((data: any) => {
       if (data) {
-        getEmployeeList({
+        getServicesList({
           ...paging,
           name: data.name,
         });
@@ -170,7 +170,7 @@ export default function ServicesList() {
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getEmployeeList({ size, page, name: formSearch.getValues('name') });
+            getServicesList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
@@ -185,7 +185,7 @@ export default function ServicesList() {
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getEmployeeList({ size, page, name: formSearch.getValues('name') });
+            getServicesList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
