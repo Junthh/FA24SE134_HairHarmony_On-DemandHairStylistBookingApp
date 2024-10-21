@@ -48,14 +48,14 @@ function Register() {
     dispatch(setLoading(true));
     try {
       const payload: RegisterPayload = {
-        email: data.email,
+        username: data.username,
         password: data.password,
       };
       const res = (await authService.register(payload)) as unknown as ResponseSuccessApi;
 
       if (res?.success) {
-        const { accessToken, refreshToken } = res.data as Token;
-        authContext.saveToken({ accessToken, refreshToken });
+        const { token, refreshToken = '' } = res.data as Token;
+        authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
       // navigate(ADMIN_PATH.ADMIN);
@@ -79,7 +79,9 @@ function Register() {
     <FormContainer>
       <FormContent>
         <FormTitle>
-          <LOGO.Vector.EcocupidLarge />
+          <h1 className="mea-culpa-regular" style={{ cursor: 'pointer' }}>
+            Hair Hamorny
+          </h1>
           <Typography
             sx={{
               fontSize: 38,
@@ -91,10 +93,10 @@ function Register() {
         </FormTitle>
         <FormItem>
           <TextFieldElement
-            name={authProps.email.propertyName}
+            name={authProps.username.propertyName}
             control={control}
-            label={authProps.email.propertyLabel}
-            placeholder="Your email"
+            label={authProps.username.propertyLabel}
+            placeholder="Your username"
             onKeyDown={handleKeyDown}
             autoFocus
           />

@@ -4,7 +4,7 @@ import { showToast } from 'components/Common/Toast';
 import CheckboxElement from 'components/Form/CheckboxElement/CheckboxElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { LOGO } from 'configurations/logo';
-import { AUTH_PATH } from 'configurations/paths/paths';
+import { AUTH_PATH, OWNER_PATH } from 'configurations/paths/paths';
 import * as colors from 'constants/colors';
 import { Token } from 'models/CredentialInfo.model';
 import { LoginPayLoad } from 'models/Request.model';
@@ -49,17 +49,17 @@ function Login() {
     dispatch(setLoading(true));
     try {
       const payload: LoginPayLoad = {
-        email: data.email,
+        username: data.username,
         password: data.password,
       };
       const res = (await authService.login(payload)) as unknown as ResponseSuccessApi;
 
       if (res?.success) {
-        const { accessToken, refreshToken } = res.data as Token;
-        authContext.saveToken({ accessToken, refreshToken });
+        const { token, refreshToken } = res.data as Token;
+        authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
-      // navigate(ADMIN_PATH.ADMIN);
+      navigate(OWNER_PATH.DASHBOARD);
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.message || error));
@@ -80,7 +80,9 @@ function Login() {
     <FormContainer>
       <FormContent>
         <FormTitle>
-          <LOGO.Vector.EcocupidLarge />
+          <h1 className="mea-culpa-regular" style={{ cursor: 'pointer' }}>
+            Hair Hamorny
+          </h1>
           <Typography
             sx={{
               fontSize: 38,
@@ -93,10 +95,10 @@ function Login() {
 
         <FormItem>
           <TextFieldElement
-            name={authProps.email.propertyName}
+            name={authProps.username.propertyName}
             control={control}
-            label={authProps.email.propertyLabel}
-            placeholder="Your email"
+            label={authProps.username.propertyLabel}
+            placeholder="Your username"
             onKeyDown={handleKeyDown}
             autoFocus
           />
