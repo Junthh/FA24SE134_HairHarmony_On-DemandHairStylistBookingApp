@@ -80,7 +80,9 @@ function Login() {
     <FormContainer>
       <FormContent>
         <FormTitle>
-          <LOGO.Vector.EcocupidLarge />
+          <h1 className="mea-culpa-regular" style={{ cursor: 'pointer' }}>
+            Hair Hamorny
+          </h1>
           <Typography
             sx={{
               fontSize: 38,
