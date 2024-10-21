@@ -8,12 +8,15 @@ import {
   ListEmployeeSuccess,
 } from 'models/EmployeeResponse.model';
 
-class EmployeeServices {
+class SalaryServices {
   async list(params = {}) {
     try {
-      const resData: ListEmployeeSuccess = await axios.get(`${ENDPOINTS.ApiPrefix}/Users`, {
-        params,
-      });
+      const resData: ListEmployeeSuccess = await axios.get(
+        `${ENDPOINTS.ApiPrefix}/StylistSalarys`,
+        {
+          params,
+        },
+      );
       return resData;
     } catch (error) {
       return {
@@ -26,10 +29,10 @@ class EmployeeServices {
   async create(data: EmployeeForm) {
     try {
       const resData: DataEmployeeSuccess = await axios.post(
-        `${ENDPOINTS.ApiPrefix}/Users`,
+        `${ENDPOINTS.ApiPrefix}/StylistSalarys`,
         data,
       );
-      return resData
+      return resData;
     } catch (error) {
       throw error;
     }
@@ -38,7 +41,7 @@ class EmployeeServices {
   async update(id: string, data: EmployeeForm) {
     try {
       const resData: DataEmployeeSuccess = await axios.put(
-        `${ENDPOINTS.ApiPrefix}/Users/${id}`,
+        `${ENDPOINTS.ApiPrefix}/StylistSalarys/${id}`,
         data,
       );
       return resData;
@@ -50,7 +53,9 @@ class EmployeeServices {
 
   async delete(id: string) {
     try {
-      const resData: ListEmployeeSuccess = await axios.delete(`${ENDPOINTS.ApiPrefix}/Users/${id}`);
+      const resData: ListEmployeeSuccess = await axios.delete(
+        `${ENDPOINTS.ApiPrefix}/StylistSalarys/${id}`,
+      );
       return resData;
     } catch (error) {
       throw error;
@@ -58,4 +63,4 @@ class EmployeeServices {
   }
 }
 
-export const employeeServices = new EmployeeServices();
+export const salaryServices = new SalaryServices();
