@@ -1,9 +1,11 @@
 import styled from '@emotion/styled';
 import { yupResolver } from '@hookform/resolvers/yup';
+import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   IconButton,
-  Pagination,
   Paper,
   Popover,
   Stack,
@@ -15,45 +17,29 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Typography,
 } from '@mui/material';
+import { Dialog } from 'components/Common/Dialog';
+import { showToast } from 'components/Common/Toast';
 import { FormContainer } from 'components/Form/FormContainer';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
-import { BoxHeaderSearch } from '../Styles/common';
+import SelectElement from 'components/Form/SelectElement/SelectElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { ICONS } from 'configurations/icons';
-import { ButtonPrimary } from 'pages/common/style/Button';
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import PopoverContent from 'pages/common/PopoverContent';
-import EditIcon from '@mui/icons-material/Edit';
-import { Typography } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { employeeServices } from 'services/employee.services';
-import { DataEmployeeError, ListEmployeeSuccess } from 'models/EmployeeResponse.model';
-import { showToast } from 'components/Common/Toast';
-import { appSelector, selectRoles, setLoading } from 'redux/Reducer';
-import { useDispatch, useSelector } from 'react-redux';
-import { formatDate } from 'utils/datetime';
-import useModal from 'hooks/useModal';
-import { Dialog } from 'components/Common/Dialog';
-import SelectElement from 'components/Form/SelectElement/SelectElement';
 import { STATUS_USER } from 'constants/status';
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
+import useModal from 'hooks/useModal';
+import { ListEmployeeSuccess } from 'models/EmployeeResponse.model';
+import PopoverContent from 'pages/common/PopoverContent';
+import { ButtonPrimary } from 'pages/common/style/Button';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectRoles, setLoading } from 'redux/Reducer';
+import { employeeServices } from 'services/employee.services';
+import { formatDate } from 'utils/datetime';
+import * as Yup from 'yup';
+import { BoxHeaderSearch } from '../Styles/common';
+import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  //   '&:nth-of-type(odd)': {
-  //     backgroundColor: theme.palette.action.hover,
-  //   },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
 export default function EmployeeList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -110,14 +96,16 @@ export default function EmployeeList() {
   }, [paging.size, paging.page]);
   const getEmployeeList = useCallback(({ size, page, username = '' }) => {
     dispatch(setLoading(true));
-    employeeServices.list({ size, page, username }).then((resultList: ListEmployeeSuccess) => {
-      setPaging((prev) => ({
-        ...prev,
-        total: resultList.paging.total,
-      }));
-      setRows(resultList.data);
-      dispatch(setLoading(false));
-    });
+    employeeServices
+      .list({ pageSize: size, pageIndex: page + 1, username })
+      .then((resultList: ListEmployeeSuccess) => {
+        setPaging((prev) => ({
+          ...prev,
+          total: resultList.paging.total,
+        }));
+        setRows(resultList.data);
+        dispatch(setLoading(false));
+      });
   }, []);
 
   const handleSearch = useCallback(
@@ -222,7 +210,7 @@ export default function EmployeeList() {
           closeModal();
         }}
         width="100%"
-        title="Create"
+        title={selectedRow ? 'Edit' : 'Create'}
         content={
           <FormContainer formContext={formUser}>
             <Box
@@ -285,8 +273,8 @@ export default function EmployeeList() {
                 label={'Trạng thái'}
               ></SelectElement>
               <Box display={'flex'} justifyContent={'flex-end'}>
-                <ButtonPrimary severity="primary" padding={'9px 14px'} onClick={() => handleSave()}>
-                  &nbsp; Lưu
+                <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
+                  Lưu
                 </ButtonPrimary>
               </Box>
             </Box>
