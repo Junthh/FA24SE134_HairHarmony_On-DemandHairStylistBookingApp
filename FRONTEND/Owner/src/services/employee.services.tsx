@@ -27,91 +27,26 @@ class EmployeeServices {
 
   async create(data: EmployeeForm) {
     try {
-      let formData: any = new FormData();
-      if (data.tags) {
-        if (data.tags.length === 0) {
-          const { tags, ...rest } = data;
-          data = { ...rest };
-        } else {
-          const { tags } = data;
-          const cusTags = tags.reduce((accumulator: Array<any>, currentValue: any) => {
-            return [...accumulator, currentValue.tag];
-          }, []);
-          data.tags = cusTags;
-        }
-      }
-      if (data.isFeature === undefined) {
-        const { isFeature, ...rest } = data;
-        data = { ...rest };
-      }
-      formData = { ...data };
       const resData: DataEmployeeSuccess = await axios.post(
-        `${ENDPOINTS.ApiPrefix}/articles`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        },
+        `${ENDPOINTS.ApiPrefix}/Users`,
+        data,
       );
-      return {
-        success: resData.success,
-        data: resData.data,
-      };
+      return resData
     } catch (error) {
-      return {
-        success: false,
-        errors: error.errors || errorDefault,
-      } as DataEmployeeError;
+      throw error;
     }
   }
 
   async update(id: string, data: EmployeeForm) {
     try {
-      let formData: any = new FormData();
-      if (data.tags) {
-        if (data.tags.length === 0) {
-          const { tags, ...rest } = data;
-          data = { ...rest };
-        } else {
-          const { tags } = data;
-          const cusTags = tags.reduce((accumulator: Array<any>, currentValue: any) => {
-            return [...accumulator, currentValue.tag];
-          }, []);
-          data.tags = cusTags;
-        }
-      }
-      if (data.isFeature === undefined) {
-        const { isFeature, ...rest } = data;
-        data = { ...rest };
-      }
-      formData = { ...data };
       const resData: DataEmployeeSuccess = await axios.put(
-        `${ENDPOINTS.ApiPrefix}/articles/${id}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        },
+        `${ENDPOINTS.ApiPrefix}/Users/${id}`,
+        data,
       );
-      const articleData = resData.data;
-      if (articleData.tags.length !== 0) {
-        const cusTags = articleData.tags.reduce((accumulator: Array<any>, currentValue: any) => {
-          return [...accumulator, { tag: currentValue.name }];
-        }, []);
-        articleData.tags = cusTags;
-      }
-      return {
-        success: resData.success,
-        data: articleData,
-      };
+      return resData;
     } catch (error) {
       // console.log(error, error);
-      return {
-        success: false,
-        errors: error.errors || errorDefault,
-      } as DataEmployeeError;
+      throw error;
     }
   }
 

@@ -1,11 +1,10 @@
 export interface EmployeeModelList {
   id: string;
-  title: string;
-  categoryName: string;
-  createdAt: Date;
-  createdBy: string;
-  isFeature: boolean;
-  actions?: any;
+  username: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  roleId: string;
 }
 
 export interface EmployeeModelFilterParams {
@@ -18,12 +17,10 @@ export interface EmployeeModelFilterParams {
 }
 
 export interface EmployeeForm {
-  title: string;
-  projectId: string;
-  writerId: string;
-  categoryId: string;
-  detail?: string;
-  image?: any;
-  isFeature?: boolean;
-  tags?: Array<string>;
+  id: string;
+  username: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  roleId: string;
 }

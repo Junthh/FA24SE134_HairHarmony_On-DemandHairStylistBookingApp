@@ -80,13 +80,6 @@ function Owner() {
   }, [buttonRef]);
 
   useEffect(() => {
-    const arrUrl = location.pathname.split('/');
-    const name = arrUrl[1] ? arrUrl[1] : '';
-    OWNER_PATH_SIDEBAR.forEach((item) => {
-      if (name === item.path.split('/')[1]) {
-        setTabName(item.title);
-      }
-    });
     rolesServices.list().then((res: any) => {
       let roles = {};
       res.data.forEach((item) => {
@@ -99,6 +92,15 @@ function Owner() {
         };
       });
       dispatch(setRoles(roles));
+    });
+  }, []);
+  useEffect(() => {
+    const arrUrl = location.pathname.split('/');
+    const name = arrUrl[1] ? arrUrl[1] : '';
+    OWNER_PATH_SIDEBAR.forEach((item) => {
+      if (name === item.path.split('/')[1]) {
+        setTabName(item.title);
+      }
     });
   }, [location]);
 

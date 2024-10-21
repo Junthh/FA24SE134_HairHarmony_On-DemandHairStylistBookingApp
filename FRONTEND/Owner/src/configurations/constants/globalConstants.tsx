@@ -32,3 +32,8 @@ export enum PaginationConfig {
   PerPage = 12,
   TotalPages = 10,
 }
+
+export enum STATUS {
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
+}

@@ -13,7 +13,9 @@ export interface ListEmployeeSuccess {
 }
 
 export interface DataEmployeeSuccess {
+  statusCode: 200;
   success: boolean;
+  msg: string;
   data: any;
 }
 

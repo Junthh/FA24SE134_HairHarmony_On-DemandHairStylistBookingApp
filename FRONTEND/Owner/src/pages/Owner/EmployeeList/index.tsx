@@ -38,6 +38,7 @@ import { formatDate } from 'utils/datetime';
 import useModal from 'hooks/useModal';
 import { Dialog } from 'components/Common/Dialog';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
+import { STATUS_USER } from 'constants/status';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -101,12 +102,15 @@ export default function EmployeeList() {
   } = formUser;
 
   useEffect(() => {
-    getEmployeeList(paging);
-  }, []);
+    getEmployeeList({
+      size: paging.size,
+      page: paging.page,
+      username: formSearch.getValues('username'),
+    });
+  }, [paging.size, paging.page]);
   const getEmployeeList = useCallback(({ size, page, username = '' }) => {
     dispatch(setLoading(true));
     employeeServices.list({ size, page, username }).then((resultList: ListEmployeeSuccess) => {
-      console.log(resultList);
       setPaging((prev) => ({
         ...prev,
         total: resultList.paging.total,
@@ -175,10 +179,40 @@ export default function EmployeeList() {
   };
 
   const handleSave = useCallback(
-    handleSubmit((data) => {
-      console.log(data);
+    handleSubmit((data: any) => {
+      if (selectedRow) {
+        dispatch(setLoading(true));
+        employeeServices
+          .update(data.id, data)
+          .then((res) => {
+            showToast('success', res.msg);
+            const { size, page } = paging;
+            getEmployeeList({ size, page, username: formSearch.getValues('username') });
+            handleClose();
+            closeModal();
+          })
+          .catch((err) => {
+            showToast('error', err.message);
+            dispatch(setLoading(false));
+          });
+      } else {
+        dispatch(setLoading(true));
+        employeeServices
+          .create(data)
+          .then((res) => {
+            showToast('success', res.msg);
+            const { size, page } = paging;
+            getEmployeeList({ size, page, username: formSearch.getValues('username') });
+            handleClose();
+            closeModal();
+          })
+          .catch((err) => {
+            showToast('error', err.message);
+            dispatch(setLoading(false));
+          });
+      }
     }),
-    [],
+    [selectedRow, paging],
   );
   const renderDialog = useMemo(() => {
     return (
@@ -246,7 +280,7 @@ export default function EmployeeList() {
               <SelectElement
                 control={control}
                 name="status"
-                options={[]}
+                options={STATUS_USER}
                 placeholder="Chọn trạng thái"
                 label={'Trạng thái'}
               ></SelectElement>
@@ -260,7 +294,7 @@ export default function EmployeeList() {
         }
       ></Dialog>
     );
-  }, [isOpen, selectedRow]);
+  }, [isOpen]);
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
       <FormContainer formContext={formSearch}>
@@ -360,6 +394,8 @@ export default function EmployeeList() {
           rowsPerPage={paging.size}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          showFirstButton
+          showLastButton
         />
       </Stack>
       <Popover
