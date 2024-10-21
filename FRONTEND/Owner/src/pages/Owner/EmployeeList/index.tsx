@@ -102,12 +102,15 @@ export default function EmployeeList() {
   } = formUser;
 
   useEffect(() => {
-    getEmployeeList(paging);
-  }, []);
+    getEmployeeList({
+      size: paging.size,
+      page: paging.page,
+      username: formSearch.getValues('username'),
+    });
+  }, [paging.size, paging.page]);
   const getEmployeeList = useCallback(({ size, page, username = '' }) => {
     dispatch(setLoading(true));
     employeeServices.list({ size, page, username }).then((resultList: ListEmployeeSuccess) => {
-      console.log(resultList);
       setPaging((prev) => ({
         ...prev,
         total: resultList.paging.total,
