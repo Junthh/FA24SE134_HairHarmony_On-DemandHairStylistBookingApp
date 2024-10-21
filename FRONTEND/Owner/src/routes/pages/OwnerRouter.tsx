@@ -1,5 +1,6 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { OWNER_PATH } from 'configurations/paths/paths';
+import AuthProvider from 'pages/Auth/AuthProvider';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -23,9 +24,9 @@ export const OwnerRouter = {
   path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
-      {/* <AuthProvider> */}
-      <OwnerPage />
-      {/* </AuthProvider> */}
+      <AuthProvider>
+        <OwnerPage />
+      </AuthProvider>
     </React.Suspense>
   ),
   children: [
