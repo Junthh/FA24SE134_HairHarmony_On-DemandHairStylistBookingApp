@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { FormContainer } from 'components/Form/FormContainer';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
@@ -34,6 +34,10 @@ import { DataEmployeeError, ListEmployeeSuccess } from 'models/EmployeeResponse.
 import { showToast } from 'components/Common/Toast';
 import { appSelector, selectRoles, setLoading } from 'redux/Reducer';
 import { useDispatch, useSelector } from 'react-redux';
+import { formatDate } from 'utils/datetime';
+import useModal from 'hooks/useModal';
+import { Dialog } from 'components/Common/Dialog';
+import SelectElement from 'components/Form/SelectElement/SelectElement';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -51,6 +55,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 export default function EmployeeList() {
   const dispatch = useDispatch();
+  const { isOpen, openModal, closeModal } = useModal();
   const roles = useSelector(selectRoles);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -71,6 +76,21 @@ export default function EmployeeList() {
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
+  const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
+
+  const schemaUser = Yup.object().shape<any>({});
+  const defaultValues = {
+    username: '',
+    email: '',
+    phoneNumber: '',
+    fullName: '',
+    roleId: '',
+  };
+  const formUser = useForm<any>({
+    defaultValues,
+    mode: 'onChange',
+    resolver: yupResolver(schemaUser),
+  });
   const {
     control,
     watch,
@@ -78,7 +98,7 @@ export default function EmployeeList() {
     getValues,
     formState: { errors },
     handleSubmit,
-  } = formSearch;
+  } = formUser;
 
   useEffect(() => {
     getEmployeeList(paging);
@@ -97,7 +117,7 @@ export default function EmployeeList() {
   }, []);
 
   const handleSearch = useCallback(
-    handleSubmit((data: any) => {
+    handleSubmitSearch((data: any) => {
       if (data) {
         getEmployeeList({
           ...paging,
@@ -119,7 +139,8 @@ export default function EmployeeList() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
-      console.log(row);
+      formUser.reset(row);
+      openModal();
     },
     [selectedRow],
   );
@@ -152,6 +173,94 @@ export default function EmployeeList() {
   ) => {
     setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
+
+  const handleSave = useCallback(
+    handleSubmit((data) => {
+      console.log(data);
+    }),
+    [],
+  );
+  const renderDialog = useMemo(() => {
+    return (
+      <Dialog
+        open={isOpen}
+        onClose={() => {
+          closeModal();
+        }}
+        width="100%"
+        title="Create"
+        content={
+          <FormContainer formContext={formUser}>
+            <Box
+              display={'flex'}
+              justifyContent={'center'}
+              flexDirection={'column'}
+              gap={2}
+              padding={'0 20px 20px 20px'}
+              width={'550px'}
+            >
+              <TextFieldElement
+                name="username"
+                control={control}
+                placeholder="Nhập username"
+                label={'Username'}
+                disabled={!!selectedRow?.username}
+                //   onKeyUp={handleKeyup}
+              />
+              <TextFieldElement
+                name="fullName"
+                control={control}
+                placeholder="Nhập Họ và tên"
+                label={'Họ và tên'}
+                //   onKeyUp={handleKeyup}
+              />
+              <TextFieldElement
+                name="email"
+                control={control}
+                type="email"
+                placeholder="Nhập Email"
+                label={'Email'}
+                //   onKeyUp={handleKeyup}
+              />
+              <TextFieldElement
+                name="phoneNumber"
+                control={control}
+                type="number"
+                placeholder="Nhập số điện thoại"
+                label={'Số điện thoại'}
+                //   onKeyUp={handleKeyup}
+              />
+              <SelectElement
+                control={control}
+                name="roleId"
+                options={
+                  roles &&
+                  Object.keys(roles).map((id) => ({
+                    value: id,
+                    label: roles[id].name,
+                  }))
+                }
+                placeholder="Chọn role"
+                label={'Roles'}
+              ></SelectElement>
+              <SelectElement
+                control={control}
+                name="status"
+                options={[]}
+                placeholder="Chọn trạng thái"
+                label={'Trạng thái'}
+              ></SelectElement>
+              <Box display={'flex'} justifyContent={'flex-end'}>
+                <ButtonPrimary severity="primary" padding={'9px 14px'} onClick={() => handleSave()}>
+                  &nbsp; Lưu
+                </ButtonPrimary>
+              </Box>
+            </Box>
+          </FormContainer>
+        }
+      ></Dialog>
+    );
+  }, [isOpen, selectedRow]);
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
       <FormContainer formContext={formSearch}>
@@ -159,7 +268,7 @@ export default function EmployeeList() {
           <Box className="search-left">
             <TextFieldElement
               name="username"
-              control={control}
+              control={controlSearch}
               placeholder="Search"
               InputProps={{
                 startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
@@ -175,7 +284,11 @@ export default function EmployeeList() {
             <ButtonPrimary
               severity="primary"
               padding={'9px 14px'}
-              //   onClick={() => handleSearch}
+              onClick={() => {
+                setSelectedRow(null);
+                formUser.reset(defaultValues);
+                openModal();
+              }}
             >
               <ControlPointIcon />
               &nbsp; Thêm mới
@@ -223,7 +336,7 @@ export default function EmployeeList() {
                 <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="right">{roles[row?.roleId]?.name}</StyledTableCell>
                 <StyledTableCell align="right">{row.status}</StyledTableCell>
-                <StyledTableCell align="right">{row.createdDate}</StyledTableCell>
+                <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -288,6 +401,7 @@ export default function EmployeeList() {
           </Box>
         </PopoverContent>
       </Popover>
+      {renderDialog}
     </Box>
   );
 }
