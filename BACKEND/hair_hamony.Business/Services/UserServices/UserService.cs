@@ -31,7 +31,8 @@ namespace hair_hamony.Business.Services.UserServices
                 try
                 {
                     var user = _mapper.Map<User>(requestBody);
-                    var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
+                    var defaultPassword = "123";
+                    var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
                     user.Password = passwordHashed;
 
                     user.Status = "Active";
