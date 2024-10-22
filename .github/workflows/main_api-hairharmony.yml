@@ -22,16 +22,16 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release ./BACKEND
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./BACKEND/hair_hamony.sln -c Release -o ./publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ./publish
+          path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
     runs-on: windows-latest
@@ -51,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1206B22F429E4C2EB4515630F3F20E1D }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FBFE211B7D6C45AFADBF646AC50D3EB0 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_02B3BDA63D2444C7B01EBB91E08EB5A5 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_588370DBF0464FF6A5F8F3E6682315FD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_AB4BEA7C80174AC28FD21020858633BA }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_802DDF8EEA88432CB7D29991019F991F }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
