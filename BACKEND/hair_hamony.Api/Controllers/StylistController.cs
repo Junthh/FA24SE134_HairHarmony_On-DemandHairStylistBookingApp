@@ -24,7 +24,7 @@ namespace home_travel.API.Controllers
         /// <returns>List of stylist</returns>
         /// <response code="200">Returns the list of stylist</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailStylistModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<StylistEnum.StylistSort> paginationModel,
@@ -32,7 +32,7 @@ namespace home_travel.API.Controllers
         {
             var (stylists, total) = await _stylistService.GetAll(paginationModel, searchStylistModel);
 
-            return Ok(new ModelsResponse<GetStylistModel>(
+            return Ok(new ModelsResponse<GetDetailStylistModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,

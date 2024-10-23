@@ -6,7 +6,7 @@ namespace hair_hamony.Business.Services.StylistServices
 {
     public interface IStylistService
     {
-        Task<(IList<GetStylistModel>, int)> GetAll(PagingParam<StylistEnum.StylistSort> paginationModel, SearchStylistModel searchStylistModel);
+        Task<(IList<GetDetailStylistModel>, int)> GetAll(PagingParam<StylistEnum.StylistSort> paginationModel, SearchStylistModel searchStylistModel);
         Task<GetStylistModel> GetById(Guid id);
         Task<GetStylistModel> Create(CreateStylistModel requestBody);
         Task<GetStylistModel> Update(Guid id, UpdateStylistModel requestBody);

@@ -11,6 +11,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
             configuration.CreateMap<Stylist, GetStylistModel>().ReverseMap();
             configuration.CreateMap<Stylist, CreateStylistModel>().ReverseMap();
             configuration.CreateMap<Stylist, UpdateStylistModel>().ReverseMap();
+            configuration.CreateMap<Stylist, GetDetailStylistModel>().ReverseMap();
         }
     }
 }
