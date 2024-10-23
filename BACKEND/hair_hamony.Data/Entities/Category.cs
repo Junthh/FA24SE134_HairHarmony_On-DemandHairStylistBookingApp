@@ -13,5 +13,7 @@ public partial class Category
 
     public DateTime? UpdatedDate { get; set; }
 
+    public string? Image { get; set; }
+
     public virtual ICollection<Service> Services { get; set; } = new List<Service>();
 }
