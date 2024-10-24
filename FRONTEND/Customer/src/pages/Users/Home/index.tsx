@@ -52,39 +52,35 @@ export default function Home() {
    ** Get info from calling api get categories
    ***
    */
-  const handleGetListCategories = () => {
-    dispatch(setLoading(true));
-    try {
-      categoryService
-        .list()
-        .then((res) => {
-          setCategories(res.data);
-        })
-        .catch((error) => showToast('error', error.msg));
-    } catch (error) {
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-  /*
-   ***
-   ** Get info from stylist
-   ***
-   */
-  const handleGetStylist = () => {
-    dispatch(setLoading(true));
-    try {
-      stylistServices
-        .list()
-        .then((res) => {
-          setStylist(res.data);
-        })
-        .catch((error) => showToast('error', error.msg));
-    } catch (error) {
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
+   const handleGetListCategories = async () => {
+     dispatch(setLoading(true));
+     try {
+       const res = await categoryService.list();
+       setCategories(res.data);
+     } catch (error) {
+       showToast('error', error.msg);
+     } finally {
+       dispatch(setLoading(false));
+     }
+   };
+
+   /*
+    ***
+    ** Get info from stylist
+    ***
+    */
+   const handleGetStylist = async () => {
+     dispatch(setLoading(true));
+     try {
+       const res = await stylistServices.list();
+       setStylist(res.data);
+     } catch (error) {
+       showToast('error', error.msg);
+     } finally {
+       dispatch(setLoading(false));
+     }
+   };
+  
   // handle get list countries
 
   useEffect(() => {

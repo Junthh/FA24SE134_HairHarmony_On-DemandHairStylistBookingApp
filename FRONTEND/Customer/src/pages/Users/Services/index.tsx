@@ -6,6 +6,8 @@ import * as colors from 'constants/colors';
 import { useParams } from 'react-router-dom';
 import { serviceServices } from 'services/services.service';
 import { showToast } from 'components/Common/Toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectLoading, setLoading } from 'redux/Reducer';
 
 const ServiceStyled = styled(Box)({
   '& .services-content': {
@@ -18,9 +20,25 @@ const ServiceStyled = styled(Box)({
       marginBottom: '59px',
     },
   },
+  '& .contact': {
+    width: '100%',
+    padding: '100px 25px',
+    '& .header': {
+      textAlign: 'center',
+      fontFamily: 'GFS Didot !important',
+      fontSize: 50,
+    },
+    '& .body': {
+      textAlign: 'center',
+      fontFamily: 'GFS Didot  !important',
+      fontSize: 25,
+    },
+  },
 });
+
 //
 export default function Services() {
+  const dispatch = useDispatch();
   const [services, setServices] = useState([]);
   const params = useParams();
 
@@ -28,16 +46,20 @@ export default function Services() {
     getListService();
   }, []);
 
-  const getListService = () => {
-    serviceServices
-      .list({
+  const getListService = async () => {
+    try {
+      dispatch(setLoading(true)); // Start loading
+      const res = await serviceServices.list({
         categoryId: params.id,
-      })
-      .then((res) => {
-        setServices(res.data);
-      })
-      .catch((error) => showToast('error', error.msg));
+      });
+      setServices(res.data); // Set services after receiving the data
+    } catch (error) {
+      showToast('error', error.msg); // Show toast on error
+    } finally {
+      dispatch(setLoading(false)); // Stop loading when done (whether success or error)
+    }
   };
+
   return (
     <ServiceStyled>
       <Box className="services-content">
@@ -47,6 +69,17 @@ export default function Services() {
         <Box className="list-card-container">
           <CardServices type="services" services={services} />
         </Box>
+      </Box>
+      <Box className="contact">
+        <Typography variant="h1" className="header">
+          LIÊN HỆ
+        </Typography>
+        <Typography variant="body2" className="body">
+          Luôn chào đón khách không hẹn trước!
+        </Typography>
+        <Typography variant="body2" className="body">
+          Hãy gọi điện hoặc ghé qua để đặt lịch hẹn.
+        </Typography>
       </Box>
     </ServiceStyled>
   );
