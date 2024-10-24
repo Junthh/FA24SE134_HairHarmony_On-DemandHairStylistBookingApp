@@ -7,7 +7,7 @@ export enum LOCAL_STORAGE_KEYS {
 }
 
 // save endpoint using in Ecocupid app
-export const ECOCUPID_ENDPOINTS = {
+export const ENDPOINTS = {
   ApiBaseUrl: env.apiUrl,
   ApiPrefix: env.prefixApi,
 };
