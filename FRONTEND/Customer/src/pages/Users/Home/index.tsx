@@ -99,6 +99,7 @@ export default function Home() {
       <Box className="home_watching">
         <Swiper
           className="mySwiper"
+          loop
           autoplay={{
             delay: 2500,
             disableOnInteraction: false,
