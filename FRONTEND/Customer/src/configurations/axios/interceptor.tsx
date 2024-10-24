@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import {
   COMMON_CONSTANTS,
-  ECOCUPID_ENDPOINTS,
+  ENDPOINTS,
   LOCAL_STORAGE_KEYS,
 } from 'configurations/constants/globalConstants';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
@@ -116,7 +116,7 @@ function Interceptor() {
   };
 
   // Handle axios default config
-  axios.defaults.baseURL = `${ECOCUPID_ENDPOINTS.ApiBaseUrl}`;
+  axios.defaults.baseURL = `${ENDPOINTS.ApiBaseUrl}`;
 
   // Handle axios request
   axios.interceptors.request.use(onRequestSuccess, onRequestError);

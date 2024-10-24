@@ -14,6 +14,11 @@ const BoxCard = styled(Box)(() => ({
   width: 480,
   height: 390,
   overflow: 'hidden', // Ensure the border radius is applied
+  '& img': {
+    width: '480px !important',
+    height: 280,
+    objectFit: 'cover',
+  },
   '& svg': {
     width: '100%', // Set SVG width to 100% of the parent
     height: 'auto', // Maintain aspect ratio
@@ -28,67 +33,22 @@ const BoxCard = styled(Box)(() => ({
   },
 }));
 
-export default function CardServices() {
-  const [data] = useState([
-    {
-      title: 'Khuyến mãi tháng 9',
-      price: '100.000đ',
-      more: 'Tìm hiểu thêm >',
-      onClickMore: () => {},
-      image: <Service1 />,
-    },
-    {
-      title: 'Cắt tóc',
-      price: '100.000đ',
-      more: 'Tìm hiểu thêm >',
-      onClickMore: () => {},
-      image: <Service2 />,
-    },
-    {
-      title: 'Nhộm tóc',
-      price: '100.000đ',
-      more: 'Tìm hiểu thêm >',
-      onClickMore: () => {},
-      image: <Service3 />,
-    },
-    {
-      title: 'Dưỡng tóc',
-      price: '100.000đ',
-      more: 'Tìm hiểu thêm >',
-      onClickMore: () => {},
-      image: <Service4 />,
-    },
-    {
-      title: 'Uốn định hình',
-      price: '100.000đ',
-      more: 'Tìm hiểu thêm >',
-      onClickMore: () => {},
-      image: <Service5 />,
-    },
-    {
-      title: 'Dịch vụ khác',
-      price: '100.000đ',
-      more: 'Tìm hiểu thêm >',
-      onClickMore: () => {},
-      image: <Service6 />,
-    },
-  ]);
-
+export default function CardServices({ categories }) {
   return (
     <Grid container spacing={2}>
-      {data.length ? (
-        data.map((item, index) => (
+      {categories.length ? (
+        categories.map((item, index) => (
           <Grid item xs={4} key={index}>
             <BoxCard>
-              {item.image}
+              <img src={item.image} alt="" />
               <Box className="content">
                 <Typography fontWeight={'bold'} variant="h2">
-                  {item.title}
+                  {item.name}
                 </Typography>
-                <Box className="body">
+                {/* <Box className="body">
                   <Typography variant="body2">Giá chỉ từ: {item.price}</Typography>
                   <Typography variant="body2">{item.more}</Typography>
-                </Box>
+                </Box> */}
               </Box>
             </BoxCard>
           </Grid>
