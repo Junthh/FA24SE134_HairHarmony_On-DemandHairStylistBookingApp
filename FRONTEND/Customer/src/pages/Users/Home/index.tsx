@@ -128,7 +128,7 @@ export default function Home() {
           Danh mục
         </Typography>
         <Box className="list-card-container">
-          <CardServices categories={categories} />
+          <CardServices type="categories" categories={categories} />
         </Box>
       </Box>
       <Box className="top-stylist-in-month">
