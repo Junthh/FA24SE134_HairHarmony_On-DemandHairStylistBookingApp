@@ -6,8 +6,7 @@ export enum LOCAL_STORAGE_KEYS {
   RefreshToken = 'refreshToken',
 }
 
-// save endpoint using in Ecocupid app
-export const ECOCUPID_ENDPOINTS = {
+export const ENDPOINTS = {
   ApiBaseUrl: env.apiUrl,
   ApiPrefix: env.prefixApi,
 };
@@ -32,4 +31,9 @@ export enum PaginationConfig {
   PageIndex = 1,
   PerPage = 12,
   TotalPages = 10,
+}
+
+export enum STATUS {
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
 }

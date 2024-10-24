@@ -45,7 +45,7 @@ export const SidebarStyled = styled(Box)<{ isopen: number }>(({ isopen }) => ({
       '& .link': {
         display: 'flex',
         alignItems: 'center',
-        color: 'white',
+        color: '#285D9A',
         gap: '10px',
         padding: isopen === 1 ? '16px 28px' : '5px 7px',
         borderRight: '4px solid transparent',
@@ -65,9 +65,12 @@ export const SidebarStyled = styled(Box)<{ isopen: number }>(({ isopen }) => ({
         },
       },
       '& .active': {
-        // borderRight: '4px solid white',
-        // background: colors.primary2,
-        // border: '1px solid #2D3748',
+        borderRight: '4px solid white',
+        background: '#285D9A',
+        color: 'white',
+        '& .link_text': {
+          color: 'white',
+        },
       },
     },
   },
@@ -84,7 +87,10 @@ export const MenuSidebarStyled = styled(Box)({
     display: 'flex',
     gap: '10px',
     '& .icon': {
-      color: '#285D9A',
+      '& .MuiSvgIcon-root': {
+        color: '#285D9A',
+        background: '#285D9A !important',
+      },
     },
   },
   '& .menu_container': {
@@ -93,6 +99,12 @@ export const MenuSidebarStyled = styled(Box)({
     '& .link': {
       paddingLeft: '20px',
       borderBottom: '#fff 0.5px solid',
+      '& .icon': {
+        background: '#285D9A !important',
+        '& .MuiSvgIcon-root': {
+          color: '#285D9A',
+        },
+      },
     },
   },
 });

@@ -38,14 +38,14 @@ namespace hair_hamony.Business.Services.StylistServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetStylistModel>, int)> GetAll(PagingParam<StylistEnum.StylistSort> paginationModel, SearchStylistModel searchStylistModel)
+        public async Task<(IList<GetDetailStylistModel>, int)> GetAll(PagingParam<StylistEnum.StylistSort> paginationModel, SearchStylistModel searchStylistModel)
         {
-            var query = _context.Stylists.AsQueryable();
+            var query = _context.Stylists.Include(stylist => stylist.User).AsQueryable();
             query = query.GetWithSearch(searchStylistModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetStylistModel>>(query);
+            var results = _mapper.Map<IList<GetDetailStylistModel>>(query);
 
             return (results, total);
         }

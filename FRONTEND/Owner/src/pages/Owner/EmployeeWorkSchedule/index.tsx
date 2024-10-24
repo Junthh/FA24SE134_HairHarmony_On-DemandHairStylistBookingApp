@@ -23,7 +23,7 @@ export default function EmployeeWorkSchedule() {
           right: 'timeGridWeek,timeGridDay', // user can switch between the two
         }}
         events={[
-          { title: 'event 1', date: new Date() },
+          { title: 'event 1', end: '2024-10-20', start: '2024-10-18' },
           { title: 'event 2', date: '2019-04-02' },
         ]}
       />
