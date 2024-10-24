@@ -134,6 +134,7 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
@@ -144,6 +145,7 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
@@ -206,6 +208,7 @@ public partial class HairHamonyContext : DbContext
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.Author).HasMaxLength(100);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Thumbnail).IsUnicode(false);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
 
@@ -243,6 +246,7 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
@@ -355,6 +359,7 @@ public partial class HairHamonyContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Users__3214EC075F05AA7A");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Avatar).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)

@@ -23,6 +23,8 @@ public partial class User
 
     public Guid? RoleId { get; set; }
 
+    public string? Avatar { get; set; }
+
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
     public virtual Role? Role { get; set; }
