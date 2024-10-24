@@ -10,6 +10,9 @@ import { setLoading } from 'redux/Reducer';
 import { HomeStyled } from './styles';
 // import { ECO_HEROES_DATA } from './mock';
 import { ReactComponent as HairHarmonyHome } from 'assets/pics/home/hair-hamony-home.svg';
+import HairHarmonyHome1 from 'assets/pics/home1.jpg';
+import HairHarmonyHome2 from 'assets/pics/home2.jpg';
+
 import { showToast } from 'components/Common/Toast';
 import { CountriesEnum } from 'models/Country.model';
 import { ProjectModel } from 'models/ProjectModel';
@@ -52,35 +55,35 @@ export default function Home() {
    ** Get info from calling api get categories
    ***
    */
-   const handleGetListCategories = async () => {
-     dispatch(setLoading(true));
-     try {
-       const res = await categoryService.list();
-       setCategories(res.data);
-     } catch (error) {
-       showToast('error', error.msg);
-     } finally {
-       dispatch(setLoading(false));
-     }
-   };
+  const handleGetListCategories = async () => {
+    dispatch(setLoading(true));
+    try {
+      const res = await categoryService.list();
+      setCategories(res.data);
+    } catch (error) {
+      showToast('error', error.msg);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-   /*
-    ***
-    ** Get info from stylist
-    ***
-    */
-   const handleGetStylist = async () => {
-     dispatch(setLoading(true));
-     try {
-       const res = await stylistServices.list();
-       setStylist(res.data);
-     } catch (error) {
-       showToast('error', error.msg);
-     } finally {
-       dispatch(setLoading(false));
-     }
-   };
-  
+  /*
+   ***
+   ** Get info from stylist
+   ***
+   */
+  const handleGetStylist = async () => {
+    dispatch(setLoading(true));
+    try {
+      const res = await stylistServices.list();
+      setStylist(res.data);
+    } catch (error) {
+      showToast('error', error.msg);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
   // handle get list countries
 
   useEffect(() => {
@@ -106,16 +109,10 @@ export default function Home() {
             <HairHarmonyHome />
           </SwiperSlide>
           <SwiperSlide>
-            <HairHarmonyHome />
+            <img src={HairHarmonyHome1} alt="" />
           </SwiperSlide>
           <SwiperSlide>
-            <HairHarmonyHome />
-          </SwiperSlide>
-          <SwiperSlide>
-            <HairHarmonyHome />
-          </SwiperSlide>
-          <SwiperSlide>
-            <HairHarmonyHome />
+            <img src={HairHarmonyHome2} alt="" />
           </SwiperSlide>
         </Swiper>
       </Box>
