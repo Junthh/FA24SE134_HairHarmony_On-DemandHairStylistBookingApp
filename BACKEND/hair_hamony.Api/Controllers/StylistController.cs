@@ -3,7 +3,9 @@ using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.ViewModels;
+using hair_hamony.Business.ViewModels.Customers;
 using hair_hamony.Business.ViewModels.Stylists;
+using hair_hamony.Business.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace home_travel.API.Controllers
@@ -14,6 +16,37 @@ namespace home_travel.API.Controllers
         public StylistController(IStylistService stylistService)
         {
             _stylistService = stylistService;
+        }
+
+        /// <summary>
+        /// Endpoint for stylist login
+        /// </summary>
+        /// <returns>Token of stylist</returns>
+        /// <response code="200">Returns a token of stylist</response>
+        [HttpPost("login")]
+        [ProducesResponseType(typeof(ModelLoginResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> Login(UserLoginModel requestBody)
+        {
+            var (token, stylist) = await _stylistService.Login(requestBody);
+            return Ok(new ModelLoginResponse<GetStylistModel>(
+                new ModelDataLoginResponse<GetStylistModel>(token, stylist)
+            ));
+        }
+
+        /// <summary>
+        /// Endpoint for stylist change password
+        /// </summary>
+        /// <returns>A stylist information</returns>
+        /// <response code="200">Returns a stylist information</response>
+        [HttpPut("{id}/changePassword")]
+        [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> ChangePassword(Guid id, string oldPassword, string newPassword)
+        {
+            return Ok(new BaseResponse<GetStylistModel>(
+                    data: await _stylistService.ChangePassword(id, oldPassword, newPassword)
+                ));
         }
 
         /// <summary>

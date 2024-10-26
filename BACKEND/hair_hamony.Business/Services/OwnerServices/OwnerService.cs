@@ -5,74 +5,75 @@ using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
-using hair_hamony.Business.ViewModels.Customers;
+using hair_hamony.Business.ViewModels.Owners;
 using hair_hamony.Business.ViewModels.Users;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
-namespace hair_hamony.Business.Services.CustomerServices
+namespace hair_hamony.Business.Services.OwnerServices
 {
-    public class CustomerService : ICustomerService
+    public class OwnerService : IOwnerService
     {
         private readonly HairHamonyContext _context;
         private readonly IMapper _mapper;
         private readonly IJwtHelper _jwtHelper;
-        public CustomerService(IMapper mapper, IJwtHelper jwtHelper)
+        public OwnerService(IMapper mapper, IJwtHelper jwtHelper)
         {
             _context = new HairHamonyContext();
             _mapper = mapper;
             _jwtHelper = jwtHelper;
         }
 
-        public async Task<GetCustomerModel> Create(CreateCustomerModel requestBody)
+        public async Task<GetOwnerModel> Create(CreateOwnerModel requestBody)
         {
-            var customer = _mapper.Map<Customer>(requestBody);
-
+            var owner = _mapper.Map<Owner>(requestBody);
             var defaultPassword = "123";
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
-            customer.Password = passwordHashed;
-            customer.Status = "Active";
-            customer.CreatedDate = DateTime.Now;
+            owner.Password = passwordHashed;
 
-            await _context.Customers.AddAsync(customer);
+            owner.Status = "Active";
+            owner.CreatedDate = DateTime.Now;
+
+            await _context.Owners.AddAsync(owner);
+
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<GetCustomerModel>(customer);
+            return _mapper.Map<GetOwnerModel>(owner);
         }
 
         public async Task Delete(Guid id)
         {
-            var customer = _mapper.Map<Customer>(await GetById(id));
-            _context.Customers.Remove(customer);
+            var owner = _mapper.Map<Owner>(await GetById(id));
+            _context.Owners.Remove(owner);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetCustomerModel>, int)> GetAll(PagingParam<CustomerEnum.CustomerSort> paginationModel, SearchCustomerModel searchCustomerModel)
+        public async Task<(IList<GetOwnerModel>, int)> GetAll(PagingParam<OwnerEnum.OwnerSort> paginationModel, SearchOwnerModel searchOwnerModel)
         {
-            var query = _context.Customers.AsQueryable();
-            query = query.GetWithSearch(searchCustomerModel);
+            var query = _context.Owners.AsQueryable();
+            query = query.GetWithSearch(searchOwnerModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetCustomerModel>>(query);
+            var results = _mapper.Map<IList<GetOwnerModel>>(query);
 
             return (results, total);
         }
 
-        public async Task<GetCustomerModel> GetById(Guid id)
+        public async Task<GetOwnerModel> GetById(Guid id)
         {
-            var customer = await _context.Customers.AsNoTracking().FirstOrDefaultAsync(customer => customer.Id == id)
+            var owner = await _context.Owners.AsNoTracking().FirstOrDefaultAsync(owner => owner.Id == id)
                 ?? throw new CException
                 {
                     StatusCode = StatusCodes.Status404NotFound,
                     ErrorMessage = $"Id {id} không tồn tại"
                 };
 
-            return _mapper.Map<GetCustomerModel>(customer);
+            return _mapper.Map<GetOwnerModel>(owner);
         }
 
-        public async Task<GetCustomerModel> Update(Guid id, UpdateCustomerModel requestBody)
+        public async Task<GetOwnerModel> Update(Guid id, UpdateOwnerModel requestBody)
         {
             if (id != requestBody.Id)
             {
@@ -82,23 +83,24 @@ namespace hair_hamony.Business.Services.CustomerServices
                     ErrorMessage = "Id không trùng"
                 };
             }
-            var customer = _mapper.Map<Customer>(await GetById(id));
-            _context.Customers.Update(customer);
+            var owner = _mapper.Map<Owner>(await GetById(id));
+            _mapper.Map(requestBody, owner);
+            _context.Owners.Update(owner);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<GetCustomerModel>(customer);
+            return _mapper.Map<GetOwnerModel>(owner);
         }
 
-        public async Task<(string token, GetCustomerModel customer)> Login(UserLoginModel requestBody)
+        public async Task<(string token, GetOwnerModel owner)> Login(UserLoginModel requestBody)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(customer => requestBody.Username == customer.Username)
+            var owner = await _context.Owners.FirstOrDefaultAsync(owner => requestBody.Username == owner.Username)
                 ?? throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tên tài khoản hoặc mật khẩu không chính xác"
                 };
 
-            bool isValidPassword = BCrypt.Net.BCrypt.Verify(requestBody.Password, customer.Password);
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(requestBody.Password, owner.Password);
             if (!isValidPassword)
             {
                 throw new CException
@@ -108,20 +110,20 @@ namespace hair_hamony.Business.Services.CustomerServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Staff", id: customer.Id, email: "", phoneNumber: customer.PhoneNumber, username: customer.Username);
-            return (token, _mapper.Map<GetCustomerModel>(customer));
+            var token = _jwtHelper.GenerateJwtToken(role: "Owner", id: owner.Id, email: "", phoneNumber: owner.PhoneNumber, username: owner.Username);
+            return (token, _mapper.Map<GetOwnerModel>(owner));
         }
 
-        public async Task<GetCustomerModel> ChangePassword(Guid id, string oldPassword, string newPassword)
+        public async Task<GetOwnerModel> ChangePassword(Guid id, string oldPassword, string newPassword)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(customer => customer.Id == id)
+            var owner = await _context.Owners.FirstOrDefaultAsync(owner => owner.Id == id)
                 ?? throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tài khoản không tồn tại"
                 };
 
-            bool isValidPassword = BCrypt.Net.BCrypt.Verify(oldPassword, customer.Password);
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(oldPassword, owner.Password);
             if (!isValidPassword)
                 throw new CException
                 {
@@ -130,11 +132,11 @@ namespace hair_hamony.Business.Services.CustomerServices
                 };
 
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(newPassword);
-            customer.Password = passwordHashed;
+            owner.Password = passwordHashed;
 
-            _context.Customers.Update(customer);
+            _context.Owners.Update(owner);
             await _context.SaveChangesAsync();
-            return _mapper.Map<GetCustomerModel>(customer);
+            return _mapper.Map<GetOwnerModel>(owner);
         }
     }
 }

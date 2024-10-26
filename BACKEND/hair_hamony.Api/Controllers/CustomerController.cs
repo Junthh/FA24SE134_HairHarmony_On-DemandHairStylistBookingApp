@@ -4,6 +4,7 @@ using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.ViewModels;
 using hair_hamony.Business.ViewModels.Customers;
+using hair_hamony.Business.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace home_travel.API.Controllers
@@ -14,6 +15,37 @@ namespace home_travel.API.Controllers
         public CustomerController(ICustomerService customerService)
         {
             _customerService = customerService;
+        }
+
+        /// <summary>
+        /// Endpoint for customer login
+        /// </summary>
+        /// <returns>Token of customer</returns>
+        /// <response code="200">Returns a token of customer</response>
+        [HttpPost("login")]
+        [ProducesResponseType(typeof(ModelLoginResponse<GetCustomerModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> Login(UserLoginModel requestBody)
+        {
+            var (token, customer) = await _customerService.Login(requestBody);
+            return Ok(new ModelLoginResponse<GetCustomerModel>(
+                new ModelDataLoginResponse<GetCustomerModel>(token, customer)
+            ));
+        }
+
+        /// <summary>
+        /// Endpoint for customer change password
+        /// </summary>
+        /// <returns>A customer information</returns>
+        /// <response code="200">Returns a customer information</response>
+        [HttpPut("{id}/changePassword")]
+        [ProducesResponseType(typeof(BaseResponse<GetCustomerModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> ChangePassword(Guid id, string oldPassword, string newPassword)
+        {
+            return Ok(new BaseResponse<GetCustomerModel>(
+                    data: await _customerService.ChangePassword(id, oldPassword, newPassword)
+                ));
         }
 
         /// <summary>

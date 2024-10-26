@@ -7,10 +7,11 @@ using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.Services.FeedbackServices;
 using hair_hamony.Business.Services.NewsServices;
+using hair_hamony.Business.Services.OwnerServices;
 using hair_hamony.Business.Services.PaymentDetailServices;
 using hair_hamony.Business.Services.PaymentServices;
-using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.ServiceServices;
+using hair_hamony.Business.Services.StaffServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.Services.StylistWorkshipServices;
@@ -18,7 +19,6 @@ using hair_hamony.Business.Services.SystemConfigServices;
 using hair_hamony.Business.Services.TimeSlotServices;
 using hair_hamony.Business.Services.TransactionDetailServices;
 using hair_hamony.Business.Services.TransactionServices;
-using hair_hamony.Business.Services.UserServices;
 using hair_hamony.Business.Services.WorkshipServices;
 using hair_hamony.Business.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +31,6 @@ namespace hair_hamony.Business.Services
         {
             services.AddScoped<IJwtHelper, JwtHelper>();
 
-            services.AddScoped<IRoleService, RoleService>();
-            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingDetailService, BookingDetailService>();
             services.AddScoped<IBookingSlotStylistService, BookingSlotStylistService>();
@@ -53,6 +51,8 @@ namespace hair_hamony.Business.Services
             services.AddScoped<INewsService, NewsService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IPaymentDetailService, PaymentDetailService>();
+            services.AddScoped<IOwnerService, OwnerService>();
+            services.AddScoped<IStaffService, StaffService>();
         }
     }
 }
