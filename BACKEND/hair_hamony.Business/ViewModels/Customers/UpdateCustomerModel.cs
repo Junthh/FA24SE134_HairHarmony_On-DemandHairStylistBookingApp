@@ -1,4 +1,6 @@
-﻿namespace hair_hamony.Business.ViewModels.Customers
+﻿using Microsoft.AspNetCore.Http;
+
+namespace hair_hamony.Business.ViewModels.Customers
 {
     public class UpdateCustomerModel
     {
@@ -9,6 +11,6 @@
         public string? Password { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Status { get; set; }
-        public string? Avatar { get; set; }
+        public IFormFile? Avatar { get; set; }
     }
 }

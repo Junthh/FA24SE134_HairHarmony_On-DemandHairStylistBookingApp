@@ -5,7 +5,6 @@ using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.TimeSlots;
-using hair_hamony.Business.ViewModels.Users;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +25,7 @@ namespace hair_hamony.Business.Services.TimeSlotServices
         {
             var timeSlot = _mapper.Map<TimeSlot>(requestBody);
             timeSlot.CreatedDate = DateTime.Now;
+
             await _context.TimeSlots.AddAsync(timeSlot);
             await _context.SaveChangesAsync();
 
@@ -74,6 +74,8 @@ namespace hair_hamony.Business.Services.TimeSlotServices
                 };
             }
             var timeSlot = _mapper.Map<TimeSlot>(await GetById(id));
+            _mapper.Map(requestBody, timeSlot);
+
             _context.TimeSlots.Update(timeSlot);
             await _context.SaveChangesAsync();
 

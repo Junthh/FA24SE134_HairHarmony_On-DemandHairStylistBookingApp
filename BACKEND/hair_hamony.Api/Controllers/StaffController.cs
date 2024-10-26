@@ -101,7 +101,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the staff</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetStaffModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateStaffModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateStaffModel requestBody)
         {
             return Ok(new BaseResponse<GetStaffModel>(
                     statusCode: 201, data: await _staffService.Create(requestBody), msg: SuccessMessageResponse.CREATED_REQUEST
@@ -120,7 +120,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetStaffModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateStaffModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateStaffModel requestBody)
         {
             return Ok(new BaseResponse<GetStaffModel>(
                     data: await _staffService.Update(id, requestBody), msg: SuccessMessageResponse.UPDATED_REQUEST

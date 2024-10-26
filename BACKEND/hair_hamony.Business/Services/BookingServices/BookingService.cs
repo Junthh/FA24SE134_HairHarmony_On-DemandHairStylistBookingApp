@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.BookingServices
             var booking = _mapper.Map<Booking>(requestBody);
             booking.CreatedDate = DateTime.Now;
             booking.UpdatedDate = DateTime.Now;
+
             await _context.Bookings.AddAsync(booking);
             await _context.SaveChangesAsync();
 
@@ -74,14 +75,9 @@ namespace hair_hamony.Business.Services.BookingServices
                 };
             }
             var booking = _mapper.Map<Booking>(await GetById(id));
-            booking.BookingDate = requestBody.BookingDate;
-            booking.ExpertFee = requestBody.ExpertFee;
-            booking.TotalPrice = requestBody.TotalPrice;
-            booking.AmoutToPaid = requestBody.AmoutToPaid;
-            booking.LoyaltyPoints = requestBody.LoyaltyPoints;
-            booking.Status = requestBody.Status;
-            booking.CustomerId = requestBody.CustomerId;
+            _mapper.Map(requestBody, booking);
             booking.UpdatedDate = DateTime.Now;
+
             _context.Bookings.Update(booking);
             await _context.SaveChangesAsync();
 

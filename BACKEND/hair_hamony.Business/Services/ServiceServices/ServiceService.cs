@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.ServiceServices
             var service = _mapper.Map<Service>(requestBody);
             service.CreatedDate = DateTime.Now;
             service.UpdatedDate = DateTime.Now;
+
             await _context.Services.AddAsync(service);
             await _context.SaveChangesAsync();
 
@@ -74,7 +75,9 @@ namespace hair_hamony.Business.Services.ServiceServices
                 };
             }
             var service = _mapper.Map<Service>(await GetById(id));
+            _mapper.Map(requestBody, service);
             service.UpdatedDate = DateTime.Now;
+
             _context.Services.Update(service);
             await _context.SaveChangesAsync();
 

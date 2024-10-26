@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Staffs;
@@ -16,11 +17,13 @@ namespace hair_hamony.Business.Services.StaffServices
     public class StaffService : IStaffService
     {
         private readonly HairHamonyContext _context;
+        private readonly IFileService _fileService;
         private readonly IMapper _mapper;
         private readonly IJwtHelper _jwtHelper;
-        public StaffService(IMapper mapper, IJwtHelper jwtHelper)
+        public StaffService(IFileService fileService, IMapper mapper, IJwtHelper jwtHelper)
         {
             _context = new HairHamonyContext();
+            _fileService = fileService;
             _mapper = mapper;
             _jwtHelper = jwtHelper;
         }
@@ -28,15 +31,19 @@ namespace hair_hamony.Business.Services.StaffServices
         public async Task<GetStaffModel> Create(CreateStaffModel requestBody)
         {
             var staff = _mapper.Map<Staff>(requestBody);
+
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                staff.Avatar = file.Url;
+            }
             var defaultPassword = "123";
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             staff.Password = passwordHashed;
-
             staff.Status = "Active";
             staff.CreatedDate = DateTime.Now;
 
             await _context.Staffs.AddAsync(staff);
-
             await _context.SaveChangesAsync();
 
             return _mapper.Map<GetStaffModel>(staff);
@@ -85,6 +92,12 @@ namespace hair_hamony.Business.Services.StaffServices
             }
             var staff = _mapper.Map<Staff>(await GetById(id));
             _mapper.Map(requestBody, staff);
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                staff.Avatar = file.Url;
+            }
+
             _context.Staffs.Update(staff);
             await _context.SaveChangesAsync();
 

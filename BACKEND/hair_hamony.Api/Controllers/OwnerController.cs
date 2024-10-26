@@ -101,7 +101,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the owner</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetOwnerModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateOwnerModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateOwnerModel requestBody)
         {
             return Ok(new BaseResponse<GetOwnerModel>(
                     statusCode: 201, data: await _ownerService.Create(requestBody), msg: SuccessMessageResponse.CREATED_REQUEST
@@ -120,7 +120,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetOwnerModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateOwnerModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateOwnerModel requestBody)
         {
             return Ok(new BaseResponse<GetOwnerModel>(
                     data: await _ownerService.Update(id, requestBody), msg: SuccessMessageResponse.UPDATED_REQUEST

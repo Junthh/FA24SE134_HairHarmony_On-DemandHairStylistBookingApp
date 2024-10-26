@@ -101,7 +101,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the customer</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetCustomerModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateCustomerModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateCustomerModel requestBody)
         {
             return Ok(new BaseResponse<GetCustomerModel>(
                     statusCode: 201, data: await _customerService.Create(requestBody),
@@ -121,7 +121,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetCustomerModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateCustomerModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateCustomerModel requestBody)
         {
             return Ok(new BaseResponse<GetCustomerModel>(
                     data: await _customerService.Update(id, requestBody),

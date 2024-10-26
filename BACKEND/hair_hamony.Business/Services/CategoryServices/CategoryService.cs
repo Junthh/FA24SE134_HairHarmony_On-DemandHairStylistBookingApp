@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.CategoryServices
             var category = _mapper.Map<Category>(requestBody);
             category.CreatedDate = DateTime.Now;
             category.UpdatedDate = DateTime.Now;
+
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
 
@@ -76,6 +77,7 @@ namespace hair_hamony.Business.Services.CategoryServices
             var category = _mapper.Map<Category>(await GetById(id));
             _mapper.Map(requestBody, category);
             category.UpdatedDate = DateTime.Now;
+
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
 

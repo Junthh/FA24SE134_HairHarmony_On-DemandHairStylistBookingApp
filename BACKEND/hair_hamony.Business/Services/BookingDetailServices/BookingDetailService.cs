@@ -5,7 +5,6 @@ using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.BookingDetails;
-using hair_hamony.Business.ViewModels.Users;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +24,8 @@ namespace hair_hamony.Business.Services.BookingDetailServices
         public async Task<GetBookingDetailModel> Create(CreateBookingDetailModel requestBody)
         {
             var bookingDetail = _mapper.Map<BookingDetail>(requestBody);
+            bookingDetail.CreatedDate = DateTime.Now;
+
             await _context.BookingDetails.AddAsync(bookingDetail);
             await _context.SaveChangesAsync();
 
@@ -73,6 +74,8 @@ namespace hair_hamony.Business.Services.BookingDetailServices
                 };
             }
             var bookingDetail = _mapper.Map<BookingDetail>(await GetById(id));
+            _mapper.Map(requestBody, bookingDetail);
+
             _context.BookingDetails.Update(bookingDetail);
             await _context.SaveChangesAsync();
 

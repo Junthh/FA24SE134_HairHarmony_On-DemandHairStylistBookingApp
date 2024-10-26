@@ -25,6 +25,7 @@ namespace hair_hamony.Business.Services.PaymentDetailServices
         {
             var paymentDetail = _mapper.Map<PaymentDetail>(requestBody);
             paymentDetail.CreatedDate = DateTime.Now;
+
             await _context.PaymentDetails.AddAsync(paymentDetail);
             await _context.SaveChangesAsync();
 
@@ -73,6 +74,8 @@ namespace hair_hamony.Business.Services.PaymentDetailServices
                 };
             }
             var paymentDetail = _mapper.Map<PaymentDetail>(await GetById(id));
+            _mapper.Map(requestBody, paymentDetail);
+
             _context.PaymentDetails.Update(paymentDetail);
             await _context.SaveChangesAsync();
 
