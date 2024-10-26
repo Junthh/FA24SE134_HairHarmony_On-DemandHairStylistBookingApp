@@ -1,7 +1,6 @@
 ﻿using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.ViewModels.Customers;
-using hair_hamony.Business.ViewModels.Stylists;
 using hair_hamony.Business.ViewModels.Users;
 
 namespace hair_hamony.Business.Services.CustomerServices
