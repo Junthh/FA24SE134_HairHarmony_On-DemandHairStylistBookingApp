@@ -10,8 +10,6 @@ public static class AutoMapperConfig
     {
         var mappingConfig = new MapperConfiguration(mc =>
         {
-            mc.ConfigRole();
-            mc.ConfigUser();
             mc.ConfigBooking();
             mc.ConfigBookingDetail();
             mc.ConfigBookingSlotStylist();
