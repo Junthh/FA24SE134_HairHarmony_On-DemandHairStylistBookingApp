@@ -6,6 +6,7 @@ using hair_hamony.Business.Services.ComboServices;
 using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.Services.FeedbackServices;
+using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Services.NewsServices;
 using hair_hamony.Business.Services.OwnerServices;
 using hair_hamony.Business.Services.PaymentDetailServices;
@@ -30,6 +31,7 @@ namespace hair_hamony.Business.Services
         public static void RegisterServivce(this IServiceCollection services)
         {
             services.AddScoped<IJwtHelper, JwtHelper>();
+            services.AddScoped<IFileService, FileService>();
 
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingDetailService, BookingDetailService>();

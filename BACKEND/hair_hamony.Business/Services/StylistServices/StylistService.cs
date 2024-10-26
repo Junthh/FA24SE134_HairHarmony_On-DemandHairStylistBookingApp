@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Stylists;
@@ -16,11 +17,13 @@ namespace hair_hamony.Business.Services.StylistServices
     public class StylistService : IStylistService
     {
         private readonly HairHamonyContext _context;
+        private readonly IFileService _fileService;
         private readonly IMapper _mapper;
         private readonly IJwtHelper _jwtHelper;
-        public StylistService(IMapper mapper, IJwtHelper jwtHelper)
+        public StylistService(IFileService fileService, IMapper mapper, IJwtHelper jwtHelper)
         {
             _context = new HairHamonyContext();
+            _fileService = fileService;
             _mapper = mapper;
             _jwtHelper = jwtHelper;
         }
@@ -29,6 +32,11 @@ namespace hair_hamony.Business.Services.StylistServices
         {
             var stylist = _mapper.Map<Stylist>(requestBody);
 
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                stylist.Avatar = file.Url;
+            }
             var defaultPassword = "123";
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             stylist.Password = passwordHashed;
@@ -58,8 +66,6 @@ namespace hair_hamony.Business.Services.StylistServices
             var results = _mapper.Map<IList<GetDetailStylistModel>>(query);
 
             return (results, total);
-
-            return ([], 0);
         }
 
         public async Task<GetStylistModel> GetById(Guid id)
@@ -85,6 +91,14 @@ namespace hair_hamony.Business.Services.StylistServices
                 };
             }
             var stylist = _mapper.Map<Stylist>(await GetById(id));
+
+            _mapper.Map(requestBody, stylist);
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                stylist.Avatar = file.Url;
+            }
+
             _context.Stylists.Update(stylist);
             await _context.SaveChangesAsync();
 

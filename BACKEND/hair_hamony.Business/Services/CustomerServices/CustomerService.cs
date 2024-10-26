@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Customers;
@@ -16,11 +17,13 @@ namespace hair_hamony.Business.Services.CustomerServices
     public class CustomerService : ICustomerService
     {
         private readonly HairHamonyContext _context;
+        private readonly IFileService _fileService;
         private readonly IMapper _mapper;
         private readonly IJwtHelper _jwtHelper;
-        public CustomerService(IMapper mapper, IJwtHelper jwtHelper)
+        public CustomerService(IFileService fileService, IMapper mapper, IJwtHelper jwtHelper)
         {
             _context = new HairHamonyContext();
+            _fileService = fileService;
             _mapper = mapper;
             _jwtHelper = jwtHelper;
         }
@@ -29,6 +32,11 @@ namespace hair_hamony.Business.Services.CustomerServices
         {
             var customer = _mapper.Map<Customer>(requestBody);
 
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                customer.Avatar = file.Url;
+            }
             var defaultPassword = "123";
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             customer.Password = passwordHashed;
@@ -83,6 +91,14 @@ namespace hair_hamony.Business.Services.CustomerServices
                 };
             }
             var customer = _mapper.Map<Customer>(await GetById(id));
+
+            _mapper.Map(requestBody, customer);
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                customer.Avatar = file.Url;
+            }
+
             _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
 

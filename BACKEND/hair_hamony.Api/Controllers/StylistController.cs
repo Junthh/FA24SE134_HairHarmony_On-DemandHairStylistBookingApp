@@ -102,7 +102,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the stylist</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateStylistModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateStylistModel requestBody)
         {
             return Ok(new BaseResponse<GetStylistModel>(
                     statusCode: 201, data: await _stylistService.Create(requestBody),
@@ -122,7 +122,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateStylistModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateStylistModel requestBody)
         {
             return Ok(new BaseResponse<GetStylistModel>(
                     data: await _stylistService.Update(id, requestBody),

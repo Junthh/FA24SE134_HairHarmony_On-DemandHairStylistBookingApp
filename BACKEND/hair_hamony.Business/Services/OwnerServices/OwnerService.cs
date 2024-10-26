@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Owners;
@@ -16,11 +17,13 @@ namespace hair_hamony.Business.Services.OwnerServices
     public class OwnerService : IOwnerService
     {
         private readonly HairHamonyContext _context;
+        private readonly IFileService _fileService;
         private readonly IMapper _mapper;
         private readonly IJwtHelper _jwtHelper;
-        public OwnerService(IMapper mapper, IJwtHelper jwtHelper)
+        public OwnerService(IFileService fileService, IMapper mapper, IJwtHelper jwtHelper)
         {
             _context = new HairHamonyContext();
+            _fileService = fileService;
             _mapper = mapper;
             _jwtHelper = jwtHelper;
         }
@@ -28,15 +31,19 @@ namespace hair_hamony.Business.Services.OwnerServices
         public async Task<GetOwnerModel> Create(CreateOwnerModel requestBody)
         {
             var owner = _mapper.Map<Owner>(requestBody);
+
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                owner.Avatar = file.Url;
+            }
             var defaultPassword = "123";
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             owner.Password = passwordHashed;
-
             owner.Status = "Active";
             owner.CreatedDate = DateTime.Now;
 
             await _context.Owners.AddAsync(owner);
-
             await _context.SaveChangesAsync();
 
             return _mapper.Map<GetOwnerModel>(owner);
@@ -84,7 +91,14 @@ namespace hair_hamony.Business.Services.OwnerServices
                 };
             }
             var owner = _mapper.Map<Owner>(await GetById(id));
+
             _mapper.Map(requestBody, owner);
+            if (requestBody.Avatar != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Avatar);
+                owner.Avatar = file.Url;
+            }
+
             _context.Owners.Update(owner);
             await _context.SaveChangesAsync();
 

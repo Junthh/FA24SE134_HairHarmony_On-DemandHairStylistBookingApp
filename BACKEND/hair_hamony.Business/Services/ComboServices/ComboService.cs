@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.ComboServices
             var combo = _mapper.Map<Combo>(requestBody);
             combo.CreatedDate = DateTime.Now;
             combo.UpdatedDate = DateTime.Now;
+
             await _context.Combos.AddAsync(combo);
             await _context.SaveChangesAsync();
 
@@ -76,6 +77,7 @@ namespace hair_hamony.Business.Services.ComboServices
             var combo = _mapper.Map<Combo>(await GetById(id));
             _mapper.Map(requestBody, combo);
             combo.UpdatedDate = DateTime.Now;
+
             _context.Combos.Update(combo);
             await _context.SaveChangesAsync();
 

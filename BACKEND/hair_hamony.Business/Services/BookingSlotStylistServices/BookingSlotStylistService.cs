@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             var bookingSlotStylist = _mapper.Map<BookingSlotStylist>(requestBody);
             bookingSlotStylist.CreatedDate = DateTime.Now;
             bookingSlotStylist.UpdatedDate = DateTime.Now;
+
             await _context.BookingSlotStylists.AddAsync(bookingSlotStylist);
             await _context.SaveChangesAsync();
 
@@ -76,6 +77,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             var bookingSlotStylist = _mapper.Map<BookingSlotStylist>(await GetById(id));
             _mapper.Map(requestBody, bookingSlotStylist);
             bookingSlotStylist.UpdatedDate = DateTime.Now;
+
             _context.BookingSlotStylists.Update(bookingSlotStylist);
             await _context.SaveChangesAsync();
 

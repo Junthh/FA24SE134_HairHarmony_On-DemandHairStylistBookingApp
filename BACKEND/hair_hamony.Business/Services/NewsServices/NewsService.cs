@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.NewsServices
             var news = _mapper.Map<News>(requestBody);
             news.CreatedDate = DateTime.Now;
             news.UpdatedDate = DateTime.Now;
+
             await _context.News.AddAsync(news);
             await _context.SaveChangesAsync();
 
@@ -74,7 +75,9 @@ namespace hair_hamony.Business.Services.NewsServices
                 };
             }
             var news = _mapper.Map<News>(await GetById(id));
+            _mapper.Map(requestBody, news);
             news.UpdatedDate = DateTime.Now;
+
             _context.News.Update(news);
             await _context.SaveChangesAsync();
 
