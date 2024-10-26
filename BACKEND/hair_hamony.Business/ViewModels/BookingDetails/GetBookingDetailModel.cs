@@ -8,5 +8,6 @@
         public Guid? BookingId { get; set; }
         public Guid? ServiceId { get; set; }
         public Guid? ComboId { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }

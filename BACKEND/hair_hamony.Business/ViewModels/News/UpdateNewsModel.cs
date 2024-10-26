@@ -7,6 +7,6 @@
         public string? Description { get; set; }
         public string? Author { get; set; }
         public string? Thumbnail { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

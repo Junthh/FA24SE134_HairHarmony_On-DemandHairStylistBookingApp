@@ -146,7 +146,7 @@ namespace hair_hamony.Business.Services.UserServices
 
             var roleName = _context.Roles.FirstOrDefaultAsync(role => role.Id == user.RoleId)!.Result!.Name;
 
-            var token = _jwtHelper.GenerateJwtToken(role: roleName!, id: user.Id, email: user.Email, phoneNumber: user.PhoneNumber, username: user.Username);
+            var token = _jwtHelper.GenerateJwtToken(role: roleName!, id: user.Id, email: "", phoneNumber: user.PhoneNumber, username: user.Username);
             return (token, _mapper.Map<GetUserDetailModel>(user));
         }
 

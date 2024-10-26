@@ -6,8 +6,8 @@ using hair_hamony.Business.Services.ComboServices;
 using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.Services.FeedbackServices;
-using hair_hamony.Business.Services.LevelServices;
 using hair_hamony.Business.Services.NewsServices;
+using hair_hamony.Business.Services.PaymentDetailServices;
 using hair_hamony.Business.Services.PaymentServices;
 using hair_hamony.Business.Services.RoleServices;
 using hair_hamony.Business.Services.ServiceServices;
@@ -46,13 +46,13 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IStylistWorkshipService, StylistWorkshipService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
-            services.AddScoped<ILevelService, LevelService>();
             services.AddScoped<ITimeSlotService, TimeSlotService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionDetailService, TransactionDetailService>();
             services.AddScoped<IWorkshipService, WorkshipService>();
             services.AddScoped<INewsService, NewsService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IPaymentDetailService, PaymentDetailService>();
         }
     }
 }

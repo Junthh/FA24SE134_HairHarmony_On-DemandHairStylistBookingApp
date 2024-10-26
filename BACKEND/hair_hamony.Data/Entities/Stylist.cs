@@ -15,11 +15,17 @@ public partial class Stylist
 
     public Guid? UserId { get; set; }
 
-    public Guid? LevelId { get; set; }
+    public string? Level { get; set; }
+
+    public int? Experience { get; set; }
+
+    public int? Kpi { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
+
+    public double? Salary { get; set; }
 
     public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
-
-    public virtual Level? Level { get; set; }
 
     public virtual ICollection<StylistSalary> StylistSalaries { get; set; } = new List<StylistSalary>();
 
