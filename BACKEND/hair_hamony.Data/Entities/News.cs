@@ -19,7 +19,7 @@ public partial class News
 
     public string? Thumbnail { get; set; }
 
-    public Guid? UserId { get; set; }
+    public Guid? StaffId { get; set; }
 
-    public virtual User? User { get; set; }
+    public virtual Staff? Staff { get; set; }
 }

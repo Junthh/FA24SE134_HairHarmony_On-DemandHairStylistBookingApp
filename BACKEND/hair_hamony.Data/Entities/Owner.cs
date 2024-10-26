@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace hair_hamony.Data.Entities;
 
-public partial class Customer
+public partial class Owner
 {
     public Guid Id { get; set; }
-
-    public int? LoyaltyPoints { get; set; }
 
     public string? Username { get; set; }
 
@@ -22,6 +20,4 @@ public partial class Customer
     public string? Avatar { get; set; }
 
     public DateTime? CreatedDate { get; set; }
-
-    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }

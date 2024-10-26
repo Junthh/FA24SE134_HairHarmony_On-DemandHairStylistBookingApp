@@ -1,8 +1,7 @@
-﻿namespace hair_hamony.Business.ViewModels.Customers
+﻿namespace hair_hamony.Business.ViewModels.Staffs
 {
-    public class CreateCustomerModel
+    public class CreateStaffModel
     {
-        public int? LoyaltyPoints { get; set; }
         public string? Username { get; set; }
         public string? FullName { get; set; }
         public string? PhoneNumber { get; set; }

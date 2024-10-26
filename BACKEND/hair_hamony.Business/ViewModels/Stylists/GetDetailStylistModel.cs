@@ -11,9 +11,11 @@ namespace hair_hamony.Business.ViewModels.Stylists
         public int? Experience { get; set; }
         public int? Kpi { get; set; }
         public double? Salary { get; set; }
-        public DateTime? UpdatedDate { get; set; }
+        public string? Username { get; set; }
+        public string? FullName { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Status { get; set; }
+        public string? Avatar { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public Guid? UserId { get; set; }
-        public GetUserModel? User { get; set; }
     }
 }

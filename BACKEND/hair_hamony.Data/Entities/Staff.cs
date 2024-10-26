@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace hair_hamony.Data.Entities;
 
-public partial class Customer
+public partial class Staff
 {
     public Guid Id { get; set; }
-
-    public int? LoyaltyPoints { get; set; }
 
     public string? Username { get; set; }
 
@@ -23,5 +21,5 @@ public partial class Customer
 
     public DateTime? CreatedDate { get; set; }
 
-    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    public virtual ICollection<News> News { get; set; } = new List<News>();
 }
