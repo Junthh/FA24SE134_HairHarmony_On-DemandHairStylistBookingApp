@@ -15,8 +15,6 @@ public partial class User
 
     public string? PhoneNumber { get; set; }
 
-    public string? Email { get; set; }
-
     public string? Status { get; set; }
 
     public DateTime? CreatedDate { get; set; }
@@ -26,6 +24,8 @@ public partial class User
     public string? Avatar { get; set; }
 
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+
+    public virtual ICollection<News> News { get; set; } = new List<News>();
 
     public virtual Role? Role { get; set; }
 

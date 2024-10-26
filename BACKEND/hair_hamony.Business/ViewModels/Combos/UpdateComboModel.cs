@@ -8,5 +8,6 @@
         public double? TotalPrice { get; set; }
         public int? Duration { get; set; }
         public string? Image { get; set; }
+        public string? Description { get; set; }
     }
 }

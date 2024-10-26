@@ -25,13 +25,13 @@ public static class AutoMapperConfig
             mc.ConfigStylistWorkship();
             mc.ConfigSystemConfig();
             mc.ConfigFeedback();
-            mc.ConfigLevel();
             mc.ConfigTimeSlot();
             mc.ConfigTransaction();
             mc.ConfigTransactionDetail();
             mc.ConfigWorkship();
             mc.ConfigNew();
             mc.ConfigPayment();
+            mc.ConfigPaymentDetail();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();

@@ -7,6 +7,6 @@
         public string? Status { get; set; }
         public Guid? TransactionId { get; set; }
         public Guid? BookingDetailId { get; set; }
-        public Guid? PaymentId { get; set; }
+        public Guid? PaymentDetailId { get; set; }
     }
 }

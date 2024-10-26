@@ -5,7 +5,6 @@
         public Guid Id { get; set; }
         public double? Rating { get; set; }
         public string? Description { get; set; }
-        public DateTime? CreatedDate { get; set; }
         public Guid? BookingId { get; set; }
     }
 }
