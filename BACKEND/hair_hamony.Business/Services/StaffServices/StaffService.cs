@@ -30,6 +30,16 @@ namespace hair_hamony.Business.Services.StaffServices
 
         public async Task<GetStaffModel> Create(CreateStaffModel requestBody)
         {
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var staff = _mapper.Map<Staff>(requestBody);
 
             if (requestBody.Avatar != null)
@@ -90,6 +100,17 @@ namespace hair_hamony.Business.Services.StaffServices
                     ErrorMessage = "Id không trùng"
                 };
             }
+
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var staff = _mapper.Map<Staff>(await GetById(id));
             _mapper.Map(requestBody, staff);
             if (requestBody.Avatar != null)
@@ -150,6 +171,13 @@ namespace hair_hamony.Business.Services.StaffServices
             _context.Staffs.Update(staff);
             await _context.SaveChangesAsync();
             return _mapper.Map<GetStaffModel>(staff);
+        }
+
+        private async Task<bool> UsernameIsExisted(string username)
+        {
+            var isExisted = await _context.Staffs.Select(staff => staff.Username == username).CountAsync() > 0;
+
+            return isExisted;
         }
     }
 }

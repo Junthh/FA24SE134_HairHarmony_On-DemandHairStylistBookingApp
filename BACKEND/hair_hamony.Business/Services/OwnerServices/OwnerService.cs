@@ -30,6 +30,16 @@ namespace hair_hamony.Business.Services.OwnerServices
 
         public async Task<GetOwnerModel> Create(CreateOwnerModel requestBody)
         {
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var owner = _mapper.Map<Owner>(requestBody);
 
             if (requestBody.Avatar != null)
@@ -90,6 +100,17 @@ namespace hair_hamony.Business.Services.OwnerServices
                     ErrorMessage = "Id không trùng"
                 };
             }
+
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var owner = _mapper.Map<Owner>(await GetById(id));
 
             _mapper.Map(requestBody, owner);
@@ -151,6 +172,13 @@ namespace hair_hamony.Business.Services.OwnerServices
             _context.Owners.Update(owner);
             await _context.SaveChangesAsync();
             return _mapper.Map<GetOwnerModel>(owner);
+        }
+
+        private async Task<bool> UsernameIsExisted(string username)
+        {
+            var isExisted = await _context.Owners.Select(owner => owner.Username == username).CountAsync() > 0;
+
+            return isExisted;
         }
     }
 }
