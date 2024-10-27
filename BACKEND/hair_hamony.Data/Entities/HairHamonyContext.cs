@@ -197,6 +197,10 @@ public partial class HairHamonyContext : DbContext
             entity.HasOne(d => d.Booking).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.BookingId)
                 .HasConstraintName("FK__Feedbacks__Booki__1AD3FDA4");
+
+            entity.HasOne(d => d.Stylist).WithMany(p => p.Feedbacks)
+                .HasForeignKey(d => d.StylistId)
+                .HasConstraintName("FK_Feedbacks_Stylists");
         });
 
         modelBuilder.Entity<News>(entity =>
