@@ -24,7 +24,7 @@ namespace home_travel.API.Controllers
         /// <returns>List of combo</returns>
         /// <response code="200">Returns the list of combo</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetComboModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailComboModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<ComboEnum.ComboSort> paginationModel,
@@ -32,7 +32,7 @@ namespace home_travel.API.Controllers
         {
             var (combos, total) = await _comboService.GetAll(paginationModel, searchComboModel);
 
-            return Ok(new ModelsResponse<GetComboModel>(
+            return Ok(new ModelsResponse<GetDetailComboModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,
@@ -51,12 +51,12 @@ namespace home_travel.API.Controllers
         /// <response code="200">Returns the combo</response>
         /// <response code="404">Returns if the combo is not exist</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(BaseResponse<GetComboModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<GetDetailComboModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return Ok(new BaseResponse<GetComboModel>(
+            return Ok(new BaseResponse<GetDetailComboModel>(
                     data: await _comboService.GetById(id)
                 ));
         }
