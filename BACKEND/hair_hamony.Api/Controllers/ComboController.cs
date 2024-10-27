@@ -69,7 +69,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the combo</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetComboModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateComboModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateComboModel requestBody)
         {
             return Ok(new BaseResponse<GetComboModel>(
                     statusCode: 201, data: await _comboService.Create(requestBody),
@@ -89,7 +89,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetComboModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateComboModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateComboModel requestBody)
         {
             return Ok(new BaseResponse<GetComboModel>(
                     data: await _comboService.Update(id, requestBody),

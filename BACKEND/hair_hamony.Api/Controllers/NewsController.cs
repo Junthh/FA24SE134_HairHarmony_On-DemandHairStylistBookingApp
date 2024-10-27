@@ -69,7 +69,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the news</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetNewsModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateNewsModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateNewsModel requestBody)
         {
             return Ok(new BaseResponse<GetNewsModel>(
                     statusCode: 201, data: await _newsService.Create(requestBody),
@@ -89,7 +89,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetNewsModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateNewsModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateNewsModel requestBody)
         {
             return Ok(new BaseResponse<GetNewsModel>(
                     data: await _newsService.Update(id, requestBody),
