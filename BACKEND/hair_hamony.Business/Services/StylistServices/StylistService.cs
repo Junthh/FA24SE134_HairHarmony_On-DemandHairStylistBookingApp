@@ -30,6 +30,16 @@ namespace hair_hamony.Business.Services.StylistServices
 
         public async Task<GetStylistModel> Create(CreateStylistModel requestBody)
         {
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var stylist = _mapper.Map<Stylist>(requestBody);
 
             if (requestBody.Avatar != null)
@@ -90,6 +100,17 @@ namespace hair_hamony.Business.Services.StylistServices
                     ErrorMessage = "Id không trùng"
                 };
             }
+
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var stylist = _mapper.Map<Stylist>(await GetById(id));
 
             _mapper.Map(requestBody, stylist);
@@ -151,6 +172,13 @@ namespace hair_hamony.Business.Services.StylistServices
             _context.Stylists.Update(stylist);
             await _context.SaveChangesAsync();
             return _mapper.Map<GetStylistModel>(stylist);
+        }
+
+        private async Task<bool> UsernameIsExisted(string username)
+        {
+            var isExisted = await _context.Stylists.Select(stylist => stylist.Username == username).CountAsync() > 0;
+
+            return isExisted;
         }
     }
 }

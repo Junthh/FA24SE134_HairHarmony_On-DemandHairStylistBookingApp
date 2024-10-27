@@ -30,6 +30,16 @@ namespace hair_hamony.Business.Services.CustomerServices
 
         public async Task<GetCustomerModel> Create(CreateCustomerModel requestBody)
         {
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var customer = _mapper.Map<Customer>(requestBody);
 
             if (requestBody.Avatar != null)
@@ -90,6 +100,17 @@ namespace hair_hamony.Business.Services.CustomerServices
                     ErrorMessage = "Id không trùng"
                 };
             }
+
+            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+            if (isExistedUsername)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+
             var customer = _mapper.Map<Customer>(await GetById(id));
 
             _mapper.Map(requestBody, customer);
@@ -151,6 +172,13 @@ namespace hair_hamony.Business.Services.CustomerServices
             _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
             return _mapper.Map<GetCustomerModel>(customer);
+        }
+
+        private async Task<bool> UsernameIsExisted(string username)
+        {
+            var isExisted = await _context.Customers.Select(customer => customer.Username == username).CountAsync() > 0;
+
+            return isExisted;
         }
     }
 }
