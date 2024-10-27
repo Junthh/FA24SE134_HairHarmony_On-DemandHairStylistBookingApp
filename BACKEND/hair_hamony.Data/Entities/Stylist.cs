@@ -35,6 +35,8 @@ public partial class Stylist
 
     public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
 
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
     public virtual ICollection<StylistSalary> StylistSalaries { get; set; } = new List<StylistSalary>();
 
     public virtual ICollection<StylistWorkship> StylistWorkships { get; set; } = new List<StylistWorkship>();
