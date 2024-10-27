@@ -69,7 +69,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the category</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetCategoryModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateCategoryModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateCategoryModel requestBody)
         {
             return Ok(new BaseResponse<GetCategoryModel>(
                     statusCode: 201, data: await _categoryService.Create(requestBody),
@@ -89,7 +89,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetCategoryModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateCategoryModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateCategoryModel requestBody)
         {
             return Ok(new BaseResponse<GetCategoryModel>(
                     data: await _categoryService.Update(id, requestBody),
