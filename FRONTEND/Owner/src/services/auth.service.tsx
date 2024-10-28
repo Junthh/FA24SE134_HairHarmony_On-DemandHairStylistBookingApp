@@ -12,14 +12,14 @@ class AuthService {
   };
   register = (payload: RegisterPayload) => {
     return axios({
-      url: `${ENDPOINTS.ApiPrefix}/users/regist`,
+      url: `${ENDPOINTS.ApiPrefix}/owners/regist`,
       method: 'POST',
       data: payload,
     });
   };
   login = async (payload: LoginPayLoad) => {
     return await axios({
-      url: `${ENDPOINTS.ApiPrefix}/users/login`,
+      url: `${ENDPOINTS.ApiPrefix}/owners/login`,
       method: 'POST',
       data: payload,
     });

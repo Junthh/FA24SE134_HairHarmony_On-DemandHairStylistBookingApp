@@ -19,7 +19,7 @@ import { authService } from 'services/auth.service';
 import { AuthConsumer } from '../AuthProvider';
 import { setLoading } from 'redux/Reducer';
 import { useNavigate } from 'react-router-dom';
-import { ADMIN_PATH, AUTH_PATH } from 'configurations/paths/paths';
+import { AUTH_PATH } from 'configurations/paths/paths';
 import { ResponseSuccessApi } from 'models/Response.model';
 import { Token } from 'models/CredentialInfo.model';
 import { LOGO } from 'configurations/logo';
@@ -48,17 +48,17 @@ function Register() {
     dispatch(setLoading(true));
     try {
       const payload: RegisterPayload = {
-        email: data.email,
+        username: data.username,
         password: data.password,
       };
       const res = (await authService.register(payload)) as unknown as ResponseSuccessApi;
 
       if (res?.success) {
-        const { accessToken, refreshToken } = res.data as Token;
-        authContext.saveToken({ accessToken, refreshToken });
+        const { token, refreshToken = '' } = res.data as Token;
+        authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
-      navigate(ADMIN_PATH.ADMIN);
+      // navigate(ADMIN_PATH.ADMIN);
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.message || error));
@@ -81,9 +81,6 @@ function Register() {
         <FormTitle>
           <h1 className="mea-culpa-regular" style={{ cursor: 'pointer' }}>
             Hair Hamorny
-          </h1>{' '}
-          <h1 className="mea-culpa-regular" style={{ cursor: 'pointer' }}>
-            Hair Hamorny
           </h1>
           <Typography
             sx={{
@@ -96,10 +93,10 @@ function Register() {
         </FormTitle>
         <FormItem>
           <TextFieldElement
-            name={authProps.email.propertyName}
+            name={authProps.username.propertyName}
             control={control}
-            label={authProps.email.propertyLabel}
-            placeholder="Your email"
+            label={authProps.username.propertyLabel}
+            placeholder="Your username"
             onKeyDown={handleKeyDown}
             autoFocus
           />
