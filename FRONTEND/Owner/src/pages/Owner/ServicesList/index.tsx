@@ -297,6 +297,7 @@ export default function ServicesList() {
               padding={'9px 14px'}
               onClick={() => {
                 setSelectedRow(null);
+                setImage('');
                 formUser.reset(defaultValues);
                 openModal();
               }}

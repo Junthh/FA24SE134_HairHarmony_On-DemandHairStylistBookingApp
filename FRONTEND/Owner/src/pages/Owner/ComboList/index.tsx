@@ -314,6 +314,7 @@ export default function ComboList() {
               padding={'9px 14px'}
               onClick={() => {
                 setSelectedRow(null);
+                setImage('');
                 formCombo.reset(defaultValues);
                 openModal();
               }}
