@@ -35,12 +35,14 @@ import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { comboServices } from 'services/combo.service';
-import { currencyFormat } from 'utils/helper';
+import { currencyFormat, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
+import AvatarUpload from 'components/Form/AvatarUpload';
 export default function ComboList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const services = useSelector(selectServices);
+  const [image, setImage] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
@@ -127,11 +129,13 @@ export default function ComboList() {
   const handleClose = () => {
     setAnchorEl(null);
     setSelectedRow(null);
+    setImage('');
   };
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
       formCombo.reset(row);
+      setImage(row.image);
       openModal();
     },
     [selectedRow],
@@ -168,10 +172,12 @@ export default function ComboList() {
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
+      const id = data.id;
+      data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
         comboServices
-          .update(data.id, data)
+          .update(id, data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
@@ -221,6 +227,7 @@ export default function ComboList() {
               padding={'0 20px 20px 20px'}
               width={'550px'}
             >
+              <AvatarUpload src={image} name="image" control={control} />
               <TextFieldElement
                 name="name"
                 control={control}
@@ -346,7 +353,7 @@ export default function ComboList() {
               <StyledTableRow key={index}>
                 <StyledTableCell component="th" scope="row">
                   <img
-                    style={{ width: 50, height: 50, borderRadius: '50%' }}
+                    style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
                     src={row.image}
                     alt=""
                   />
