@@ -2,12 +2,10 @@ import { ResponseErrorApi } from "models/Response.model";
 
 // Write code to build common functions/methods
 export const currencyFormat = (value) => {
-    return new Intl.NumberFormat('en-US',
-        {
-            style: 'currency',
-            currency: 'USD'
-        })
-        .format(value);
+    return new Intl.NumberFormat('vi-vn', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(value);
 }
 
 export const numberSepartorFormat = (value) => {

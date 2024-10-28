@@ -11,6 +11,9 @@ interface AppState {
   categorys: {
     [key: string]: { name: string; createdDate: string };
   };
+  services: {
+    [key: string]: { name: string; createdDate: string };
+  };
 }
 
 // Init state
@@ -20,6 +23,7 @@ const initialState: AppState = {
   credentialInfo: CredentialInfoDefault,
   roles: {},
   categorys: {},
+  services: {},
 };
 
 // reducer callback
@@ -39,6 +43,9 @@ const reducers = {
   setCategorys(state: AppState, action: PayloadAction<{}>) {
     state.categorys = action.payload;
   },
+  setServices(state: AppState, action: PayloadAction<{}>) {
+    state.services = action.payload;
+  },
 };
 
 export const appSlice = createSlice({
@@ -47,7 +54,7 @@ export const appSlice = createSlice({
   reducers,
 });
 
-export const { setLoading, setActiveStep, setCredentialInfo, setRoles, setCategorys } =
+export const { setLoading, setActiveStep, setCredentialInfo, setRoles, setCategorys, setServices } =
   appSlice.actions;
 
 // Selector
@@ -55,4 +62,6 @@ export const selectLoading = (state: { app: AppState }) => state.app?.loading;
 export const selectCredentialInfo = (state: { app: AppState }) => state.app?.credentialInfo;
 export const selectRoles = (state: { app: AppState }) => state.app?.roles;
 export const selectCategorys = (state: { app: AppState }) => state.app?.categorys;
+export const selectServices = (state: { app: AppState }) => state.app?.services;
+
 export const appSelector = (state: { app: AppState }) => state.app;
