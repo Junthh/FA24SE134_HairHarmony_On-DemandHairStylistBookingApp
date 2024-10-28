@@ -17,6 +17,7 @@ const News = lazy(() => import('pages/Owner/News'));
 const PromotionList = lazy(() => import('pages/Owner/PromotionList'));
 const ServicesList = lazy(() => import('pages/Owner/ServicesList'));
 const TransactionList = lazy(() => import('pages/Owner/TransactionList'));
+const ComboList = lazy(() => import('pages/Owner/ComboList'));
 
 //
 //
@@ -54,6 +55,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.SERVICES}`,
       element: <ServicesList />,
+    },
+    {
+      path: `${OWNER_PATH.COMBO}`,
+      element: <ComboList />,
     },
     {
       path: `${OWNER_PATH.PROMOTION}`,
