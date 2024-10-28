@@ -27,11 +27,11 @@ function AuthProvider({ children }) {
     const accessToken = localStorage.getItem(LOCAL_STORAGE_KEYS.AccessToken);
     const refreshToken = localStorage.getItem(LOCAL_STORAGE_KEYS.RefreshToken);
 
-    return (accessToken && refreshToken && { accessToken, refreshToken }) || null;
+    return (accessToken && refreshToken && { token: accessToken, refreshToken }) || null;
   });
 
   const saveToken = (data: Token) => {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.AccessToken, data.accessToken);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AccessToken, data.token);
     localStorage.setItem(LOCAL_STORAGE_KEYS.RefreshToken, data.refreshToken);
     setToken(data);
   };
@@ -48,7 +48,7 @@ function AuthProvider({ children }) {
 
   useEffect(() => {
     if (token) {
-      const { exp, email, role, id } = jwtDecode(token.accessToken) as any;
+      const { exp, email, role, id } = jwtDecode(token.token) as any;
 
       if (Date.now() >= exp * 1000) {
         if (!token.refreshToken) {
@@ -62,7 +62,7 @@ function AuthProvider({ children }) {
               localStorage.setItem(LOCAL_STORAGE_KEYS.AccessToken, res.data.accessToken);
               localStorage.setItem(LOCAL_STORAGE_KEYS.RefreshToken, res.data.refreshToken);
               setToken({
-                accessToken: res.data.accessToken,
+                token: res.data.accessToken,
                 refreshToken: res.data.refreshToken,
               });
             }
@@ -72,7 +72,7 @@ function AuthProvider({ children }) {
           });
       } else {
         const info: CredentialInfo = {
-          acessToken: token.accessToken,
+          acessToken: token.token,
           refreshToken: token.refreshToken,
           email: email,
           role: role,
@@ -83,7 +83,7 @@ function AuthProvider({ children }) {
     } else {
       logout();
     }
-  }, [token?.accessToken, token?.refreshToken]);
+  }, [token?.token, token?.refreshToken]);
 
   const value = useMemo(
     () => ({

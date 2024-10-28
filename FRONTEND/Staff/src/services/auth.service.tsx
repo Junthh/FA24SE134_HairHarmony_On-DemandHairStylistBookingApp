@@ -12,14 +12,14 @@ class AuthService {
   };
   register = (payload: RegisterPayload) => {
     return axios({
-      url: `${ECOCUPID_ENDPOINTS.ApiPrefix}/auth/regist`,
+      url: `${ECOCUPID_ENDPOINTS.ApiPrefix}/Staffs/regist`,
       method: 'POST',
       data: payload,
     });
   };
   login = async (payload: LoginPayLoad) => {
     return await axios({
-      url: `${ECOCUPID_ENDPOINTS.ApiPrefix}/auth/login`,
+      url: `${ECOCUPID_ENDPOINTS.ApiPrefix}/Staffs/login`,
       method: 'POST',
       data: payload,
     });
