@@ -26,19 +26,45 @@ namespace hair_hamony.Business.Services.ComboServices
 
         public async Task<GetComboModel> Create(CreateComboModel requestBody)
         {
-            var combo = _mapper.Map<Combo>(requestBody);
-            combo.CreatedDate = DateTime.Now;
-            combo.UpdatedDate = DateTime.Now;
-            if (requestBody.Image != null)
+            using var transaction = _context.Database.BeginTransaction();
+            try
             {
-                var file = await _fileService.UploadFile(requestBody.Image);
-                combo.Image = file.Url;
+                var combo = _mapper.Map<Combo>(requestBody);
+                combo.CreatedDate = DateTime.Now;
+                combo.UpdatedDate = DateTime.Now;
+                if (requestBody.Image != null)
+                {
+                    var file = await _fileService.UploadFile(requestBody.Image);
+                    combo.Image = file.Url;
+                }
+
+                await _context.Combos.AddAsync(combo);
+                await _context.SaveChangesAsync();
+
+                if (requestBody.Services != null)
+                {
+                    foreach (Guid id in requestBody.Services)
+                    {
+                        await _context.ComboServices.AddAsync(new Data.Entities.ComboService
+                        {
+                            ComboId = combo.Id,
+                            ServiceId = id,
+                            CreatedDate = DateTime.Now,
+                            UpdatedDate = DateTime.Now,
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return _mapper.Map<GetComboModel>(combo);
             }
-
-            await _context.Combos.AddAsync(combo);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<GetComboModel>(combo);
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         public async Task Delete(Guid id)
@@ -80,27 +106,54 @@ namespace hair_hamony.Business.Services.ComboServices
 
         public async Task<GetComboModel> Update(Guid id, UpdateComboModel requestBody)
         {
-            if (id != requestBody.Id)
+            using var transaction = _context.Database.BeginTransaction();
+            try
             {
-                throw new CException
+                if (id != requestBody.Id)
                 {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = "Id không trùng"
-                };
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Id không trùng"
+                    };
+                }
+                var combo = _mapper.Map<Combo>(await GetById(id));
+                _mapper.Map(requestBody, combo);
+                combo.UpdatedDate = DateTime.Now;
+                if (requestBody.Image != null)
+                {
+                    var file = await _fileService.UploadFile(requestBody.Image);
+                    combo.Image = file.Url;
+                }
+                _context.Combos.Update(combo);
+                await _context.SaveChangesAsync();
+
+                if (requestBody.Services != null)
+                {
+                    await _context.ComboServices.Where(comboService => comboService.ComboId == id).ExecuteDeleteAsync();
+                    
+                    foreach (Guid _id in requestBody.Services)
+                    {
+                        await _context.ComboServices.AddAsync(new Data.Entities.ComboService
+                        {
+                            ComboId = combo.Id,
+                            ServiceId = _id,
+                            CreatedDate = DateTime.Now,
+                            UpdatedDate = DateTime.Now,
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return _mapper.Map<GetComboModel>(combo);
             }
-            var combo = _mapper.Map<Combo>(await GetById(id));
-            _mapper.Map(requestBody, combo);
-            combo.UpdatedDate = DateTime.Now;
-            if (requestBody.Image != null)
+            catch
             {
-                var file = await _fileService.UploadFile(requestBody.Image);
-                combo.Image = file.Url;
+                transaction.Rollback();
+                throw;
             }
-
-            _context.Combos.Update(combo);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<GetComboModel>(combo);
         }
     }
 }
