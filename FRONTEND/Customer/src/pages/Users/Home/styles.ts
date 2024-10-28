@@ -10,6 +10,11 @@ export const HomeStyled = styled(Box)({
       padding: 0,
       marginBottom: 80,
     },
+    '& img': {
+      width: 1920,
+      height: 481,
+      objectFit: 'cover',
+    },
   },
   '& .home-services': {
     padding: '40px 40px',

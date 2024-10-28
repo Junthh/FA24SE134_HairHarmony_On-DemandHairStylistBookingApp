@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import { Box, IconButton } from '@mui/material';
 import { ICONS } from 'configurations/icons';
+import * as colors from 'constants/colors';
 import CardContentImage from 'pages/common/CardContentImage';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Navigation, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import * as colors from 'constants/colors';
 import NewsAbou1 from '../mock/news-about-1.png';
 import NewsAbou2 from '../mock/news-about-2.png';
 import NewsAbou3 from '../mock/news-about-3.png';

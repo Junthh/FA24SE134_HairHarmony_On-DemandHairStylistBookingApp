@@ -104,6 +104,8 @@ export default function EmployeeList() {
           total: resultList.paging.total,
         }));
         setRows(resultList.data);
+      })
+      .finally(() => {
         dispatch(setLoading(false));
       });
   }, []);
@@ -144,10 +146,11 @@ export default function EmployeeList() {
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
-          dispatch(setLoading(false));
         })
         .catch((err) => {
           showToast('error', err.message);
+        })
+        .finally(() => {
           dispatch(setLoading(false));
         });
     },
@@ -181,6 +184,8 @@ export default function EmployeeList() {
           })
           .catch((err) => {
             showToast('error', err.message);
+          })
+          .finally(() => {
             dispatch(setLoading(false));
           });
       } else {
@@ -196,6 +201,8 @@ export default function EmployeeList() {
           })
           .catch((err) => {
             showToast('error', err.message);
+          })
+          .finally(() => {
             dispatch(setLoading(false));
           });
       }

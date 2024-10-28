@@ -3,7 +3,9 @@ using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.ViewModels;
+using hair_hamony.Business.ViewModels.Customers;
 using hair_hamony.Business.ViewModels.Stylists;
+using hair_hamony.Business.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace home_travel.API.Controllers
@@ -14,6 +16,37 @@ namespace home_travel.API.Controllers
         public StylistController(IStylistService stylistService)
         {
             _stylistService = stylistService;
+        }
+
+        /// <summary>
+        /// Endpoint for stylist login
+        /// </summary>
+        /// <returns>Token of stylist</returns>
+        /// <response code="200">Returns a token of stylist</response>
+        [HttpPost("login")]
+        [ProducesResponseType(typeof(ModelLoginResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> Login(UserLoginModel requestBody)
+        {
+            var (token, stylist) = await _stylistService.Login(requestBody);
+            return Ok(new ModelLoginResponse<GetStylistModel>(
+                new ModelDataLoginResponse<GetStylistModel>(token, stylist)
+            ));
+        }
+
+        /// <summary>
+        /// Endpoint for stylist change password
+        /// </summary>
+        /// <returns>A stylist information</returns>
+        /// <response code="200">Returns a stylist information</response>
+        [HttpPut("{id}/changePassword")]
+        [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> ChangePassword(Guid id, string oldPassword, string newPassword)
+        {
+            return Ok(new BaseResponse<GetStylistModel>(
+                    data: await _stylistService.ChangePassword(id, oldPassword, newPassword)
+                ));
         }
 
         /// <summary>
@@ -69,7 +102,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the stylist</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateStylistModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateStylistModel requestBody)
         {
             return Ok(new BaseResponse<GetStylistModel>(
                     statusCode: 201, data: await _stylistService.Create(requestBody),
@@ -89,7 +122,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateStylistModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateStylistModel requestBody)
         {
             return Ok(new BaseResponse<GetStylistModel>(
                     data: await _stylistService.Update(id, requestBody),

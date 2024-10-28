@@ -5,6 +5,7 @@ export enum USER_PATH {
   BOOKING = '/booking',
   APPOINTMENT = '/appointment',
   OUR_TEAMMATES = '/our-teammates',
+  SERVICES = '/services',
 }
 
 export enum ADMIN_PATH {

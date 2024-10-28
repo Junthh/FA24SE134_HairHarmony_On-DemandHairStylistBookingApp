@@ -17,6 +17,8 @@ public partial class BookingDetail
 
     public Guid? ComboId { get; set; }
 
+    public DateTime? CreatedDate { get; set; }
+
     public virtual Booking? Booking { get; set; }
 
     public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
