@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
             var stylistWorkship = _mapper.Map<StylistWorkship>(requestBody);
             stylistWorkship.CreatedDate = DateTime.Now;
             stylistWorkship.UpdatedDate = DateTime.Now;
+
             await _context.StylistWorkships.AddAsync(stylistWorkship);
             await _context.SaveChangesAsync();
 
@@ -74,7 +75,9 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                 };
             }
             var stylistWorkship = _mapper.Map<StylistWorkship>(await GetById(id));
+            _mapper.Map(requestBody, stylistWorkship);
             stylistWorkship.UpdatedDate = DateTime.Now;
+
             _context.StylistWorkships.Update(stylistWorkship);
             await _context.SaveChangesAsync();
 

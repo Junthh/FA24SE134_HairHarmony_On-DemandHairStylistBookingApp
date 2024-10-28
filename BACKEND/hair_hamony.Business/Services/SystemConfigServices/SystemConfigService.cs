@@ -24,6 +24,7 @@ namespace hair_hamony.Business.Services.SystemConfigServices
         public async Task<GetSystemConfigModel> Create(CreateSystemConfigModel requestBody)
         {
             var systemConfig = _mapper.Map<SystemConfig>(requestBody);
+
             await _context.SystemConfigs.AddAsync(systemConfig);
             await _context.SaveChangesAsync();
 
@@ -72,6 +73,8 @@ namespace hair_hamony.Business.Services.SystemConfigServices
                 };
             }
             var systemConfig = _mapper.Map<SystemConfig>(await GetById(id));
+            _mapper.Map(requestBody, systemConfig);
+
             _context.SystemConfigs.Update(systemConfig);
             await _context.SaveChangesAsync();
 

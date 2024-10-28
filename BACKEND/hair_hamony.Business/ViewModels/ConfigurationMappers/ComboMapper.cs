@@ -11,6 +11,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
             configuration.CreateMap<Combo, GetComboModel>().ReverseMap();
             configuration.CreateMap<Combo, CreateComboModel>().ReverseMap();
             configuration.CreateMap<Combo, UpdateComboModel>().ReverseMap();
+            configuration.CreateMap<Combo, GetDetailComboModel>().ReverseMap();
         }
     }
 }

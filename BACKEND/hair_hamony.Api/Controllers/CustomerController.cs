@@ -4,6 +4,7 @@ using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.ViewModels;
 using hair_hamony.Business.ViewModels.Customers;
+using hair_hamony.Business.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace home_travel.API.Controllers
@@ -14,6 +15,37 @@ namespace home_travel.API.Controllers
         public CustomerController(ICustomerService customerService)
         {
             _customerService = customerService;
+        }
+
+        /// <summary>
+        /// Endpoint for customer login
+        /// </summary>
+        /// <returns>Token of customer</returns>
+        /// <response code="200">Returns a token of customer</response>
+        [HttpPost("login")]
+        [ProducesResponseType(typeof(ModelLoginResponse<GetCustomerModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> Login(UserLoginModel requestBody)
+        {
+            var (token, customer) = await _customerService.Login(requestBody);
+            return Ok(new ModelLoginResponse<GetCustomerModel>(
+                new ModelDataLoginResponse<GetCustomerModel>(token, customer)
+            ));
+        }
+
+        /// <summary>
+        /// Endpoint for customer change password
+        /// </summary>
+        /// <returns>A customer information</returns>
+        /// <response code="200">Returns a customer information</response>
+        [HttpPut("{id}/changePassword")]
+        [ProducesResponseType(typeof(BaseResponse<GetCustomerModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> ChangePassword(Guid id, string oldPassword, string newPassword)
+        {
+            return Ok(new BaseResponse<GetCustomerModel>(
+                    data: await _customerService.ChangePassword(id, oldPassword, newPassword)
+                ));
         }
 
         /// <summary>
@@ -69,7 +101,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the customer</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetCustomerModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateCustomerModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateCustomerModel requestBody)
         {
             return Ok(new BaseResponse<GetCustomerModel>(
                     statusCode: 201, data: await _customerService.Create(requestBody),
@@ -89,7 +121,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetCustomerModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateCustomerModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateCustomerModel requestBody)
         {
             return Ok(new BaseResponse<GetCustomerModel>(
                     data: await _customerService.Update(id, requestBody),

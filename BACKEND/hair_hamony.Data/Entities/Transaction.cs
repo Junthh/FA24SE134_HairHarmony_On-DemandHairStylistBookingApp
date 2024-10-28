@@ -11,6 +11,8 @@ public partial class Transaction
 
     public DateTime? UpdatedDate { get; set; }
 
+    public string? Status { get; set; }
+
     public Guid? BookingId { get; set; }
 
     public virtual Booking? Booking { get; set; }
