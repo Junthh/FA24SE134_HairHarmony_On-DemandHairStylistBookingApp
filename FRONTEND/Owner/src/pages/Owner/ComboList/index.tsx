@@ -38,6 +38,7 @@ import { comboServices } from 'services/combo.service';
 import { currencyFormat, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
+import SelectMultiElement from 'components/Form/SelectMultiElement';
 export default function ComboList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -134,6 +135,12 @@ export default function ComboList() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
+      console.log(row);
+      const comboServices = row.comboServices.map((comboService) => comboService.service.id);
+      row = {
+        ...row,
+        comboService: comboServices,
+      };
       formCombo.reset(row);
       setImage(row.image);
       openModal();
@@ -173,6 +180,13 @@ export default function ComboList() {
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       const id = data.id;
+      const comboMap = data.comboServices.map((comboService) => comboService.service.id);
+      data = {
+        ...data,
+        services: JSON.stringify(comboMap),
+      };
+      delete data.comboServices;
+      delete data.comboService;
       data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
@@ -235,9 +249,10 @@ export default function ComboList() {
                 label={'Tên dịch vụ'}
                 //   onKeyUp={handleKeyup}
               />
-              <SelectElement
-                control={control}
+              <SelectMultiElement
                 name="comboService"
+                label="Loại dịch vụ"
+                control={control}
                 options={
                   services &&
                   Object.keys(services).map((id) => ({
@@ -245,9 +260,8 @@ export default function ComboList() {
                     label: services[id].name,
                   }))
                 }
-                placeholder="Chọn loại dịch vụ"
-                label={'Loại dịch vụ'}
-              ></SelectElement>
+                placeholder="Select items"
+              />
               <TextFieldElement
                 name="totalPrice"
                 control={control}
@@ -363,7 +377,9 @@ export default function ComboList() {
                   {row.name}
                 </StyledTableCell>
                 <StyledTableCell align="right">{row.description}</StyledTableCell>
-                <StyledTableCell align="right">{row.comboService}</StyledTableCell>
+                <StyledTableCell align="right">
+                  {row.comboServices?.map((item) => item?.service?.name || '').join(', ')}
+                </StyledTableCell>
                 <StyledTableCell align="right">{row.duration}/phút</StyledTableCell>
                 <StyledTableCell align="right">
                   <span style={{ textDecoration: 'line-through' }}>
