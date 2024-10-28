@@ -30,19 +30,20 @@ import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled'
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCategorys, setLoading } from 'redux/Reducer';
-import { servicesService } from 'services/services.service';
+import { selectServices, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
+import { comboServices } from 'services/combo.service';
+import { currencyFormat, objectToFormData } from 'utils/helper';
+import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
-import { objectToFormData } from 'utils/helper';
-export default function ServicesList() {
+export default function ComboList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
-  const categorys = useSelector(selectCategorys);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const services = useSelector(selectServices);
   const [image, setImage] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
   const [paging, setPaging] = useState({
@@ -67,12 +68,14 @@ export default function ServicesList() {
   const defaultValues = {
     id: '',
     name: '',
-    image: '',
+    discount: 0,
+    totalPrice: 0,
     duration: 0,
-    price: 0,
-    categoryId: null,
+    image: '',
+    description: '',
+    comboService: null,
   };
-  const formUser = useForm<any>({
+  const formCombo = useForm<any>({
     defaultValues,
     mode: 'onChange',
     resolver: yupResolver(schemaUser),
@@ -84,18 +87,18 @@ export default function ServicesList() {
     getValues,
     formState: { errors },
     handleSubmit,
-  } = formUser;
+  } = formCombo;
 
   useEffect(() => {
-    getServicesList({
+    getCombosList({
       size: paging.size,
       page: paging.page,
       name: formSearch.getValues('name'),
     });
   }, [paging.size, paging.page]);
-  const getServicesList = useCallback(({ size, page, name = '' }) => {
+  const getCombosList = useCallback(({ size, page, name = '' }) => {
     dispatch(setLoading(true));
-    servicesService
+    comboServices
       .list({ pageSize: size, pageIndex: page + 1, name })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
@@ -110,7 +113,7 @@ export default function ServicesList() {
   const handleSearch = useCallback(
     handleSubmitSearch((data: any) => {
       if (data) {
-        getServicesList({
+        getCombosList({
           ...paging,
           name: data.name,
         });
@@ -131,7 +134,7 @@ export default function ServicesList() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
-      formUser.reset(row);
+      formCombo.reset(row);
       setImage(row.image);
       openModal();
     },
@@ -141,7 +144,7 @@ export default function ServicesList() {
     (row) => {
       dispatch(setLoading(true));
       setAnchorEl(null);
-      servicesService
+      comboServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
@@ -173,12 +176,12 @@ export default function ServicesList() {
       data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
-        servicesService
+        comboServices
           .update(id, data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getServicesList({ size, page, name: formSearch.getValues('name') });
+            getCombosList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
@@ -188,12 +191,12 @@ export default function ServicesList() {
           });
       } else {
         dispatch(setLoading(true));
-        servicesService
+        comboServices
           .create(data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getServicesList({ size, page, name: formSearch.getValues('name') });
+            getCombosList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
@@ -215,7 +218,7 @@ export default function ServicesList() {
         width="100%"
         title={selectedRow ? 'Edit' : 'Create'}
         content={
-          <FormContainer formContext={formUser}>
+          <FormContainer formContext={formCombo}>
             <Box
               display={'flex'}
               justifyContent={'center'}
@@ -234,19 +237,19 @@ export default function ServicesList() {
               />
               <SelectElement
                 control={control}
-                name="categoryId"
+                name="comboService"
                 options={
-                  categorys &&
-                  Object.keys(categorys).map((id) => ({
+                  services &&
+                  Object.keys(services).map((id) => ({
                     value: id,
-                    label: categorys[id]?.name,
+                    label: services[id].name,
                   }))
                 }
                 placeholder="Chọn loại dịch vụ"
                 label={'Loại dịch vụ'}
               ></SelectElement>
               <TextFieldElement
-                name="price"
+                name="totalPrice"
                 control={control}
                 type="number"
                 placeholder="Nhập giá"
@@ -260,7 +263,21 @@ export default function ServicesList() {
                 label={'Khoảng thời gian'}
                 //   onKeyUp={handleKeyup}
               />
+              <TextFieldElement
+                name="discount"
+                control={control}
+                placeholder="Nhập giảm giá"
+                label={'Giảm giá'}
+                //   onKeyUp={handleKeyup}
+              />
+              <TextAreaElement
+                name="description"
+                control={control}
+                placeholder="Nhập mô tả"
+                label={'Mô tả'}
 
+                //   onKeyUp={handleKeyup}
+              />
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
                   Lưu
@@ -297,7 +314,7 @@ export default function ServicesList() {
               padding={'9px 14px'}
               onClick={() => {
                 setSelectedRow(null);
-                formUser.reset(defaultValues);
+                formCombo.reset(defaultValues);
                 openModal();
               }}
             >
@@ -314,22 +331,19 @@ export default function ServicesList() {
             <TableRow>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
-                Tên dịch vụ
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
-                Loại dịch vụ
+                Tên combo
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Giá
+                Mô tả
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Combo service
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Trong khoản thời gian
               </StyledTableCell>{' '}
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày tạo
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày cập nhật
+                Đơn giá
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
@@ -347,11 +361,15 @@ export default function ServicesList() {
                 <StyledTableCell component="th" scope="row">
                   {row.name}
                 </StyledTableCell>
-                <StyledTableCell align="right">{categorys[row.categoryId]?.name}</StyledTableCell>
-                <StyledTableCell align="right">{row.price}</StyledTableCell>
-                <StyledTableCell align="right">{row.duration}</StyledTableCell>
-                <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>
-                <StyledTableCell align="right">{formatDate(row.updatedDate)}</StyledTableCell>
+                <StyledTableCell align="right">{row.description}</StyledTableCell>
+                <StyledTableCell align="right">{row.comboService}</StyledTableCell>
+                <StyledTableCell align="right">{row.duration}/phút</StyledTableCell>
+                <StyledTableCell align="right">
+                  <span style={{ textDecoration: 'line-through' }}>
+                    {currencyFormat(row.totalPrice + row.discount)}
+                  </span>
+                  /{currencyFormat(row.totalPrice)}
+                </StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
