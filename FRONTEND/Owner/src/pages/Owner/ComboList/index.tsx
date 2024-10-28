@@ -31,11 +31,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCategorys, setLoading } from 'redux/Reducer';
-import { servicesService } from 'services/services.service';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
-export default function ServicesList() {
+import { comboServices } from 'services/combo.service';
+export default function ComboList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const categorys = useSelector(selectCategorys);
@@ -83,15 +83,15 @@ export default function ServicesList() {
   } = formUser;
 
   useEffect(() => {
-    getServicesList({
+    getCombosList({
       size: paging.size,
       page: paging.page,
       name: formSearch.getValues('name'),
     });
   }, [paging.size, paging.page]);
-  const getServicesList = useCallback(({ size, page, name = '' }) => {
+  const getCombosList = useCallback(({ size, page, name = '' }) => {
     dispatch(setLoading(true));
-    servicesService
+    comboServices
       .list({ pageSize: size, pageIndex: page + 1, name })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
@@ -106,7 +106,7 @@ export default function ServicesList() {
   const handleSearch = useCallback(
     handleSubmitSearch((data: any) => {
       if (data) {
-        getServicesList({
+        getCombosList({
           ...paging,
           name: data.name,
         });
@@ -135,7 +135,7 @@ export default function ServicesList() {
     (row) => {
       dispatch(setLoading(true));
       setAnchorEl(null);
-      servicesService
+      comboServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
@@ -165,12 +165,12 @@ export default function ServicesList() {
     handleSubmit((data: any) => {
       if (selectedRow) {
         dispatch(setLoading(true));
-        servicesService
+        comboServices
           .update(data.id, data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getServicesList({ size, page, name: formSearch.getValues('name') });
+            getCombosList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
@@ -180,12 +180,12 @@ export default function ServicesList() {
           });
       } else {
         dispatch(setLoading(true));
-        servicesService
+        comboServices
           .create(data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getServicesList({ size, page, name: formSearch.getValues('name') });
+            getCombosList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
