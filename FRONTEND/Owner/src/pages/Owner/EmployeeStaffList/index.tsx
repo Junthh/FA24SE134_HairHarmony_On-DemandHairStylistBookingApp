@@ -332,7 +332,16 @@ export default function EmployeeStaffList() {
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Ngày tạo
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
+              <StyledTableCell
+                style={{
+                  color: 'white',
+                  position: 'sticky',
+                  right: 0,
+                  backgroundColor: '#2d3748',
+                  zIndex: 1,
+                }}
+                align="right"
+              ></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -352,7 +361,16 @@ export default function EmployeeStaffList() {
                 <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="right">{row.status}</StyledTableCell>
                 <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell
+                  align="right"
+                  style={{
+                    color: 'white',
+                    position: 'sticky',
+                    right: 0,
+                    backgroundColor: 'white',
+                    zIndex: 1,
+                  }}
+                >
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                       handleClick(event, row)
