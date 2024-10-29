@@ -37,3 +37,7 @@ export enum STATUS {
   ACTIVE = 'Active',
   INACTIVE = 'Inactive',
 }
+export enum LEVEL {
+  REGULAR = 'Regular',
+  EXPERT = 'Expert',
+}
