@@ -100,7 +100,7 @@ function Owner() {
   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([
-        fetchAndSetData(rolesServices, setRoles, dispatch),
+        // fetchAndSetData(rolesServices, setRoles, dispatch),
         fetchAndSetData(categorysServices, setCategorys, dispatch),
         fetchAndSetData(servicesService, setServices, dispatch),
       ]);

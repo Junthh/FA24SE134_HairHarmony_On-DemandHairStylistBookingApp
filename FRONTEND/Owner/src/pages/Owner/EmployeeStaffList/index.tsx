@@ -1,3 +1,4 @@
+import styled from '@emotion/styled';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,6 +11,8 @@ import {
   Stack,
   Table,
   TableBody,
+  TableCell,
+  tableCellClasses,
   TableContainer,
   TableHead,
   TablePagination,
@@ -22,30 +25,30 @@ import { FormContainer } from 'components/Form/FormContainer';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { ICONS } from 'configurations/icons';
+import { STATUS_USER } from 'constants/status';
 import useModal from 'hooks/useModal';
 import { ListEmployeeSuccess } from 'models/EmployeeResponse.model';
 import PopoverContent from 'pages/common/PopoverContent';
 import { ButtonPrimary } from 'pages/common/style/Button';
-import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectServices, setLoading } from 'redux/Reducer';
+import { selectRoles, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
-import { comboServices } from 'services/combo.service';
-import { currencyFormat, objectToFormData } from 'utils/helper';
-import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
+import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
+import { employeeStaffServices } from 'services/employee-staff.services';
 import AvatarUpload from 'components/Form/AvatarUpload';
-import SelectMultiElement from 'components/Form/SelectMultiElement';
-export default function ComboList() {
+import { objectToFormData } from 'utils/helper';
+
+export default function EmployeeStaffList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
-  const services = useSelector(selectServices);
-  const [image, setImage] = useState('');
+  const roles = useSelector(selectRoles);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [image, setImage] = useState('');
   const [rows, setRows] = useState([]);
   const [paging, setPaging] = useState({
     size: 10,
@@ -58,7 +61,7 @@ export default function ComboList() {
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
     defaultValues: {
-      name: '',
+      username: '',
     },
     mode: 'onChange',
     resolver: yupResolver(schema),
@@ -67,16 +70,13 @@ export default function ComboList() {
 
   const schemaUser = Yup.object().shape<any>({});
   const defaultValues = {
-    id: '',
-    name: '',
-    discount: 0,
-    totalPrice: 0,
-    duration: 0,
-    image: '',
-    description: '',
-    comboService: null,
+    username: '',
+    email: '',
+    phoneNumber: '',
+    fullName: '',
+    roleId: '',
   };
-  const formCombo = useForm<any>({
+  const formUser = useForm<any>({
     defaultValues,
     mode: 'onChange',
     resolver: yupResolver(schemaUser),
@@ -88,25 +88,27 @@ export default function ComboList() {
     getValues,
     formState: { errors },
     handleSubmit,
-  } = formCombo;
+  } = formUser;
 
   useEffect(() => {
-    getCombosList({
+    getEmployeeList({
       size: paging.size,
       page: paging.page,
-      name: formSearch.getValues('name'),
+      username: formSearch.getValues('username'),
     });
   }, [paging.size, paging.page]);
-  const getCombosList = useCallback(({ size, page, name = '' }) => {
+  const getEmployeeList = useCallback(({ size, page, username = '' }) => {
     dispatch(setLoading(true));
-    comboServices
-      .list({ pageSize: size, pageIndex: page + 1, name })
+    employeeStaffServices
+      .list({ pageSize: size, pageIndex: page + 1, username })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
           ...prev,
           total: resultList.paging.total,
         }));
         setRows(resultList.data);
+      })
+      .finally(() => {
         dispatch(setLoading(false));
       });
   }, []);
@@ -114,9 +116,9 @@ export default function ComboList() {
   const handleSearch = useCallback(
     handleSubmitSearch((data: any) => {
       if (data) {
-        getCombosList({
+        getEmployeeList({
           ...paging,
-          name: data.name,
+          username: data.username,
         });
       }
     }),
@@ -135,13 +137,7 @@ export default function ComboList() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
-      console.log(row);
-      const comboServices = row.comboServices.map((comboService) => comboService.service.id);
-      row = {
-        ...row,
-        comboService: comboServices,
-      };
-      formCombo.reset(row);
+      formUser.reset(row);
       setImage(row.image);
       openModal();
     },
@@ -151,14 +147,15 @@ export default function ComboList() {
     (row) => {
       dispatch(setLoading(true));
       setAnchorEl(null);
-      comboServices
+      employeeStaffServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
-          dispatch(setLoading(false));
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', err.msg || err.message);
+        })
+        .finally(() => {
           dispatch(setLoading(false));
         });
     },
@@ -180,42 +177,39 @@ export default function ComboList() {
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       const id = data.id;
-      const comboMap = data.comboServices.map((comboService) => comboService.service.id);
-      data = {
-        ...data,
-        services: JSON.stringify(comboMap),
-      };
-      delete data.comboServices;
-      delete data.comboService;
       data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
-        comboServices
+        employeeStaffServices
           .update(id, data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getCombosList({ size, page, name: formSearch.getValues('name') });
+            getEmployeeList({ size, page, username: formSearch.getValues('username') });
             handleClose();
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', err.msg || err.message);
+          })
+          .finally(() => {
             dispatch(setLoading(false));
           });
       } else {
         dispatch(setLoading(true));
-        comboServices
+        employeeStaffServices
           .create(data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getCombosList({ size, page, name: formSearch.getValues('name') });
+            getEmployeeList({ size, page, username: formSearch.getValues('username') });
             handleClose();
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', err.msg || err.message);
+          })
+          .finally(() => {
             dispatch(setLoading(false));
           });
       }
@@ -232,7 +226,7 @@ export default function ComboList() {
         width="100%"
         title={selectedRow ? 'Edit' : 'Create'}
         content={
-          <FormContainer formContext={formCombo}>
+          <FormContainer formContext={formUser}>
             <Box
               display={'flex'}
               justifyContent={'center'}
@@ -243,55 +237,35 @@ export default function ComboList() {
             >
               <AvatarUpload src={image} name="image" control={control} />
               <TextFieldElement
-                name="name"
+                name="username"
                 control={control}
-                placeholder="Nhập tên dịch vụ"
-                label={'Tên dịch vụ'}
+                placeholder="Nhập username"
+                label={'Username'}
+                disabled={!!selectedRow?.username}
                 //   onKeyUp={handleKeyup}
               />
-              <SelectMultiElement
-                name="comboService"
-                label="Loại dịch vụ"
+              <TextFieldElement
+                name="fullName"
                 control={control}
-                options={
-                  services &&
-                  Object.keys(services).map((id) => ({
-                    value: id,
-                    label: services[id].name,
-                  }))
-                }
-                placeholder="Select items"
+                placeholder="Nhập Họ và tên"
+                label={'Họ và tên'}
+                //   onKeyUp={handleKeyup}
               />
               <TextFieldElement
-                name="totalPrice"
+                name="phoneNumber"
                 control={control}
                 type="number"
-                placeholder="Nhập giá"
-                label={'Giá'}
+                placeholder="Nhập số điện thoại"
+                label={'Số điện thoại'}
                 //   onKeyUp={handleKeyup}
               />
-              <TextFieldElement
-                name="duration"
+              <SelectElement
                 control={control}
-                placeholder="Nhập khoản thời gian"
-                label={'Khoảng thời gian'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="discount"
-                control={control}
-                placeholder="Nhập giảm giá"
-                label={'Giảm giá'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextAreaElement
-                name="description"
-                control={control}
-                placeholder="Nhập mô tả"
-                label={'Mô tả'}
-
-                //   onKeyUp={handleKeyup}
-              />
+                name="status"
+                options={STATUS_USER}
+                placeholder="Chọn trạng thái"
+                label={'Trạng thái'}
+              ></SelectElement>
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
                   Lưu
@@ -309,7 +283,7 @@ export default function ComboList() {
         <BoxHeaderSearch>
           <Box className="search-left">
             <TextFieldElement
-              name="name"
+              name="username"
               control={controlSearch}
               placeholder="Search"
               InputProps={{
@@ -328,8 +302,8 @@ export default function ComboList() {
               padding={'9px 14px'}
               onClick={() => {
                 setSelectedRow(null);
+                formUser.reset(defaultValues);
                 setImage('');
-                formCombo.reset(defaultValues);
                 openModal();
               }}
             >
@@ -346,26 +320,26 @@ export default function ComboList() {
             <TableRow>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
-                Tên combo
+                Username
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="left">
+                Họ và tên
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Mô tả
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Combo service
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Trong khoản thời gian
+                Số điện thoại
               </StyledTableCell>{' '}
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Đơn giá
+                Trạng thái
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Ngày tạo
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
-              <StyledTableRow key={index}>
+            {rows.map((row) => (
+              <StyledTableRow key={row.username}>
                 <StyledTableCell component="th" scope="row">
                   <img
                     style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
@@ -374,19 +348,12 @@ export default function ComboList() {
                   />
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row">
-                  {row.name}
+                  {row.username}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.description}</StyledTableCell>
-                <StyledTableCell align="right">
-                  {row.comboServices?.map((item) => item?.service?.name || '').join(', ')}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.duration}/phút</StyledTableCell>
-                <StyledTableCell align="right">
-                  <span style={{ textDecoration: 'line-through' }}>
-                    {currencyFormat(row.totalPrice + row.discount)}
-                  </span>
-                  /{currencyFormat(row.totalPrice)}
-                </StyledTableCell>
+                <StyledTableCell align="right">{row.fullName}</StyledTableCell>
+                <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
+                <StyledTableCell align="right">{row.status}</StyledTableCell>
+                <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -437,7 +404,7 @@ export default function ComboList() {
           >
             <EditIcon />
             <Typography variant="body2" fontWeight={500}>
-              Edit service
+              Edit user
             </Typography>
           </Box>
           <Box
@@ -448,7 +415,7 @@ export default function ComboList() {
           >
             <DeleteIcon />
             <Typography variant="body2" fontWeight={500}>
-              Delete service
+              Delete user
             </Typography>
           </Box>
         </PopoverContent>

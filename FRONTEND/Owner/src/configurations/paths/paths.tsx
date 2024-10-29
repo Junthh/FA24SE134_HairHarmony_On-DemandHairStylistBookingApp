@@ -14,7 +14,8 @@ import PixIcon from '@mui/icons-material/Pix';
 //
 export enum OWNER_PATH {
   EMPLOYEE_WORK_SCHEDULE = '/employee-work-schedule',
-  EMPLOYEE_LIST = '/employee-list',
+  EMPLOYEE_STAFF_LIST = '/employee-staff-list',
+  EMPLOYEE_STYLIST_LIST = '/employee-stylist',
   EMPLOYEE_SALARY = '/employee-salary',
   DASHBOARD = '/dashboard',
   SERVICES = '/services',
@@ -35,7 +36,12 @@ export const OWNER_PATH_SIDEBAR = [
   },
   {
     title: 'Danh sách nhân viên',
-    path: OWNER_PATH.EMPLOYEE_LIST,
+    path: OWNER_PATH.EMPLOYEE_STAFF_LIST,
+    icon: <PeopleAltIcon />,
+  },
+  {
+    title: 'Danh sách stylist',
+    path: OWNER_PATH.EMPLOYEE_STYLIST_LIST,
     icon: <PeopleAltIcon />,
   },
   {

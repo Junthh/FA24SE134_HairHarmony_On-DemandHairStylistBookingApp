@@ -8,6 +8,7 @@ import {
   IconButton,
   Paper,
   Popover,
+  Rating,
   Stack,
   Table,
   TableBody,
@@ -25,7 +26,7 @@ import { FormContainer } from 'components/Form/FormContainer';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { ICONS } from 'configurations/icons';
-import { STATUS_USER } from 'constants/status';
+import { LEVEL_USER, STATUS_USER } from 'constants/status';
 import useModal from 'hooks/useModal';
 import { ListEmployeeSuccess } from 'models/EmployeeResponse.model';
 import PopoverContent from 'pages/common/PopoverContent';
@@ -34,18 +35,23 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectRoles, setLoading } from 'redux/Reducer';
-import { employeeServices } from 'services/employee.services';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
+import { employeeStylistServices } from 'services/employee-stylist.services';
+import { objectToFormData } from 'utils/helper';
+import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
+import AvatarUpload from 'components/Form/AvatarUpload';
+import CurrencyFieldElement from 'components/Form/CurrencyFieldElement/CurrencyFieldElement';
 
-export default function EmployeeList() {
+export default function EmployeeStylistList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const roles = useSelector(selectRoles);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [image, setImage] = useState('');
   const [rows, setRows] = useState([]);
   const [paging, setPaging] = useState({
     size: 10,
@@ -96,7 +102,7 @@ export default function EmployeeList() {
   }, [paging.size, paging.page]);
   const getEmployeeList = useCallback(({ size, page, username = '' }) => {
     dispatch(setLoading(true));
-    employeeServices
+    employeeStylistServices
       .list({ pageSize: size, pageIndex: page + 1, username })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
@@ -129,6 +135,7 @@ export default function EmployeeList() {
   const handleClose = () => {
     setAnchorEl(null);
     setSelectedRow(null);
+    setImage('');
   };
   const handleEdit = useCallback(
     (row) => {
@@ -142,7 +149,7 @@ export default function EmployeeList() {
     (row) => {
       dispatch(setLoading(true));
       setAnchorEl(null);
-      employeeServices
+      employeeStylistServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
@@ -171,10 +178,12 @@ export default function EmployeeList() {
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
+      const id = data.id;
+      data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
-        employeeServices
-          .update(data.id, data)
+        employeeStylistServices
+          .update(id, data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
@@ -190,7 +199,7 @@ export default function EmployeeList() {
           });
       } else {
         dispatch(setLoading(true));
-        employeeServices
+        employeeStylistServices
           .create(data)
           .then((res) => {
             showToast('success', res.msg);
@@ -200,7 +209,7 @@ export default function EmployeeList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', err.msg);
           })
           .finally(() => {
             dispatch(setLoading(false));
@@ -228,6 +237,7 @@ export default function EmployeeList() {
               padding={'0 20px 20px 20px'}
               width={'550px'}
             >
+              <AvatarUpload src={image} name="image" control={control} />
               <TextFieldElement
                 name="username"
                 control={control}
@@ -243,12 +253,12 @@ export default function EmployeeList() {
                 label={'Họ và tên'}
                 //   onKeyUp={handleKeyup}
               />
-              <TextFieldElement
-                name="email"
+              <TextAreaElement
+                name="description"
                 control={control}
-                type="email"
-                placeholder="Nhập Email"
-                label={'Email'}
+                type="text"
+                placeholder="Nhập description"
+                label={'Description'}
                 //   onKeyUp={handleKeyup}
               />
               <TextFieldElement
@@ -261,17 +271,33 @@ export default function EmployeeList() {
               />
               <SelectElement
                 control={control}
-                name="roleId"
-                options={
-                  roles &&
-                  Object.keys(roles).map((id) => ({
-                    value: id,
-                    label: roles[id].name,
-                  }))
-                }
-                placeholder="Chọn role"
-                label={'Roles'}
+                name="level"
+                options={LEVEL_USER}
+                placeholder="Chọn level"
+                label={'Level'}
               ></SelectElement>
+              <TextFieldElement
+                control={control}
+                name="experience"
+                type="number"
+                placeholder="Nhập experience"
+                label={'Experience'}
+              ></TextFieldElement>
+              <TextFieldElement
+                name="kpi"
+                control={control}
+                type="number"
+                placeholder="Nhập KPI"
+                label={'Số KPI'}
+                //   onKeyUp={handleKeyup}
+              />
+              <CurrencyFieldElement
+                name="salary"
+                control={control}
+                placeholder="Nhập lương"
+                label={'Số lương'}
+                //   onKeyUp={handleKeyup}
+              />
               <SelectElement
                 control={control}
                 name="status"
@@ -315,6 +341,7 @@ export default function EmployeeList() {
               padding={'9px 14px'}
               onClick={() => {
                 setSelectedRow(null);
+                setImage('');
                 formUser.reset(defaultValues);
                 openModal();
               }}
@@ -330,6 +357,7 @@ export default function EmployeeList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
+              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Username
               </StyledTableCell>
@@ -337,13 +365,25 @@ export default function EmployeeList() {
                 Họ và tên
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Email
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
                 Số điện thoại
               </StyledTableCell>{' '}
+              <StyledTableCell style={{ color: 'white' }} align="left">
+                Mô tả
+              </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Role
+                Level
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Experience
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                KPI
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Lương
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Rating
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Trạng thái
@@ -358,12 +398,26 @@ export default function EmployeeList() {
             {rows.map((row) => (
               <StyledTableRow key={row.username}>
                 <StyledTableCell component="th" scope="row">
+                  <img
+                    style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                    src={row.image}
+                    alt=""
+                  />
+                </StyledTableCell>
+                <StyledTableCell component="th" scope="row">
                   {row.username}
                 </StyledTableCell>
                 <StyledTableCell align="right">{row.fullName}</StyledTableCell>
-                <StyledTableCell align="right">{row.email}</StyledTableCell>
                 <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
-                <StyledTableCell align="right">{roles[row?.roleId]?.name}</StyledTableCell>
+                <StyledTableCell align="right">{row.description}</StyledTableCell>
+                <StyledTableCell align="right">{row.level}</StyledTableCell>
+                <StyledTableCell align="right">{row.experience}</StyledTableCell>
+                <StyledTableCell align="right">{row.kpi}</StyledTableCell>
+                <StyledTableCell align="right">{row.salary}</StyledTableCell>
+                <StyledTableCell align="right">
+                  <Rating readOnly precision={0.5} name="read-only" value={row.rating} />
+                </StyledTableCell>
+
                 <StyledTableCell align="right">{row.status}</StyledTableCell>
                 <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>
                 <StyledTableCell align="right">
