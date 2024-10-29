@@ -177,7 +177,7 @@ namespace hair_hamony.Business.Services.OwnerServices
 
         private async Task<bool> UsernameIsExisted(string username)
         {
-            var isExisted = await _context.Owners.Select(owner => owner.Username == username).CountAsync() > 0;
+            var isExisted = await _context.Owners.Where(owner => owner.Username == username).AnyAsync();
 
             return isExisted;
         }
