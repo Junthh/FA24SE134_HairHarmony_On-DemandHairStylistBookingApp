@@ -74,10 +74,8 @@ export default function EmployeeStylistList() {
   const schemaUser = Yup.object().shape<any>({});
   const defaultValues = {
     username: '',
-    email: '',
     phoneNumber: '',
     fullName: '',
-    roleId: '',
   };
   const formUser = useForm<any>({
     defaultValues,
@@ -141,6 +139,7 @@ export default function EmployeeStylistList() {
     (row) => {
       setAnchorEl(null);
       formUser.reset(row);
+      setImage(row.avatar);
       openModal();
     },
     [selectedRow],
@@ -237,7 +236,7 @@ export default function EmployeeStylistList() {
               padding={'0 20px 20px 20px'}
               width={'550px'}
             >
-              <AvatarUpload src={image} name="image" control={control} />
+              <AvatarUpload src={image} name="avatar" control={control} />
               <TextFieldElement
                 name="username"
                 control={control}
@@ -400,7 +399,7 @@ export default function EmployeeStylistList() {
                 <StyledTableCell component="th" scope="row">
                   <img
                     style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
-                    src={row.image}
+                    src={row.avatar}
                     alt=""
                   />
                 </StyledTableCell>
