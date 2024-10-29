@@ -360,13 +360,13 @@ export default function EmployeeStylistList() {
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Username
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="left">
                 Họ và tên
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
                 Số điện thoại
               </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="left">
+              <StyledTableCell style={{ color: 'white', minWidth: 200 }} align="left">
                 Mô tả
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
@@ -384,13 +384,22 @@ export default function EmployeeStylistList() {
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Rating
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
                 Trạng thái
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
                 Ngày tạo
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
+              <StyledTableCell
+                style={{
+                  color: 'white',
+                  position: 'sticky',
+                  right: 0,
+                  backgroundColor: '#2d3748',
+                  zIndex: 1,
+                }}
+                align="right"
+              ></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -406,9 +415,13 @@ export default function EmployeeStylistList() {
                 <StyledTableCell component="th" scope="row">
                   {row.username}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.fullName}</StyledTableCell>
+                <StyledTableCell align="right" style={{ color: 'white', minWidth: 120 }}>
+                  {row.fullName}
+                </StyledTableCell>
                 <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
-                <StyledTableCell align="right">{row.description}</StyledTableCell>
+                <StyledTableCell align="right" style={{ color: 'white', minWidth: 200 }}>
+                  {row.description}
+                </StyledTableCell>
                 <StyledTableCell align="right">{row.level}</StyledTableCell>
                 <StyledTableCell align="right">{row.experience}</StyledTableCell>
                 <StyledTableCell align="right">{row.kpi}</StyledTableCell>
@@ -418,8 +431,18 @@ export default function EmployeeStylistList() {
                 </StyledTableCell>
 
                 <StyledTableCell align="right">{row.status}</StyledTableCell>
-                <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="right" style={{ color: 'white', minWidth: 200 }}>
+                  {formatDate(row.createdDate)}
+                </StyledTableCell>
+                <StyledTableCell
+                  align="right"
+                  style={{
+                    position: 'sticky',
+                    right: 0,
+                    background: '#fff',
+                    zIndex: 1,
+                  }}
+                >
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                       handleClick(event, row)
