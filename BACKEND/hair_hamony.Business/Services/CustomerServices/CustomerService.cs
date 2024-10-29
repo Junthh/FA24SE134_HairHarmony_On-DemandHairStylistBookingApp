@@ -101,18 +101,19 @@ namespace hair_hamony.Business.Services.CustomerServices
                 };
             }
 
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
-            {
-                throw new CException
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = "Tên đăng nhập đã tồn tại"
-                };
-            }
-
             var customer = _mapper.Map<Customer>(await GetById(id));
-
+            if (customer.Username != requestBody.Username)
+            {
+                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+                if (isExistedUsername)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Tên đăng nhập đã tồn tại"
+                    };
+                }
+            }
             _mapper.Map(requestBody, customer);
             if (requestBody.Avatar != null)
             {
