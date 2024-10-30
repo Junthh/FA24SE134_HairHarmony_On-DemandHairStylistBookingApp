@@ -1,5 +1,6 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { STYLIST_PATH } from 'configurations/paths/paths';
+import AuthProvider from 'pages/Auth/AuthProvider';
 import ScheduleList from 'pages/Stylist/ScheduleList';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
@@ -14,9 +15,9 @@ export const StylistRouter = {
   path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
-      {/* <AuthProvider> */}
-      <StylistPage />
-      {/* </AuthProvider> */}
+      <AuthProvider>
+        <StylistPage />
+      </AuthProvider>
     </React.Suspense>
   ),
   children: [

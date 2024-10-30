@@ -29,9 +29,9 @@ export const StaffRouter = {
   path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
-      {/* <AuthProvider> */}
-      <StaffPage />
-      {/* </AuthProvider> */}
+      <AuthProvider>
+        <StaffPage />
+      </AuthProvider>
     </React.Suspense>
   ),
   children: [

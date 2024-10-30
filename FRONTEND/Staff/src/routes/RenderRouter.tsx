@@ -3,11 +3,12 @@ import Root from 'layouts/Root';
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { StaffRouter } from './pages/StaffRouter';
 import { AuthRouter } from './pages/AuthRouter';
+import { STAFF_PATH } from 'configurations/paths/paths';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="home" replace />,
+    element: <Navigate to={STAFF_PATH.SCHEDULE_LIST} replace />,
   },
   {
     path: '/',
