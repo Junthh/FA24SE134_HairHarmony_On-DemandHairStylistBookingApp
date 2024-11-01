@@ -16,4 +16,10 @@ public partial class News
     public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    public string? Thumbnail { get; set; }
+
+    public Guid? StaffId { get; set; }
+
+    public virtual Staff? Staff { get; set; }
 }

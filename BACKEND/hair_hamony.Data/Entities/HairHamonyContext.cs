@@ -31,15 +31,17 @@ public partial class HairHamonyContext : DbContext
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
-    public virtual DbSet<Level> Levels { get; set; }
-
     public virtual DbSet<News> News { get; set; }
+
+    public virtual DbSet<Owner> Owners { get; set; }
 
     public virtual DbSet<Payment> Payments { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<PaymentDetail> PaymentDetails { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
+
+    public virtual DbSet<Staff> Staffs { get; set; }
 
     public virtual DbSet<Stylist> Stylists { get; set; }
 
@@ -54,8 +56,6 @@ public partial class HairHamonyContext : DbContext
     public virtual DbSet<Transaction> Transactions { get; set; }
 
     public virtual DbSet<TransactionDetail> TransactionDetails { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Workship> Workships { get; set; }
 
@@ -86,6 +86,7 @@ public partial class HairHamonyContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__BookingD__3214EC07DF887C51");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.Booking).WithMany(p => p.BookingDetails)
                 .HasForeignKey(d => d.BookingId)
@@ -134,6 +135,7 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
@@ -144,6 +146,7 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
@@ -170,11 +173,18 @@ public partial class HairHamonyContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC07B7B98A2A");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Avatar).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Customers)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Customers__UserI__6477ECF3");
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Status)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Username)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Feedback>(entity =>
@@ -187,16 +197,10 @@ public partial class HairHamonyContext : DbContext
             entity.HasOne(d => d.Booking).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.BookingId)
                 .HasConstraintName("FK__Feedbacks__Booki__1AD3FDA4");
-        });
 
-        modelBuilder.Entity<Level>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Levels__3214EC076B4330FF");
-
-            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Name).HasMaxLength(100);
-            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+            entity.HasOne(d => d.Stylist).WithMany(p => p.Feedbacks)
+                .HasForeignKey(d => d.StylistId)
+                .HasConstraintName("FK_Feedbacks_Stylists");
         });
 
         modelBuilder.Entity<News>(entity =>
@@ -206,7 +210,32 @@ public partial class HairHamonyContext : DbContext
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.Author).HasMaxLength(100);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Thumbnail).IsUnicode(false);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.News)
+                .HasForeignKey(d => d.StaffId)
+                .HasConstraintName("FK_News_Staff");
+        });
+
+        modelBuilder.Entity<Owner>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Admin__3214EC07A25C9D1D");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Avatar).IsUnicode(false);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.Password).IsUnicode(false);
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Status)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Username)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Payment>(entity =>
@@ -226,15 +255,16 @@ public partial class HairHamonyContext : DbContext
                 .HasConstraintName("FK__Payments__Bookin__1EA48E88");
         });
 
-        modelBuilder.Entity<Role>(entity =>
+        modelBuilder.Entity<PaymentDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC072341E070");
+            entity.HasKey(e => e.Id).HasName("PK_PaymentDetail");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+
+            entity.HasOne(d => d.Payment).WithMany(p => p.PaymentDetails)
+                .HasForeignKey(d => d.PaymentId)
+                .HasConstraintName("FK_PaymentDetail_Payments");
         });
 
         modelBuilder.Entity<Service>(entity =>
@@ -243,6 +273,7 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
@@ -251,20 +282,47 @@ public partial class HairHamonyContext : DbContext
                 .HasConstraintName("FK__Services__Catego__7E37BEF6");
         });
 
+        modelBuilder.Entity<Staff>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Staff__3214EC072938E32E");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Avatar).IsUnicode(false);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.Password).IsUnicode(false);
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Status)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Username)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Stylist>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Stylists__3214EC0787544767");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Avatar)
+                .HasMaxLength(10)
+                .IsFixedLength();
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-            entity.HasOne(d => d.Level).WithMany(p => p.Stylists)
-                .HasForeignKey(d => d.LevelId)
-                .HasConstraintName("FK__Stylists__LevelI__6C190EBB");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Stylists)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Stylists__UserId__6B24EA82");
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.Level).HasMaxLength(100);
+            entity.Property(e => e.Password).IsUnicode(false);
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Status)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Username)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<StylistSalary>(entity =>
@@ -320,6 +378,9 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(100)
+                .IsUnicode(false);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.Booking).WithMany(p => p.Transactions)
@@ -341,39 +402,13 @@ public partial class HairHamonyContext : DbContext
                 .HasForeignKey(d => d.BookingDetailId)
                 .HasConstraintName("FK__Transacti__Booki__2739D489");
 
-            entity.HasOne(d => d.Payment).WithMany(p => p.TransactionDetails)
-                .HasForeignKey(d => d.PaymentId)
-                .HasConstraintName("FK_TransactionDetails_Payments");
+            entity.HasOne(d => d.PaymentDetail).WithMany(p => p.TransactionDetails)
+                .HasForeignKey(d => d.PaymentDetailId)
+                .HasConstraintName("FK_TransactionDetails_PaymentDetail");
 
             entity.HasOne(d => d.Transaction).WithMany(p => p.TransactionDetails)
                 .HasForeignKey(d => d.TransactionId)
                 .HasConstraintName("FK__Transacti__Trans__2645B050");
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC075F05AA7A");
-
-            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Email)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.FullName).HasMaxLength(100);
-            entity.Property(e => e.Password).IsUnicode(false);
-            entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Status)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Username)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK__Users__RoleId__60A75C0F");
         });
 
         modelBuilder.Entity<Workship>(entity =>

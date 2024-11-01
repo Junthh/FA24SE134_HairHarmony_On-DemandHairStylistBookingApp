@@ -3,6 +3,7 @@ import React, { lazy } from 'react';
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { USER_PATH } from 'configurations/paths/paths';
 import { Navigate } from 'react-router-dom';
+import Services from 'pages/Users/Services';
 
 //LAZY LOADING COMPONENT
 const UsersPage = lazy(() => import('pages/Users'));
@@ -29,6 +30,10 @@ export const UsersRouter = {
     {
       path: USER_PATH.HOME,
       element: <UserHome />,
+    },
+    {
+      path: `${USER_PATH.SERVICES}/:id`,
+      element: <Services />,
     },
     {
       path: USER_PATH.STYLIST_DETAIL,

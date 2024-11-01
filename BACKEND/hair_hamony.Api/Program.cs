@@ -35,10 +35,10 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 });
 
 // config firebase
-//FirebaseApp.Create(new AppOptions()
-//{
-//    Credential = GoogleCredential.FromFile("Configurations/firebase-adminsdk.json")
-//});
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("Configurations/firebase-adminsdk.json")
+});
 
 var app = builder.Build();
 

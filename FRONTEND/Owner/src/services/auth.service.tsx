@@ -1,25 +1,25 @@
 import axios from 'axios';
-import { ECOCUPID_ENDPOINTS } from 'configurations/constants/globalConstants';
+import { ENDPOINTS } from 'configurations/constants/globalConstants';
 import { LoginPayLoad, RefreshAccessTokenPayload, RegisterPayload } from 'models/Request.model';
 
 class AuthService {
   refreshAccessToken = (payload: RefreshAccessTokenPayload) => {
     return axios({
-      url: `${ECOCUPID_ENDPOINTS.ApiPrefix}/auth/refresh`,
+      url: `${ENDPOINTS.ApiPrefix}/auth/refresh`,
       method: 'GET',
       data: payload,
     });
   };
   register = (payload: RegisterPayload) => {
     return axios({
-      url: `${ECOCUPID_ENDPOINTS.ApiPrefix}/auth/regist`,
+      url: `${ENDPOINTS.ApiPrefix}/owners/regist`,
       method: 'POST',
       data: payload,
     });
   };
   login = async (payload: LoginPayLoad) => {
     return await axios({
-      url: `${ECOCUPID_ENDPOINTS.ApiPrefix}/auth/login`,
+      url: `${ENDPOINTS.ApiPrefix}/owners/login`,
       method: 'POST',
       data: payload,
     });

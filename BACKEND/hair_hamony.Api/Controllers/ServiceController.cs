@@ -69,7 +69,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the service</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetServiceModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create(CreateServiceModel requestBody)
+        public async Task<IActionResult> Create([FromForm] CreateServiceModel requestBody)
         {
             return Ok(new BaseResponse<GetServiceModel>(
                     statusCode: 201, data: await _serviceService.Create(requestBody),
@@ -89,7 +89,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetServiceModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, UpdateServiceModel requestBody)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateServiceModel requestBody)
         {
             return Ok(new BaseResponse<GetServiceModel>(
                     data: await _serviceService.Update(id, requestBody),
