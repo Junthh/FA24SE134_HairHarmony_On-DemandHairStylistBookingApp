@@ -10,5 +10,6 @@
         public int? LoyaltyPoints { get; set; }
         public string? Status { get; set; }
         public Guid? CustomerId { get; set; }
+        public Guid? StaffId { get; set; }
     }
 }

@@ -25,6 +25,8 @@ public partial class Booking
 
     public Guid? CustomerId { get; set; }
 
+    public Guid? StaffId { get; set; }
+
     public virtual ICollection<BookingDetail> BookingDetails { get; set; } = new List<BookingDetail>();
 
     public virtual Customer? Customer { get; set; }
@@ -32,6 +34,8 @@ public partial class Booking
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    public virtual Staff? Staff { get; set; }
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }
