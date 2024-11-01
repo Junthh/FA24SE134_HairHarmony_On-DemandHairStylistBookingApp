@@ -9,6 +9,8 @@ import { Navigate } from 'react-router-dom';
 const StylistPage = lazy(() => import('pages/Stylist'));
 //
 const TimeKeeping = lazy(() => import('pages/Stylist/Timekeeping'));
+const RegisterWorkSchedule = lazy(() => import('pages/Stylist/RegisterWorkSchedule'));
+
 const Feedback = lazy(() => import('pages/Stylist/Feedback'));
 //
 export const StylistRouter = {
@@ -28,7 +30,7 @@ export const StylistRouter = {
     //
     {
       path: `${STYLIST_PATH.TIMEKEEPING}`,
-      element: <></>,
+      element: <RegisterWorkSchedule />,
     },
     {
       path: `${STYLIST_PATH.SCHEDULE_LIST}`,

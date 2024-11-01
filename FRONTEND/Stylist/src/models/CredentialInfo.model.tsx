@@ -1,9 +1,15 @@
 export interface CredentialInfo {
+  Username?: string;
+  Email?: string;
+  PhoneNumber?: string;
+  Id?: string;
+  Role?: string;
+  nbf?: number;
+  exp?: number;
+  iss?: string;
+  aud?: string;
   acessToken?: string;
   refreshToken?: string;
-  id?: string;
-  email?: string;
-  role?: any;
 }
 
 export const CredentialInfoDefault = {
