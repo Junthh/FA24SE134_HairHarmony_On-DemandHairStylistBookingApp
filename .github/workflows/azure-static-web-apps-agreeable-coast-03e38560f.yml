@@ -28,10 +28,13 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./FRONTEND" # App source code path
+          app_location: "./FRONTEND/Stylist" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "build" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+        env:
+          REACT_APP_API_BASE_URL: https://api-hairharmony.azurewebsites.net/api/
+          REACT_APP_PREFIX_API: v1
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
