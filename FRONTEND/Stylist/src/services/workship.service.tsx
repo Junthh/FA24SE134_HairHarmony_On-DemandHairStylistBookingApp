@@ -30,9 +30,30 @@ class WorkshipService {
   }
   async createWorkshipStylist(body) {
     try {
-      const resData: ListServiceSuccess = await axios.post(
+      const resData: any = await axios.post(
         `${ECOCUPID_ENDPOINTS.ApiPrefix}/StylistWorkships`,
         body,
+      );
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async updateWorkshipStylist(id, body) {
+    try {
+      const resData: any = await axios.put(
+        `${ECOCUPID_ENDPOINTS.ApiPrefix}/StylistWorkships/${id}`,
+        body,
+      );
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async deleteWorkshipStylist(id) {
+    try {
+      const resData: any = await axios.delete(
+        `${ECOCUPID_ENDPOINTS.ApiPrefix}/StylistWorkships/${id}`,
       );
       return resData;
     } catch (error) {
