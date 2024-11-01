@@ -21,7 +21,8 @@ import { selectCredentialInfo, selectWorkship, setLoading } from 'redux/Reducer'
 import { formatDate } from 'utils/datetime';
 import { workshipService } from 'services/workship.service';
 import { showToast } from 'components/Common/Toast';
-
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 const RegisterWorkScheduleStyled = styled(Box)({
   padding: '10px 20px',
   '& .card-total': {
@@ -270,6 +271,15 @@ export default function RegisterWorkSchedule() {
             <Typography variant="body1" fontWeight={'700'} fontFamily={'Lato !important'}>
               08:00 &nbsp;&nbsp; <span style={{ fontWeight: 400 }}>Discuss project with team</span>
             </Typography>
+            <Box height={20}></Box>
+            <Box display={'flex'} gap={2} justifyContent={'space-between'}>
+              <ButtonPrimary severity="primary" padding={'9px 14px'} onClick={() => {}}>
+                <DoneAllIcon /> Check in
+              </ButtonPrimary>
+              <ButtonPrimary severity="cancel" padding={'9px 14px'} onClick={() => {}}>
+                Check out <ExitToAppIcon />
+              </ButtonPrimary>
+            </Box>
           </Box>
         </Grid>
         <Grid item xs={8}>
