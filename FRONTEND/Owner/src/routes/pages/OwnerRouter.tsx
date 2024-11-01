@@ -26,9 +26,9 @@ export const OwnerRouter = {
   path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
-      {/* <AuthProvider> */}
-      <OwnerPage />
-      {/* </AuthProvider> */}
+      <AuthProvider>
+        <OwnerPage />
+      </AuthProvider>
     </React.Suspense>
   ),
   children: [
