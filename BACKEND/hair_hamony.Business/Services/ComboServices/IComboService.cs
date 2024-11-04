@@ -6,8 +6,8 @@ namespace hair_hamony.Business.Services.ComboServices
 {
     public interface IComboService
     {
-        Task<(IList<GetComboModel>, int)> GetAll(PagingParam<ComboEnum.ComboSort> paginationModel, SearchComboModel searchComboModel);
-        Task<GetComboModel> GetById(Guid id);
+        Task<(IList<GetDetailComboModel>, int)> GetAll(PagingParam<ComboEnum.ComboSort> paginationModel, SearchComboModel searchComboModel);
+        Task<GetDetailComboModel> GetById(Guid id);
         Task<GetComboModel> Create(CreateComboModel requestBody);
         Task<GetComboModel> Update(Guid id, UpdateComboModel requestBody);
         Task Delete(Guid id);

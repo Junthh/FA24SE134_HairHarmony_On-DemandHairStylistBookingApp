@@ -6,5 +6,6 @@
         public string? Description { get; set; }
         public DateTime? CreatedDate { get; set; }
         public Guid? BookingId { get; set; }
+        public Guid? StylistId { get; set; }
     }
 }

@@ -25,6 +25,7 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
         {
             var stylistSalary = _mapper.Map<StylistSalary>(requestBody);
             stylistSalary.CreatedDate = DateTime.Now;
+
             await _context.StylistSalarys.AddAsync(stylistSalary);
             await _context.SaveChangesAsync();
 
@@ -73,6 +74,8 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
                 };
             }
             var stylistSalary = _mapper.Map<StylistSalary>(await GetById(id));
+            _mapper.Map(requestBody, stylistSalary);
+
             _context.StylistSalarys.Update(stylistSalary);
             await _context.SaveChangesAsync();
 

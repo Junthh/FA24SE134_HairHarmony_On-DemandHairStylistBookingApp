@@ -9,11 +9,19 @@ public partial class Customer
 
     public int? LoyaltyPoints { get; set; }
 
+    public string? Username { get; set; }
+
+    public string? FullName { get; set; }
+
+    public string? Password { get; set; }
+
+    public string? PhoneNumber { get; set; }
+
+    public string? Status { get; set; }
+
+    public string? Avatar { get; set; }
+
     public DateTime? CreatedDate { get; set; }
 
-    public Guid? UserId { get; set; }
-
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-
-    public virtual User? User { get; set; }
 }

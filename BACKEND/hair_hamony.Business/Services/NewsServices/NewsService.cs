@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.News;
 using hair_hamony.Data.Entities;
@@ -14,10 +15,12 @@ namespace hair_hamony.Business.Services.NewsServices
     public class NewsService : INewsService
     {
         private readonly HairHamonyContext _context;
+        private readonly IFileService _fileService;
         private readonly IMapper _mapper;
-        public NewsService(IMapper mapper)
+        public NewsService(IFileService fileService, IMapper mapper)
         {
             _context = new HairHamonyContext();
+            _fileService = fileService;
             _mapper = mapper;
         }
 
@@ -26,6 +29,12 @@ namespace hair_hamony.Business.Services.NewsServices
             var news = _mapper.Map<News>(requestBody);
             news.CreatedDate = DateTime.Now;
             news.UpdatedDate = DateTime.Now;
+            if (requestBody.Thumbnail != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Thumbnail);
+                news.Thumbnail = file.Url;
+            }
+
             await _context.News.AddAsync(news);
             await _context.SaveChangesAsync();
 
@@ -74,7 +83,14 @@ namespace hair_hamony.Business.Services.NewsServices
                 };
             }
             var news = _mapper.Map<News>(await GetById(id));
+            _mapper.Map(requestBody, news);
             news.UpdatedDate = DateTime.Now;
+            if (requestBody.Thumbnail != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Thumbnail);
+                news.Thumbnail = file.Url;
+            }
+
             _context.News.Update(news);
             await _context.SaveChangesAsync();
 

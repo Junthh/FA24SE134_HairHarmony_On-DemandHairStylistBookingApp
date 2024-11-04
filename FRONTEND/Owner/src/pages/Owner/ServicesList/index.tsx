@@ -35,11 +35,14 @@ import { servicesService } from 'services/services.service';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
+import AvatarUpload from 'components/Form/AvatarUpload';
+import { objectToFormData } from 'utils/helper';
 export default function ServicesList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const categorys = useSelector(selectCategorys);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [image, setImage] = useState('');
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
   const [paging, setPaging] = useState({
@@ -64,6 +67,7 @@ export default function ServicesList() {
   const defaultValues = {
     id: '',
     name: '',
+    image: '',
     duration: 0,
     price: 0,
     categoryId: null,
@@ -122,11 +126,13 @@ export default function ServicesList() {
   const handleClose = () => {
     setAnchorEl(null);
     setSelectedRow(null);
+    setImage('');
   };
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
       formUser.reset(row);
+      setImage(row.image);
       openModal();
     },
     [selectedRow],
@@ -163,10 +169,12 @@ export default function ServicesList() {
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
+      const id = data.id;
+      data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
         servicesService
-          .update(data.id, data)
+          .update(id, data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
@@ -216,6 +224,7 @@ export default function ServicesList() {
               padding={'0 20px 20px 20px'}
               width={'550px'}
             >
+              <AvatarUpload src={image} name="image" control={control} />
               <TextFieldElement
                 name="name"
                 control={control}
@@ -230,7 +239,7 @@ export default function ServicesList() {
                   categorys &&
                   Object.keys(categorys).map((id) => ({
                     value: id,
-                    label: categorys[id].name,
+                    label: categorys[id]?.name,
                   }))
                 }
                 placeholder="Chọn loại dịch vụ"
@@ -288,6 +297,7 @@ export default function ServicesList() {
               padding={'9px 14px'}
               onClick={() => {
                 setSelectedRow(null);
+                setImage('');
                 formUser.reset(defaultValues);
                 openModal();
               }}
@@ -303,6 +313,7 @@ export default function ServicesList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
+              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Tên dịch vụ
               </StyledTableCell>
@@ -328,9 +339,16 @@ export default function ServicesList() {
             {rows.map((row, index) => (
               <StyledTableRow key={index}>
                 <StyledTableCell component="th" scope="row">
+                  <img
+                    style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                    src={row.image}
+                    alt=""
+                  />
+                </StyledTableCell>
+                <StyledTableCell component="th" scope="row">
                   {row.name}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.categoryId}</StyledTableCell>
+                <StyledTableCell align="right">{categorys[row.categoryId]?.name}</StyledTableCell>
                 <StyledTableCell align="right">{row.price}</StyledTableCell>
                 <StyledTableCell align="right">{row.duration}</StyledTableCell>
                 <StyledTableCell align="right">{formatDate(row.createdDate)}</StyledTableCell>

@@ -90,7 +90,7 @@ function Interceptor() {
           .then(({ data }) => {
             if (data && data.accessToken) {
               authContext.saveToken({
-                accessToken: data.accessToken,
+                token: data.token,
                 refreshToken: data.refreshToken,
               });
               axios.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;

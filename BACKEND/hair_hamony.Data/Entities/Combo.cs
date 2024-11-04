@@ -19,6 +19,10 @@ public partial class Combo
 
     public DateTime? UpdatedDate { get; set; }
 
+    public string? Image { get; set; }
+
+    public string? Description { get; set; }
+
     public virtual ICollection<BookingDetail> BookingDetails { get; set; } = new List<BookingDetail>();
 
     public virtual ICollection<ComboService> ComboServices { get; set; } = new List<ComboService>();

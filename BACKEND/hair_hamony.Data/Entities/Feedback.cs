@@ -15,5 +15,9 @@ public partial class Feedback
 
     public Guid? BookingId { get; set; }
 
+    public Guid? StylistId { get; set; }
+
     public virtual Booking? Booking { get; set; }
+
+    public virtual Stylist? Stylist { get; set; }
 }

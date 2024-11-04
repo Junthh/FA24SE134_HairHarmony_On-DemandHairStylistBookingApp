@@ -8,9 +8,10 @@ import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
-import { selectCredentialInfo, setCategorys, setRoles } from 'redux/Reducer';
+import { selectCredentialInfo, setCategorys, setRoles, setServices } from 'redux/Reducer';
 import { categorysServices } from 'services/categorys.service';
 import { rolesServices } from 'services/roles.service';
+import { servicesService } from 'services/services.service';
 import SideBar from 'shared/Sidebar';
 
 const HeaderStyled = styled(Box)({
@@ -99,8 +100,9 @@ function Owner() {
   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([
-        fetchAndSetData(rolesServices, setRoles, dispatch),
+        // fetchAndSetData(rolesServices, setRoles, dispatch),
         fetchAndSetData(categorysServices, setCategorys, dispatch),
+        fetchAndSetData(servicesService, setServices, dispatch),
       ]);
     };
 

@@ -10,13 +10,16 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import PixIcon from '@mui/icons-material/Pix';
 //
 export enum OWNER_PATH {
   EMPLOYEE_WORK_SCHEDULE = '/employee-work-schedule',
-  EMPLOYEE_LIST = '/employee-list',
+  EMPLOYEE_STAFF_LIST = '/employee-staff-list',
+  EMPLOYEE_STYLIST_LIST = '/employee-stylist',
   EMPLOYEE_SALARY = '/employee-salary',
   DASHBOARD = '/dashboard',
   SERVICES = '/services',
+  COMBO = '/combo',
   PROMOTION = '/promotion',
   ACCOUNT_MANAGEMENT = '/account-management',
   NEWS = '/news',
@@ -33,7 +36,12 @@ export const OWNER_PATH_SIDEBAR = [
   },
   {
     title: 'Danh sách nhân viên',
-    path: OWNER_PATH.EMPLOYEE_LIST,
+    path: OWNER_PATH.EMPLOYEE_STAFF_LIST,
+    icon: <PeopleAltIcon />,
+  },
+  {
+    title: 'Danh sách stylist',
+    path: OWNER_PATH.EMPLOYEE_STYLIST_LIST,
     icon: <PeopleAltIcon />,
   },
   {
@@ -50,6 +58,11 @@ export const OWNER_PATH_SIDEBAR = [
     title: 'Dịch vụ',
     path: OWNER_PATH.SERVICES,
     icon: <DesignServicesIcon />,
+  },
+  {
+    title: 'Combo',
+    path: OWNER_PATH.COMBO,
+    icon: <PixIcon />,
   },
   {
     title: 'Khuyến mãi',

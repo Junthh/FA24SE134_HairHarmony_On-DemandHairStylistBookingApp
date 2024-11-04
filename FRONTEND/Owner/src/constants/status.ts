@@ -1,5 +1,5 @@
 import { Label } from '@mui/icons-material';
-import { STATUS } from 'configurations/constants/globalConstants';
+import { LEVEL, STATUS } from 'configurations/constants/globalConstants';
 
 export const STATUS_USER = [
   {
@@ -19,6 +19,28 @@ export const MAP_STATUS_USER = {
   },
   [STATUS.INACTIVE]: {
     label: STATUS.INACTIVE,
+    color: '',
+  },
+};
+
+export const LEVEL_USER = [
+  {
+    value: LEVEL.REGULAR,
+    label: LEVEL.REGULAR,
+  },
+  {
+    value: LEVEL.EXPERT,
+    label: LEVEL.EXPERT,
+  },
+];
+
+export const MAP_LEVEL_USER = {
+  [LEVEL.REGULAR]: {
+    label: LEVEL.REGULAR,
+    color: '',
+  },
+  [LEVEL.EXPERT]: {
+    label: LEVEL.EXPERT,
     color: '',
   },
 };

@@ -74,7 +74,9 @@ namespace hair_hamony.Business.Services.TransactionServices
                 };
             }
             var transaction = _mapper.Map<Transaction>(await GetById(id));
+            _mapper.Map(requestBody, transaction);
             transaction.UpdatedDate = DateTime.Now;
+
             _context.Transactions.Update(transaction);
             await _context.SaveChangesAsync();
 

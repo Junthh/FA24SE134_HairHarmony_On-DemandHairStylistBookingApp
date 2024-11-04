@@ -25,6 +25,7 @@ namespace hair_hamony.Business.Services.FeedbackServices
         {
             var feedback = _mapper.Map<Feedback>(requestBody);
             feedback.CreatedDate = DateTime.Now;
+
             await _context.Feedbacks.AddAsync(feedback);
             await _context.SaveChangesAsync();
 
@@ -73,6 +74,8 @@ namespace hair_hamony.Business.Services.FeedbackServices
                 };
             }
             var feedback = _mapper.Map<Feedback>(await GetById(id));
+            _mapper.Map(requestBody, feedback);
+
             _context.Feedbacks.Update(feedback);
             await _context.SaveChangesAsync();
 

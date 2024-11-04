@@ -50,35 +50,9 @@ export const SwiperStyled = styled(Swiper)({
     height: 10,
   },
 });
-export default function TopSylistSlider() {
+export default function TopSylistSlider({ stylist }) {
   const [swiperRef, setSwiperRef] = useState(null);
-  const [datas] = useState([
-    {
-      image: TopStyledList1,
-      name: 'Jacob',
-      star: 5,
-    },
-    {
-      image: TopStyledList2,
-      name: 'Helena',
-      star: 4.5,
-    },
-    {
-      image: TopStyledList3,
-      name: 'Alex',
-      star: 3.5,
-    },
-    {
-      image: TopStyledList4,
-      name: 'Jacob',
-      star: 4.5,
-    },
-    {
-      image: TopStyledList1,
-      name: 'Jacob',
-      star: 5,
-    },
-  ]);
+
   const handleGetDetail = () => {};
 
   return (
@@ -102,11 +76,12 @@ export default function TopSylistSlider() {
               disabledClass: 'swiper-button-disabled',
             }}
           >
-            {datas.map((item, index) => (
-              <SwiperSlide key={index} className="swiper-slide_custom">
-                <CardContentImage type="" item={item} onViewDetail={handleGetDetail} />
-              </SwiperSlide>
-            ))}
+            {stylist &&
+              stylist.map((item, index) => (
+                <SwiperSlide key={index} className="swiper-slide_custom">
+                  <CardContentImage type="" item={item} onViewDetail={handleGetDetail} />
+                </SwiperSlide>
+              ))}
           </SwiperStyled>
         </>
       }

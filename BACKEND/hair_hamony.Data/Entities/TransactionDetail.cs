@@ -17,11 +17,11 @@ public partial class TransactionDetail
 
     public Guid? BookingDetailId { get; set; }
 
-    public Guid? PaymentId { get; set; }
+    public Guid? PaymentDetailId { get; set; }
 
     public virtual BookingDetail? BookingDetail { get; set; }
 
-    public virtual Payment? Payment { get; set; }
+    public virtual PaymentDetail? PaymentDetail { get; set; }
 
     public virtual Transaction? Transaction { get; set; }
 }
