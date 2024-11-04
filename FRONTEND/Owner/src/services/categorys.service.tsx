@@ -10,10 +10,34 @@ class CategorysServices {
       });
       return resData;
     } catch (error) {
-      return {
-        success: false,
-        errors: error.errors || errorDefault,
-      } as DataEmployeeError;
+       throw error;
+    }
+  }
+  async create(data: any) {
+    try {
+      const resData = await axios.post(`${ENDPOINTS.ApiPrefix}/Categorys`, data);
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(id: string, data: any) {
+    try {
+      const resData = await axios.put(`${ENDPOINTS.ApiPrefix}/Categorys/${id}`, data);
+      return resData;
+    } catch (error) {
+      // console.log(error, error);
+      throw error;
+    }
+  }
+
+  async delete(id: string) {
+    try {
+      const resData = await axios.delete(`${ENDPOINTS.ApiPrefix}/Categorys/${id}`);
+      return resData;
+    } catch (error) {
+      throw error;
     }
   }
 }
