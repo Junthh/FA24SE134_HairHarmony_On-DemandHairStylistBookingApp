@@ -101,17 +101,19 @@ namespace hair_hamony.Business.Services.StylistServices
                 };
             }
 
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
-            {
-                throw new CException
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = "Tên đăng nhập đã tồn tại"
-                };
-            }
-
             var stylist = _mapper.Map<Stylist>(await GetById(id));
+            if (stylist.Username != requestBody.Username)
+            {
+                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+                if (isExistedUsername)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Tên đăng nhập đã tồn tại"
+                    };
+                }
+            }
 
             _mapper.Map(requestBody, stylist);
             if (requestBody.Avatar != null)
@@ -176,7 +178,7 @@ namespace hair_hamony.Business.Services.StylistServices
 
         private async Task<bool> UsernameIsExisted(string username)
         {
-            var isExisted = await _context.Stylists.Select(stylist => stylist.Username == username).CountAsync() > 0;
+            var isExisted = await _context.Stylists.Where(stylist => stylist.Username == username).AnyAsync();
 
             return isExisted;
         }

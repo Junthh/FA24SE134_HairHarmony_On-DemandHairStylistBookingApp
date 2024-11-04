@@ -12,5 +12,6 @@
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public Guid? CustomerId { get; set; }
+        public Guid? StaffId { get; set; }
     }
 }

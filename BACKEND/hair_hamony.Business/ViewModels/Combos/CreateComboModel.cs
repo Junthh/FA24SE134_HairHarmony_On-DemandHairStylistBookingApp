@@ -10,5 +10,6 @@ namespace hair_hamony.Business.ViewModels.Combos
         public int? Duration { get; set; }
         public IFormFile? Image { get; set; }
         public string? Description { get; set; }
+        public ICollection<Guid>? Services { get; set; }
     }
 }
