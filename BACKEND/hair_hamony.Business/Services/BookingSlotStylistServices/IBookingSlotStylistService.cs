@@ -1,6 +1,7 @@
 ﻿using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.ViewModels.BookingSlotStylists;
+using hair_hamony.Business.ViewModels.Stylists;
 
 namespace hair_hamony.Business.Services.BookingSlotStylistServices
 {
@@ -11,5 +12,6 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
         Task<GetBookingSlotStylistModel> Create(CreateBookingSlotStylistModel requestBody);
         Task<GetBookingSlotStylistModel> Update(Guid id, UpdateBookingSlotStylistModel requestBody);
         Task Delete(Guid id);
+        IList<GetStylistModel> GetListStylistFreetime(DateOnly bookingDate, Guid timeSlotId);
     }
 }
