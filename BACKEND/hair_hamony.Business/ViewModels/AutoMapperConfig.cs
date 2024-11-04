@@ -10,8 +10,6 @@ public static class AutoMapperConfig
     {
         var mappingConfig = new MapperConfiguration(mc =>
         {
-            mc.ConfigRole();
-            mc.ConfigUser();
             mc.ConfigBooking();
             mc.ConfigBookingDetail();
             mc.ConfigBookingSlotStylist();
@@ -22,6 +20,18 @@ public static class AutoMapperConfig
             mc.ConfigComboService();
             mc.ConfigCustomer();
             mc.ConfigStylistSalary();
+            mc.ConfigStylistWorkship();
+            mc.ConfigSystemConfig();
+            mc.ConfigFeedback();
+            mc.ConfigTimeSlot();
+            mc.ConfigTransaction();
+            mc.ConfigTransactionDetail();
+            mc.ConfigWorkship();
+            mc.ConfigNew();
+            mc.ConfigPayment();
+            mc.ConfigPaymentDetail();
+            mc.ConfigOwner();
+            mc.ConfigStaff();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();

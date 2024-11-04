@@ -17,11 +17,15 @@ import { ICONS } from 'configurations/icons';
 import styled from '@emotion/styled';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 interface CardContentImageProps {
-  item?: { image: string; name?: string; star?: number; description?: string };
+  item?: any;
   onViewDetail?: (p: any) => void;
   type: string;
 }
 const CardContentImagesSyled = styled(Box)({
+  textAlign: 'center',
+  '& img': {
+    borderRadius: 12,
+  },
   '& .star': {
     display: 'flex',
     justifyContent: 'center',
@@ -39,6 +43,8 @@ const CardContentAboutImagesSyled = styled(Box)({
 });
 function CardContentImage(props: CardContentImageProps) {
   const { item, onViewDetail, type = '' } = props;
+  console.log(item);
+
   return type === 'NEWS' ? (
     <CardContentAboutImagesSyled>
       <img src={item.image} alt="" />
@@ -60,16 +66,16 @@ function CardContentImage(props: CardContentImageProps) {
   ) : (
     <CardContentImagesSyled>
       <Box className="content">
-        <img src={item.image} alt="" />
+        <img src={item?.user?.avatar} alt="" />
         <Typography fontWeight={600} variant="h3" textAlign={'center'}>
-          {item.name}
+          {item?.user?.fullName}
         </Typography>
         <Box className="star">
           <Typography fontFamily={'GFS Didot !important'} component="legend">
-            {item.star.toFixed(1)}
+            {item?.rating?.toFixed(1)}
           </Typography>
           &nbsp;&nbsp;
-          <Rating precision={0.5} name="read-only" value={item.star} readOnly />
+          <Rating precision={0.5} name="read-only" value={item.rating} readOnly />
         </Box>
       </Box>
     </CardContentImagesSyled>

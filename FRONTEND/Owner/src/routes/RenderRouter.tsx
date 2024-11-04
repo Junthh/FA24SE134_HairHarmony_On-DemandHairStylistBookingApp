@@ -8,7 +8,7 @@ import { OWNER_PATH } from 'configurations/paths/paths';
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to={OWNER_PATH.EMPLOYEE_WORK_SCHEDULE} replace />,
+    element: <Navigate to={OWNER_PATH.DASHBOARD} replace />,
   },
   {
     path: '/',

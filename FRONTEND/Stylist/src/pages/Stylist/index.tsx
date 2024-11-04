@@ -5,11 +5,12 @@ import { Outlet, useLocation } from 'react-router-dom';
 import SideBar from 'shared/Sidebar';
 import * as colors from 'constants/colors';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useSelector } from 'react-redux';
-import { selectCredentialInfo } from 'redux/Reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCredentialInfo, setWorkShip } from 'redux/Reducer';
 import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
 import { STAFF_PATH, STYLIST_PATH } from 'configurations/paths/paths';
+import { workshipService } from 'services/workship.service';
 
 const HeaderStyled = styled(Box)({
   height: 80,
@@ -59,6 +60,7 @@ function Staff() {
   const [toggle, setToggle] = useState(false);
   const buttonRef = useRef(null);
   const authContext = AuthConsumer();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
     authContext.logout();
@@ -88,12 +90,30 @@ function Staff() {
     }
   }, [location]);
 
-  useEffect(() => {
-    if (credentialInfo?.email) {
-      // setEmail(credentialInfo.email);
+  const fetchAndSetData = async (service, setter, dispatch) => {
+    try {
+      const res = await service.list();
+      const data = res.data.reduce((acc, item) => {
+        acc[item.id] = {
+          startTime: item.startTime,
+          endTime: item.endTime,
+          id: item.id,
+        };
+        return acc;
+      }, {});
+      dispatch(setter(data));
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
-  }, [credentialInfo]);
+  };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      await Promise.all([fetchAndSetData(workshipService, setWorkShip, dispatch)]);
+    };
+
+    fetchData();
+  }, [dispatch]);
   return (
     <SideBar>
       <HeaderStyled>
@@ -120,7 +140,7 @@ function Staff() {
               sx={{
                 position: 'absolute',
                 top: 60,
-                width: '100%',
+                width: '200px',
                 zIndex: 200,
                 right: 0,
                 boxShadow: colors.boxShadowCard,

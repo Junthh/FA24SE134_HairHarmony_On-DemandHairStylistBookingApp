@@ -1,15 +1,18 @@
 import styled from '@emotion/styled';
-import { Avatar, Box, Divider, Typography } from '@mui/material';
-import React, { memo, useEffect, useRef, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import SideBar from 'shared/Sidebar';
-import * as colors from 'constants/colors';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useSelector } from 'react-redux';
-import { selectCredentialInfo } from 'redux/Reducer';
-import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
+import { Avatar, Box, Divider, Typography } from '@mui/material';
+import { OWNER_PATH_SIDEBAR } from 'configurations/paths/paths';
+import * as colors from 'constants/colors';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
-import { STAFF_PATH } from 'configurations/paths/paths';
+import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
+import { memo, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Outlet, useLocation } from 'react-router-dom';
+import { selectCredentialInfo, setCategorys, setRoles, setServices } from 'redux/Reducer';
+import { categorysServices } from 'services/categorys.service';
+import { rolesServices } from 'services/roles.service';
+import { servicesService } from 'services/services.service';
+import SideBar from 'shared/Sidebar';
 
 const HeaderStyled = styled(Box)({
   height: 80,
@@ -27,6 +30,7 @@ const MainContainerStyled = styled(Box)({
   height: '100%',
   overflow: 'scroll',
   maxHeight: 'calc(100% - 80px)',
+  paddingLeft: '20px',
 });
 
 const InfoAccountStyled = styled(Box)({
@@ -54,7 +58,8 @@ const EmailWrapper = styled(Box)({
 function Owner() {
   const location = useLocation();
   const credentialInfo = useSelector(selectCredentialInfo);
-  const [tabName, setTabName] = useState('Danh sách đặt lịch');
+  const dispatch = useDispatch();
+  const [tabName, setTabName] = useState('');
   // const [email, setEmail] = useState('admin@gmail.com');
   const [toggle, setToggle] = useState(false);
   const buttonRef = useRef(null);
@@ -76,16 +81,42 @@ function Owner() {
     };
   }, [buttonRef]);
 
+  const fetchAndSetData = async (service, setter, dispatch) => {
+    try {
+      const res = await service.list();
+      const data = res.data.reduce((acc, item) => {
+        acc[item.id] = {
+          name: item.name,
+          createdDate: item.createdDate,
+        };
+        return acc;
+      }, {});
+      dispatch(setter(data));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await Promise.all([
+        // fetchAndSetData(rolesServices, setRoles, dispatch),
+        fetchAndSetData(categorysServices, setCategorys, dispatch),
+        fetchAndSetData(servicesService, setServices, dispatch),
+      ]);
+    };
+
+    fetchData();
+  }, [dispatch]);
+
   useEffect(() => {
     const arrUrl = location.pathname.split('/');
     const name = arrUrl[1] ? arrUrl[1] : '';
-    if (name === STAFF_PATH.SCHEDULE_LIST.split('/')[1]) {
-      setTabName('Danh sách đặt lịch');
-    } else if (name === STAFF_PATH.HISTORY.split('/')[1]) {
-      setTabName('Lịch sử đặt lịch');
-    } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
-      setTabName('Tình Trạng Stylist');
-    }
+    OWNER_PATH_SIDEBAR.forEach((item) => {
+      if (name === item.path.split('/')[1]) {
+        setTabName(item.title);
+      }
+    });
   }, [location]);
 
   useEffect(() => {
@@ -120,7 +151,7 @@ function Owner() {
               sx={{
                 position: 'absolute',
                 top: 60,
-                width: '100%',
+                width: '200px',
                 zIndex: 200,
                 right: 0,
                 boxShadow: colors.boxShadowCard,
@@ -136,7 +167,9 @@ function Owner() {
           {tabName}
         </Typography>
         <Divider variant="fullWidth"></Divider>
-        <Outlet />
+        <Box className="body-content">
+          <Outlet />
+        </Box>
       </MainContainerStyled>
     </SideBar>
   );

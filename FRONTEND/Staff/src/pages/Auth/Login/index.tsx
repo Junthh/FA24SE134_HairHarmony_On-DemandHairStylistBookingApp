@@ -1,30 +1,30 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Typography } from '@mui/material';
+import { showToast } from 'components/Common/Toast';
+import CheckboxElement from 'components/Form/CheckboxElement/CheckboxElement';
+import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import { LOGO } from 'configurations/logo';
+import { AUTH_PATH, STAFF_PATH } from 'configurations/paths/paths';
+import * as colors from 'constants/colors';
+import { Token } from 'models/CredentialInfo.model';
+import { LoginPayLoad } from 'models/Request.model';
+import { ResponseSuccessApi } from 'models/Response.model';
+import { ButtonPrimary } from 'pages/common/style/Button';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setLoading } from 'redux/Reducer';
+import { authService } from 'services/auth.service';
+import { handleError } from 'utils/helper';
+import { AuthConsumer } from '../AuthProvider';
+import { FormContainer, FormContent, FormItem, FormTitle } from '../styles';
 import {
   AuthKeys,
   authProps,
   loginFormDefaultValues,
   loginSchema,
 } from '../Validators/AuthValidators';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { FormContainer, FormContent, FormItem, FormTitle } from '../styles';
-import { Box, Typography } from '@mui/material';
-import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
-import { ButtonPrimary } from 'pages/common/style/Button';
-import * as colors from 'constants/colors';
-import { showToast } from 'components/Common/Toast';
-import { LoginPayLoad } from 'models/Request.model';
-import { authService } from 'services/auth.service';
-import { AuthConsumer } from '../AuthProvider';
-import { setLoading } from 'redux/Reducer';
-import { useNavigate } from 'react-router-dom';
-import { ADMIN_PATH, AUTH_PATH } from 'configurations/paths/paths';
-import { ResponseSuccessApi } from 'models/Response.model';
-import { Token } from 'models/CredentialInfo.model';
-import CheckboxElement from 'components/Form/CheckboxElement/CheckboxElement';
-import { LOGO } from 'configurations/logo';
-import { handleError } from 'utils/helper';
 
 function Login() {
   const dispatch = useDispatch();
@@ -49,17 +49,17 @@ function Login() {
     dispatch(setLoading(true));
     try {
       const payload: LoginPayLoad = {
-        email: data.email,
+        username: data.username,
         password: data.password,
       };
       const res = (await authService.login(payload)) as unknown as ResponseSuccessApi;
 
       if (res?.success) {
-        const { accessToken, refreshToken } = res.data as Token;
-        authContext.saveToken({ accessToken, refreshToken });
+        const { token, refreshToken } = res.data as Token;
+        authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
-      navigate(ADMIN_PATH.ADMIN);
+      navigate(STAFF_PATH.SCHEDULE_LIST);
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.message || error));
@@ -80,7 +80,9 @@ function Login() {
     <FormContainer>
       <FormContent>
         <FormTitle>
-          <LOGO.Vector.EcocupidLarge />
+          <h1 className="mea-culpa-regular" style={{ cursor: 'pointer' }}>
+            Hair Hamorny
+          </h1>
           <Typography
             sx={{
               fontSize: 38,
@@ -93,10 +95,10 @@ function Login() {
 
         <FormItem>
           <TextFieldElement
-            name={authProps.email.propertyName}
+            name={authProps.username.propertyName}
             control={control}
-            label={authProps.email.propertyLabel}
-            placeholder="Your email"
+            label={authProps.username.propertyLabel}
+            placeholder="Your username"
             onKeyDown={handleKeyDown}
             autoFocus
           />

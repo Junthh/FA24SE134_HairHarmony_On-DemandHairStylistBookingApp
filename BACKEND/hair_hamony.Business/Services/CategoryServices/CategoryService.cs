@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Categories;
 using hair_hamony.Data.Entities;
@@ -14,10 +15,12 @@ namespace hair_hamony.Business.Services.CategoryServices
     public class CategoryService : ICategoryService
     {
         private readonly HairHamonyContext _context;
+        private readonly IFileService _fileService;
         private readonly IMapper _mapper;
-        public CategoryService(IMapper mapper)
+        public CategoryService(IFileService fileService, IMapper mapper)
         {
             _context = new HairHamonyContext();
+            _fileService = fileService;
             _mapper = mapper;
         }
 
@@ -26,6 +29,13 @@ namespace hair_hamony.Business.Services.CategoryServices
             var category = _mapper.Map<Category>(requestBody);
             category.CreatedDate = DateTime.Now;
             category.UpdatedDate = DateTime.Now;
+
+            if (requestBody.Image != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Image);
+                category.Image = file.Url;
+            }
+
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
 
@@ -75,7 +85,13 @@ namespace hair_hamony.Business.Services.CategoryServices
             }
             var category = _mapper.Map<Category>(await GetById(id));
             _mapper.Map(requestBody, category);
+            if (requestBody.Image != null)
+            {
+                var file = await _fileService.UploadFile(requestBody.Image);
+                category.Image = file.Url;
+            }
             category.UpdatedDate = DateTime.Now;
+
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
 

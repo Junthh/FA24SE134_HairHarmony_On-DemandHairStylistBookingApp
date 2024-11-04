@@ -5,6 +5,9 @@ interface AppState {
   loading: boolean;
   activeStep: number;
   credentialInfo: CredentialInfo;
+  workShip: {
+    [key: string]: { id: string; startTime: string; endTime: string };
+  };
 }
 
 // Init state
@@ -12,6 +15,7 @@ const initialState: AppState = {
   loading: false,
   activeStep: 1,
   credentialInfo: CredentialInfoDefault,
+  workShip: {},
 };
 
 // reducer callback
@@ -25,6 +29,12 @@ const reducers = {
   setCredentialInfo(state: AppState, action: PayloadAction<CredentialInfo>) {
     state.credentialInfo = action.payload;
   },
+  setWorkShip(
+    state: AppState,
+    action: PayloadAction<{ [key: string]: { id: string; startTime: string; endTime: string } }>,
+  ) {
+    state.workShip = action.payload;
+  },
 };
 
 export const appSlice = createSlice({
@@ -33,9 +43,11 @@ export const appSlice = createSlice({
   reducers,
 });
 
-export const { setLoading, setActiveStep, setCredentialInfo } = appSlice.actions;
+export const { setLoading, setActiveStep, setCredentialInfo, setWorkShip } = appSlice.actions;
 
 // Selector
 export const selectLoading = (state: { app: AppState }) => state.app?.loading;
 export const selectCredentialInfo = (state: { app: AppState }) => state.app?.credentialInfo;
+export const selectWorkship = (state: { app: AppState }) => state.app?.workShip;
+
 export const appSelector = (state: { app: AppState }) => state.app;

@@ -1,5 +1,6 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { STYLIST_PATH } from 'configurations/paths/paths';
+import AuthProvider from 'pages/Auth/AuthProvider';
 import ScheduleList from 'pages/Stylist/ScheduleList';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
@@ -8,15 +9,17 @@ import { Navigate } from 'react-router-dom';
 const StylistPage = lazy(() => import('pages/Stylist'));
 //
 const TimeKeeping = lazy(() => import('pages/Stylist/Timekeeping'));
+const RegisterWorkSchedule = lazy(() => import('pages/Stylist/RegisterWorkSchedule'));
+
 const Feedback = lazy(() => import('pages/Stylist/Feedback'));
 //
 export const StylistRouter = {
   path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
-      {/* <AuthProvider> */}
-      <StylistPage />
-      {/* </AuthProvider> */}
+      <AuthProvider>
+        <StylistPage />
+      </AuthProvider>
     </React.Suspense>
   ),
   children: [
@@ -27,7 +30,7 @@ export const StylistRouter = {
     //
     {
       path: `${STYLIST_PATH.TIMEKEEPING}`,
-      element: <></>,
+      element: <RegisterWorkSchedule />,
     },
     {
       path: `${STYLIST_PATH.SCHEDULE_LIST}`,
