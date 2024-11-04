@@ -79,6 +79,10 @@ public partial class HairHamonyContext : DbContext
             entity.HasOne(d => d.Customer).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.CustomerId)
                 .HasConstraintName("FK__Bookings__Custom__0C85DE4D");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.StaffId)
+                .HasConstraintName("FK_Bookings_Staffs");
         });
 
         modelBuilder.Entity<BookingDetail>(entity =>
@@ -307,9 +311,7 @@ public partial class HairHamonyContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Stylists__3214EC0787544767");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Avatar)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.Avatar).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.Level).HasMaxLength(100);

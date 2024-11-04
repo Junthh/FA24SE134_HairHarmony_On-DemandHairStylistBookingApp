@@ -21,5 +21,7 @@ public partial class Staff
 
     public DateTime? CreatedDate { get; set; }
 
+    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
     public virtual ICollection<News> News { get; set; } = new List<News>();
 }

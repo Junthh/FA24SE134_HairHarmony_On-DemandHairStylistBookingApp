@@ -19,6 +19,7 @@ const PromotionList = lazy(() => import('pages/Owner/PromotionList'));
 const ServicesList = lazy(() => import('pages/Owner/ServicesList'));
 const TransactionList = lazy(() => import('pages/Owner/TransactionList'));
 const ComboList = lazy(() => import('pages/Owner/ComboList'));
+const CategoriesList = lazy(() => import('pages/Owner/CategoriesList'));
 
 //
 //
@@ -26,9 +27,9 @@ export const OwnerRouter = {
   path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
-      {/* <AuthProvider> */}
-      <OwnerPage />
-      {/* </AuthProvider> */}
+      <AuthProvider>
+        <OwnerPage />
+      </AuthProvider>
     </React.Suspense>
   ),
   children: [
@@ -56,6 +57,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.EMPLOYEE_SALARY}`,
       element: <EmployeeSalary />,
+    },
+    {
+      path: `${OWNER_PATH.CATEGORIES}`,
+      element: <CategoriesList />,
     },
     {
       path: `${OWNER_PATH.SERVICES}`,

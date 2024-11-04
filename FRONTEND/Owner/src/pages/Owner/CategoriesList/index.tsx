@@ -22,7 +22,6 @@ import { FormContainer } from 'components/Form/FormContainer';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { ICONS } from 'configurations/icons';
-import { STATUS_USER } from 'constants/status';
 import useModal from 'hooks/useModal';
 import { ListEmployeeSuccess } from 'models/EmployeeResponse.model';
 import PopoverContent from 'pages/common/PopoverContent';
@@ -31,15 +30,21 @@ import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled'
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectRoles, setLoading } from 'redux/Reducer';
+import { selectServices, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
-import { salaryServices } from 'services/salary.service';
-export default function EmployeeSalary() {
+import { currencyFormat, objectToFormData } from 'utils/helper';
+import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
+import AvatarUpload from 'components/Form/AvatarUpload';
+import SelectMultiElement from 'components/Form/SelectMultiElement';
+import { categorysServices } from 'services/categorys.service';
+
+export default function CategoriesList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
-  const roles = useSelector(selectRoles);
+  const services = useSelector(selectServices);
+  const [image, setImage] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
@@ -54,7 +59,7 @@ export default function EmployeeSalary() {
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
     defaultValues: {
-      totalSalary: '',
+      name: '',
     },
     mode: 'onChange',
     resolver: yupResolver(schema),
@@ -63,13 +68,11 @@ export default function EmployeeSalary() {
 
   const schemaUser = Yup.object().shape<any>({});
   const defaultValues = {
-    totalSalary: '',
-    email: '',
-    phoneNumber: '',
-    fullName: '',
-    roleId: '',
+    id: '',
+    name: '',
+    image: '',
   };
-  const formUser = useForm<any>({
+  const formCombo = useForm<any>({
     defaultValues,
     mode: 'onChange',
     resolver: yupResolver(schemaUser),
@@ -81,20 +84,20 @@ export default function EmployeeSalary() {
     getValues,
     formState: { errors },
     handleSubmit,
-  } = formUser;
+  } = formCombo;
 
   useEffect(() => {
-    getSalaryList({
+    getCombosList({
       size: paging.size,
       page: paging.page,
-      totalSalary: formSearch.getValues('totalSalary'),
+      name: formSearch.getValues('name'),
     });
   }, [paging.size, paging.page]);
-  const getSalaryList = useCallback(({ size, page, totalSalary = '' }) => {
+  const getCombosList = useCallback(({ size, page, name = '' }) => {
     dispatch(setLoading(true));
-    salaryServices
-      .list({ pageSize: size, pageIndex: page + 1, totalSalary })
-      .then((resultList: ListEmployeeSuccess) => {
+    categorysServices
+      .list({ pageSize: size, pageIndex: page + 1, name })
+      .then((resultList: any) => {
         setPaging((prev) => ({
           ...prev,
           total: resultList.paging.total,
@@ -107,9 +110,9 @@ export default function EmployeeSalary() {
   const handleSearch = useCallback(
     handleSubmitSearch((data: any) => {
       if (data) {
-        getSalaryList({
+        getCombosList({
           ...paging,
-          totalSalary: data.totalSalary,
+          name: data.name,
         });
       }
     }),
@@ -123,11 +126,13 @@ export default function EmployeeSalary() {
   const handleClose = () => {
     setAnchorEl(null);
     setSelectedRow(null);
+    setImage('');
   };
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
-      formUser.reset(row);
+      formCombo.reset(row);
+      setImage(row.image);
       openModal();
     },
     [selectedRow],
@@ -136,15 +141,19 @@ export default function EmployeeSalary() {
     (row) => {
       dispatch(setLoading(true));
       setAnchorEl(null);
-      salaryServices
+      categorysServices
         .delete(row.id)
-        .then((res: ListEmployeeSuccess) => {
+        .then((res: any) => {
           showToast('success', res.msg);
           dispatch(setLoading(false));
         })
         .catch((err) => {
           showToast('error', err.message);
           dispatch(setLoading(false));
+        })
+        .finally(() => {
+          const { size, page } = paging;
+          getCombosList({ size, page, name: formSearch.getValues('name') });
         });
     },
     [selectedRow],
@@ -164,14 +173,16 @@ export default function EmployeeSalary() {
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
+      const id = data.id;
+      data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
-        salaryServices
-          .update(data.id, data)
-          .then((res) => {
+        categorysServices
+          .update(id, data)
+          .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getSalaryList({ size, page, totalSalary: formSearch.getValues('totalSalary') });
+            getCombosList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
@@ -181,12 +192,12 @@ export default function EmployeeSalary() {
           });
       } else {
         dispatch(setLoading(true));
-        salaryServices
+        categorysServices
           .create(data)
-          .then((res) => {
+          .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getSalaryList({ size, page, totalSalary: formSearch.getValues('totalSalary') });
+            getCombosList({ size, page, name: formSearch.getValues('name') });
             handleClose();
             closeModal();
           })
@@ -208,7 +219,7 @@ export default function EmployeeSalary() {
         width="100%"
         title={selectedRow ? 'Edit' : 'Create'}
         content={
-          <FormContainer formContext={formUser}>
+          <FormContainer formContext={formCombo}>
             <Box
               display={'flex'}
               justifyContent={'center'}
@@ -217,57 +228,14 @@ export default function EmployeeSalary() {
               padding={'0 20px 20px 20px'}
               width={'550px'}
             >
+              <AvatarUpload src={image} name="image" control={control} />
               <TextFieldElement
-                name="fullName"
+                name="name"
                 control={control}
-                placeholder="Nhập Họ và tên"
-                label={'Họ và tên'}
+                placeholder="Nhập tên dịch vụ"
+                label={'Tên dịch vụ'}
                 //   onKeyUp={handleKeyup}
               />
-              <TextFieldElement
-                name="email"
-                control={control}
-                type="email"
-                placeholder="Nhập Email"
-                label={'Email'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="phoneNumber"
-                control={control}
-                type="number"
-                placeholder="Nhập số điện thoại"
-                label={'Số điện thoại'}
-                //   onKeyUp={handleKeyup}
-              />
-              <SelectElement
-                control={control}
-                name="roleId"
-                options={
-                  roles &&
-                  Object.keys(roles).map((id) => ({
-                    value: id,
-                    label: roles[id].name,
-                  }))
-                }
-                placeholder="Chọn role"
-                label={'Roles'}
-              ></SelectElement>
-              <TextFieldElement
-                name="totalSalary"
-                control={control}
-                placeholder="Nhập totalSalary"
-                label={'Tổng lương'}
-                disabled={!!selectedRow?.totalSalary}
-                //   onKeyUp={handleKeyup}
-              />
-              <SelectElement
-                control={control}
-                name="status"
-                options={STATUS_USER}
-                placeholder="Chọn trạng thái"
-                label={'Trạng thái'}
-              ></SelectElement>
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
                   Lưu
@@ -285,7 +253,7 @@ export default function EmployeeSalary() {
         <BoxHeaderSearch>
           <Box className="search-left">
             <TextFieldElement
-              name="totalSalary"
+              name="name"
               control={controlSearch}
               placeholder="Search"
               InputProps={{
@@ -304,7 +272,8 @@ export default function EmployeeSalary() {
               padding={'9px 14px'}
               onClick={() => {
                 setSelectedRow(null);
-                formUser.reset(defaultValues);
+                setImage('');
+                formCombo.reset(defaultValues);
                 openModal();
               }}
             >
@@ -319,42 +288,38 @@ export default function EmployeeSalary() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
+              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
-                Stylist name
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
-                Tháng
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
-                Năm
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Tổng lượt booking
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Tổng hoa hồng
-              </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Tổng lương
+                Category Name
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Ngày tạo
+              </StyledTableCell>{' '}
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Ngày cập nhật
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
-              <StyledTableRow key={row.index}>
+              <StyledTableRow key={index}>
                 <StyledTableCell component="th" scope="row">
-                  {row.stylistId}
+                  <img
+                    style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                    src={row.image}
+                    alt=""
+                  />
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.month}</StyledTableCell>
-                <StyledTableCell align="right">{row.year}</StyledTableCell>
-                <StyledTableCell align="right">{row.totalBooking}</StyledTableCell>
-                <StyledTableCell align="right">{row.totalCommission}</StyledTableCell>
-                <StyledTableCell align="right">{row.totalSalary}</StyledTableCell>
-                <StyledTableCell align="right">{row.createdDate}</StyledTableCell>
+                <StyledTableCell component="th" scope="row">
+                  {row.name}
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  {formatDate(row.createdDate, 'dd/MM/yyyy')}
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  {formatDate(row.updatedDate, 'dd/MM/yyyy')}
+                </StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -405,7 +370,7 @@ export default function EmployeeSalary() {
           >
             <EditIcon />
             <Typography variant="body2" fontWeight={500}>
-              Edit user
+              Edit category
             </Typography>
           </Box>
           <Box
@@ -416,7 +381,7 @@ export default function EmployeeSalary() {
           >
             <DeleteIcon />
             <Typography variant="body2" fontWeight={500}>
-              Delete user
+              Delete category
             </Typography>
           </Box>
         </PopoverContent>
