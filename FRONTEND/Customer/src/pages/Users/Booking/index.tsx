@@ -12,6 +12,7 @@ import {
   Stack,
   Avatar,
   Skeleton,
+  Rating,
 } from '@mui/material';
 import Breadscrumb from 'components/Common/Breadscrumb';
 import { ButtonPrimary } from 'pages/common/style/Button';
@@ -62,6 +63,13 @@ const BoxStylistCard = styled(Box)({
   width: '200px',
   height: '240px',
   gap: 2,
+  '&:hover': {
+    cursor: 'pointer',
+  },
+  '&.active': {
+    background: 'black',
+    color: 'white',
+  },
 });
 //
 export default function Booking() {
@@ -99,7 +107,8 @@ export default function Booking() {
     getListStylistFreeTime();
   }, [getListStylistFreeTime]);
   const getListTimeSlot = useCallback(() => {
-    if (currentStep === 1) {
+    const isActiveTime = times.some((time) => time.isActive);
+    if (currentStep === 1 && !isActiveTime) {
       dispatch(setLoading(true));
       bookingServices
         .listTimeSlots()
@@ -123,7 +132,7 @@ export default function Booking() {
     getListTimeSlot();
   }, [getListTimeSlot]);
 
-  const handleChangeStep = () => {
+  const handleChangeStep = (step?: number) => {
     const isAnyServiceChecked = Object.values(services).some((service) => service.checked);
     if (currentStep === 0 && !isAnyServiceChecked) {
       showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
@@ -134,8 +143,12 @@ export default function Booking() {
       showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
       return;
     }
-    if (currentStep === 3) navigate('/appointment');
-    setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
+    if (step?.toString()) {
+      setCurrentStep(step);
+    } else {
+      if (currentStep === 3 && !step) navigate('/appointment');
+      setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
+    }
   };
 
   // this services will be call api to get data
@@ -176,6 +189,7 @@ export default function Booking() {
     }));
   };
   const activeTime = times.find((item) => item.isActive);
+  const stylistActive = stylists.find((item) => item.isActive);
 
   return (
     <BoxBookingStyled>
@@ -186,18 +200,30 @@ export default function Booking() {
           {
             step: 0,
             label: 'Dịch vụ',
+            onClick: () => {
+              handleChangeStep(0);
+            },
           },
           {
             step: 1,
             label: 'Thời gian',
+            onClick: () => {
+              handleChangeStep(1);
+            },
           },
           {
             step: 2,
             label: 'Stylist',
+            onClick: () => {
+              handleChangeStep(2);
+            },
           },
           {
             step: 3,
             label: 'Xác nhận',
+            onClick: () => {
+              handleChangeStep(3);
+            },
           },
         ]}
       />
@@ -435,58 +461,50 @@ export default function Booking() {
               <Box height={25}></Box>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
-                  <BoxStylistCard>
+                  <BoxStylistCard
+                    onClick={() => {
+                      const randomIndex = Math.floor(Math.random() * stylists.length);
+                      const newData = stylists.map((item, index) => ({
+                        ...item,
+                        isActive: index === randomIndex ? true : item.isActive || false,
+                      }));
+                      setStylists(newData);
+                    }}
+                  >
                     <IconStylist />
                     <Typography variant="h4" fontWeight={700}>
                       Chọn stylist bất kỳ
                     </Typography>
                   </BoxStylistCard>
                 </Grid>
-                <Grid item xs={4}>
-                  <BoxStylistCard>
-                    <Avatar sx={{ width: 70, height: 70 }} />
-                    <Box height={20}></Box>
-                    <Typography variant="h4" fontWeight={700}>
-                      John Alex
-                    </Typography>
-                    <Typography variant="body1" color={colors.grey2}>
-                      Chuyên viên
-                    </Typography>
-                    <Typography variant="body1" fontWeight={500}>
-                      Phí dịch vụ tăng 20%
-                    </Typography>
-                  </BoxStylistCard>
-                </Grid>
-                <Grid item xs={4}>
-                  <BoxStylistCard>
-                    <Avatar sx={{ width: 70, height: 70 }} />
-                    <Box height={20}></Box>
-                    <Typography variant="h4" fontWeight={700}>
-                      John Alex
-                    </Typography>
-                    <Typography variant="body1" color={colors.grey2}>
-                      Chuyên viên
-                    </Typography>
-                    <Typography variant="body1" fontWeight={500}>
-                      Phí dịch vụ tăng 20%
-                    </Typography>
-                  </BoxStylistCard>
-                </Grid>
-                <Grid item xs={4}>
-                  <BoxStylistCard>
-                    <Avatar sx={{ width: 70, height: 70 }} />
-                    <Box height={20}></Box>
-                    <Typography variant="h4" fontWeight={700}>
-                      John Alex
-                    </Typography>
-                    <Typography variant="body1" color={colors.grey2}>
-                      Chuyên viên
-                    </Typography>
-                    <Typography variant="body1" fontWeight={500}>
-                      Phí dịch vụ tăng 20%
-                    </Typography>
-                  </BoxStylistCard>
-                </Grid>
+                {stylists.map((item) => {
+                  return (
+                    <Grid item xs={4}>
+                      <BoxStylistCard
+                        className={item.isActive ? 'active' : ''}
+                        onClick={() => {
+                          setStylists((prevStylist) =>
+                            prevStylist.map((sty) =>
+                              sty.id === item.id
+                                ? { ...sty, isActive: true }
+                                : { ...sty, isActive: false },
+                            ),
+                          );
+                        }}
+                      >
+                        <Avatar src={item.avatar} sx={{ width: 70, height: 70 }}></Avatar>
+                        <Box height={20}></Box>
+                        <Typography variant="h4" fontWeight={700}>
+                          {item.fullName}
+                        </Typography>
+                        <Typography variant="body1" color={colors.grey2}>
+                          {item.level}
+                        </Typography>
+                        <Rating precision={0.5} value={item.rating} />
+                      </BoxStylistCard>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </>
           ) : currentStep === 3 ? (
@@ -546,19 +564,39 @@ export default function Booking() {
                 </>
               ) : null;
             })}
-            <Box height={60}></Box>
-            <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-              <Box>
-                <Typography variant="h5" fontWeight={700}>
-                  Ngày cắt Giờ cắt
-                </Typography>
 
-                <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                  {activeTime ? `${activeTime?.startTime} - ${activeTime?.endTime}` : ''} Ngày{' '}
-                  {date ? formatDate(date.toString()) : ''}
-                </Typography>
+            {activeTime && date ? (
+              <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                <Box>
+                  <Typography variant="h5" fontWeight={700}>
+                    Ngày cắt Giờ cắt
+                  </Typography>
+
+                  <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                    {activeTime ? `${activeTime?.startTime} - ${activeTime?.endTime}` : ''} Ngày{' '}
+                    {date ? formatDate(date.toString()) : ''}
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
+            ) : (
+              ''
+            )}
+            <Box height={20}></Box>
+            {stylistActive ? (
+              <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                <Box>
+                  <Typography variant="h5" fontWeight={700}>
+                    Thợ cắt
+                  </Typography>
+                  <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                    {`${stylistActive?.fullName} - ${stylistActive?.level}`}
+                  </Typography>
+                </Box>
+                {<Rating value={stylistActive?.rating} precision={0.5} />}
+              </Box>
+            ) : (
+              <></>
+            )}
             <Divider variant="fullWidth"></Divider>
             <Box height={20}></Box>
             <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
