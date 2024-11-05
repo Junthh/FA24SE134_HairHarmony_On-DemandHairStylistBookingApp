@@ -84,7 +84,7 @@ export default function Booking() {
   const getListStylistFreeTime = useCallback(() => {
     const stylistActive = stylists.find((item) => item.isActive);
 
-    if (currentStep === 2 && !stylistActive) {
+    if (currentStep === 2) {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
       const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
       dispatch(setLoading(true));
@@ -142,6 +142,11 @@ export default function Booking() {
     }
     const isActiveTime = times.some((time) => time.isActive);
     if (currentStep === 1 && (!isActiveTime || isEmpty(date))) {
+      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+      return;
+    }
+    const stylistActive = stylists.find((item) => item.isActive);
+    if (currentStep === 2 && (!stylistActive || isEmpty(stylistActive))) {
       showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
       return;
     }
@@ -217,14 +222,14 @@ export default function Booking() {
             step: 2,
             label: 'Stylist',
             onClick: () => {
-              handleChangeStep(2);
+              // handleChangeStep(2);
             },
           },
           {
             step: 3,
             label: 'Xác nhận',
             onClick: () => {
-              handleChangeStep(3);
+              // handleChangeStep(3);
             },
           },
         ]}
