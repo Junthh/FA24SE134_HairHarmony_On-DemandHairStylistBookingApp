@@ -82,8 +82,6 @@ export default function Booking() {
   const navigate = useNavigate();
 
   const getListStylistFreeTime = useCallback(() => {
-    const stylistActive = stylists.find((item) => item.isActive);
-
     if (currentStep === 2) {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
       const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
@@ -145,15 +143,35 @@ export default function Booking() {
       showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
       return;
     }
-    const stylistActive = stylists.find((item) => item.isActive);
-    if (currentStep === 2 && (!stylistActive || isEmpty(stylistActive))) {
-      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
-      return;
+    const stylistActive = stylists.some((item) => item.isActive);
+    if (stylists.length > 0) {
+      if (currentStep === 2 && !stylistActive) {
+        showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+        return;
+      }
     }
     if (step?.toString()) {
       setCurrentStep(step);
     } else {
-      if (currentStep === 3 && !step) navigate('/appointment');
+      if (currentStep === 3 && !step) {
+        if (!stylistActive) {
+          showToast('warning', 'Vui lòng chọn stylist!');
+          return;
+        }
+        const serviceChecked = Object.entries(services)
+          .filter(([, option]) => option.checked)
+          .map(([id, option]) => ({ id, ...option }));
+        const timeChecked = times.find((time) => time.isActive);
+        const stylistChecked = stylists.find((item) => item.isActive);
+        const timeSlotId = times.find((time) => time.isActive);
+        const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
+        console.log('serviceChecked', serviceChecked);
+        console.log('timeChecked', timeChecked);
+        console.log('stylistChecked', stylistChecked);
+        console.log('date time', { timeSlotId, bookingDate });
+
+        navigate('/appointment');
+      }
       setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
     }
   };
@@ -571,7 +589,8 @@ export default function Booking() {
                 </>
               ) : null;
             })}
-
+            <Divider variant="fullWidth"></Divider>
+            <Box height={10}></Box>
             {activeTime && date ? (
               <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
                 <Box>

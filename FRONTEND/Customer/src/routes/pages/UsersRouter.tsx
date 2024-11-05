@@ -4,6 +4,7 @@ import { LoadingOverlay } from 'components/Common/Spinner';
 import { USER_PATH } from 'configurations/paths/paths';
 import { Navigate } from 'react-router-dom';
 import Services from 'pages/Users/Services';
+import AuthProvider from 'pages/Auth/AuthProvider';
 
 //LAZY LOADING COMPONENT
 const UsersPage = lazy(() => import('pages/Users'));
@@ -41,11 +42,19 @@ export const UsersRouter = {
     },
     {
       path: USER_PATH.BOOKING,
-      element: <Booking />,
+      element: (
+        // <AuthProvider>
+        <Booking />
+        // </AuthProvider>
+      ),
     },
     {
       path: USER_PATH.APPOINTMENT,
-      element: <Appointment />,
+      element: (
+        // <AuthProvider>
+        <Appointment />
+        // </AuthProvider>
+      ),
     },
     {
       path: USER_PATH.ABOUTUS,
