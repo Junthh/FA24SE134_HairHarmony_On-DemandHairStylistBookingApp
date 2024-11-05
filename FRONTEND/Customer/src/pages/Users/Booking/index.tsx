@@ -82,7 +82,9 @@ export default function Booking() {
   const navigate = useNavigate();
 
   const getListStylistFreeTime = useCallback(() => {
-    if (currentStep === 2) {
+    const stylistActive = stylists.find((item) => item.isActive);
+
+    if (currentStep === 2 && !stylistActive) {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
       const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
       dispatch(setLoading(true));
