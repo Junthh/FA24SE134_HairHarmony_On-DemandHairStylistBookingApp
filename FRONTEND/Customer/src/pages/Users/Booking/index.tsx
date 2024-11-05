@@ -11,10 +11,11 @@ import {
   SvgIcon,
   Stack,
   Avatar,
+  Skeleton,
 } from '@mui/material';
 import Breadscrumb from 'components/Common/Breadscrumb';
 import { ButtonPrimary } from 'pages/common/style/Button';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import * as colors from 'constants/colors';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers';
@@ -23,6 +24,15 @@ import dayjs, { Dayjs } from 'dayjs';
 import { ReactComponent as IconStylist } from 'assets/pics/icons/icon-stylist.svg';
 import { ICONS } from 'configurations/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { active } from '../../../constants/colors';
+import { formatDate } from 'utils/datetime';
+import { isEmpty } from 'lodash';
+import { bookingServices } from 'services/booking.service';
+import { currencyFormat } from 'utils/helper';
+import { showToast } from 'components/Common/Toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectLoading, setLoading } from 'redux/Reducer';
+import SkeletonTime from './components/SkeletonTime';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -55,10 +65,75 @@ const BoxStylistCard = styled(Box)({
 });
 //
 export default function Booking() {
-  const [value, setValue] = React.useState<Dayjs | null>(null);
+  const [date, setDate] = React.useState<Dayjs | null>(dayjs);
   const [currentStep, setCurrentStep] = useState(0);
+  const [times, setTimes] = useState([]);
+  const [stylists, setStylists] = useState([]);
+  const dispatch = useDispatch();
+  const isLoading = useSelector(selectLoading);
   const navigate = useNavigate();
+
+  const getListStylistFreeTime = useCallback(() => {
+    if (currentStep === 2) {
+      const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
+      const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
+      dispatch(setLoading(true));
+      bookingServices
+        .listStylistFreeTime({
+          timeSlotId,
+          bookingDate,
+        })
+        .then((res) => {
+          console.log(res);
+          const resultStylist = res.data;
+          setStylists(resultStylist);
+        })
+        .catch((err) => {})
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+    }
+  }, [date, currentStep, times]);
+
+  useEffect(() => {
+    getListStylistFreeTime();
+  }, [getListStylistFreeTime]);
+  const getListTimeSlot = useCallback(() => {
+    if (currentStep === 1) {
+      dispatch(setLoading(true));
+      bookingServices
+        .listTimeSlots()
+        .then((res) => {
+          let timeSlots = res.data.map((item) => ({
+            ...item,
+            startTime: item.startTime.split(':').slice(0, 2).join(':'),
+            endTime: item.endTime.split(':').slice(0, 2).join(':'),
+            isActive: false,
+          }));
+          setTimes(timeSlots);
+        })
+        .catch((err) => {})
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+    }
+  }, [currentStep]);
+
+  useEffect(() => {
+    getListTimeSlot();
+  }, [getListTimeSlot]);
+
   const handleChangeStep = () => {
+    const isAnyServiceChecked = Object.values(services).some((service) => service.checked);
+    if (currentStep === 0 && !isAnyServiceChecked) {
+      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+      return;
+    }
+    const isActiveTime = times.some((time) => time.isActive);
+    if (currentStep === 1 && (!isActiveTime || isEmpty(date))) {
+      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+      return;
+    }
     if (currentStep === 3) navigate('/appointment');
     setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
   };
@@ -100,6 +175,8 @@ export default function Booking() {
       },
     }));
   };
+  const activeTime = times.find((item) => item.isActive);
+
   return (
     <BoxBookingStyled>
       {' '}
@@ -296,7 +373,7 @@ export default function Booking() {
               </FormControl>
             </Box>
           ) : currentStep === 1 ? (
-            <Box paddingRight={20}>
+            <Box paddingRight={10}>
               <Typography variant="h2" fontWeight={700}>
                 Chọn thời gian
               </Typography>
@@ -312,90 +389,43 @@ export default function Booking() {
                       },
                     },
                   }}
+                  disableHighlightToday
+                  // disablePast
                   showDaysOutsideCurrentMonth
-                  value={value}
-                  onChange={(newValue) => setValue(newValue)}
+                  value={date}
+                  onChange={(newValue) => setDate(newValue)}
                 />
               </LocalizationProvider>
-              <Grid container spacing={2}>
-                <Grid item xs={2}>
-                  <ButtonPrimary
-                    severity="cancel"
-                    padding={'16px 18px'}
-                    sx={{ color: 'black !important' }}
-                    border={'1px solid black'}
-                    //   onClick={() => navigate(`${STATE.CREATE}`)}
-                  >
-                    07:00
-                  </ButtonPrimary>
+              {!isLoading ? (
+                <Grid container spacing={2}>
+                  {times.map((item) => {
+                    return (
+                      <Grid item xs={3}>
+                        <ButtonPrimary
+                          severity="cancel"
+                          padding={'16px 18px'}
+                          sx={{ color: 'black !important' }}
+                          border={'1px solid black'}
+                          className={item.isActive ? 'active' : ''}
+                          onClick={() => {
+                            setTimes((prevTimes) =>
+                              prevTimes.map((time) =>
+                                time.id === item.id
+                                  ? { ...time, isActive: true }
+                                  : { ...time, isActive: false },
+                              ),
+                            );
+                          }}
+                        >
+                          {item.startTime} - {item.endTime}
+                        </ButtonPrimary>
+                      </Grid>
+                    );
+                  })}
                 </Grid>
-                <Grid item xs={2}>
-                  <ButtonPrimary
-                    severity="cancel"
-                    padding={'16px 18px'}
-                    sx={{ color: 'black !important' }}
-                    border={'1px solid black'}
-                    //   onClick={() => navigate(`${STATE.CREATE}`)}
-                  >
-                    07:00
-                  </ButtonPrimary>
-                </Grid>
-                <Grid item xs={2}>
-                  <ButtonPrimary
-                    severity="cancel"
-                    padding={'16px 18px'}
-                    sx={{ color: 'black !important' }}
-                    border={'1px solid black'}
-                    //   onClick={() => navigate(`${STATE.CREATE}`)}
-                  >
-                    07:00
-                  </ButtonPrimary>
-                </Grid>
-                <Grid item xs={2}>
-                  <ButtonPrimary
-                    severity="cancel"
-                    padding={'16px 18px'}
-                    sx={{ color: 'black !important' }}
-                    border={'1px solid black'}
-                    //   onClick={() => navigate(`${STATE.CREATE}`)}
-                  >
-                    07:00
-                  </ButtonPrimary>
-                </Grid>
-                <Grid item xs={2}>
-                  <ButtonPrimary
-                    severity="cancel"
-                    padding={'16px 18px'}
-                    sx={{ color: 'black !important' }}
-                    border={'1px solid black'}
-                    //   onClick={() => navigate(`${STATE.CREATE}`)}
-                  >
-                    07:00
-                  </ButtonPrimary>
-                </Grid>
-                <Grid item xs={2}>
-                  <ButtonPrimary
-                    severity="cancel"
-                    padding={'16px 18px'}
-                    sx={{ color: 'black !important' }}
-                    border={'1px solid black'}
-                    //   onClick={() => navigate(`${STATE.CREATE}`)}
-                  >
-                    07:00
-                  </ButtonPrimary>
-                </Grid>
-                <Grid item xs={2}>
-                  <ButtonPrimary
-                    severity="cancel"
-                    padding={'16px 18px'}
-                    sx={{ color: 'black !important' }}
-                    border={'1px solid black'}
-                    //   onClick={() => navigate(`${STATE.CREATE}`)}
-                  >
-                    07:00
-                  </ButtonPrimary>
-                </Grid>
-              </Grid>
+              ) : (
+                <SkeletonTime />
+              )}
             </Box>
           ) : currentStep === 2 ? (
             <>
@@ -509,7 +539,7 @@ export default function Booking() {
                       </Typography>
                     </Box>
                     <Typography variant="body1" fontWeight={600}>
-                      {services[key].price} VND
+                      {currencyFormat(services[key].price)}
                     </Typography>
                   </Box>
                   <Box height={20}></Box>
@@ -517,6 +547,18 @@ export default function Booking() {
               ) : null;
             })}
             <Box height={60}></Box>
+            <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+              <Box>
+                <Typography variant="h5" fontWeight={700}>
+                  Ngày cắt Giờ cắt
+                </Typography>
+
+                <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                  {activeTime ? `${activeTime?.startTime} - ${activeTime?.endTime}` : ''} Ngày{' '}
+                  {date ? formatDate(date.toString()) : ''}
+                </Typography>
+              </Box>
+            </Box>
             <Divider variant="fullWidth"></Divider>
             <Box height={20}></Box>
             <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
@@ -524,10 +566,11 @@ export default function Booking() {
                 Tổng tiền
               </Typography>
               <Typography variant="body1" fontWeight={600}>
-                {Object.values(services)
-                  .filter((option) => option.checked === true) // Filter only checked options
-                  .reduce((total, option) => total + option.price, 0)}{' '}
-                VND
+                {currencyFormat(
+                  Object.values(services)
+                    .filter((option) => option.checked === true)
+                    .reduce((total, option) => total + option.price, 0),
+                )}{' '}
               </Typography>
             </Box>
             <Box height={120}></Box>
@@ -538,7 +581,7 @@ export default function Booking() {
               borderradius={9}
               onClick={() => handleChangeStep()}
             >
-              Tiếp tục
+              {currentStep === 3 ? 'Xác nhận' : 'Tiếp tục'}
             </ButtonPrimary>
           </BoxCardBill>
         </Grid>
