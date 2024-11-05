@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import Breadscrumb from 'components/Common/Breadscrumb';
 import { ButtonPrimary } from 'pages/common/style/Button';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as colors from 'constants/colors';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers';
@@ -34,6 +34,7 @@ import { showToast } from 'components/Common/Toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectLoading, setLoading } from 'redux/Reducer';
 import SkeletonTime from './components/SkeletonTime';
+import { categoryService } from 'services/category.service';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -80,7 +81,38 @@ export default function Booking() {
   const dispatch = useDispatch();
   const isLoading = useSelector(selectLoading);
   const navigate = useNavigate();
-
+  const [categories, setCategories] = useState([]);
+  // this services will be call api to get data
+  const [services, setServices] = useState({
+    option1: {
+      checked: false,
+      service: 'Gói cắt tóc & Uốn',
+      time: '120 phút • chỉ dành cho nam',
+      price: 595000,
+      categoryId: '195416b6-7ee4-4ed5-a429-543726d4193f',
+    },
+    option2: {
+      checked: false,
+      service: 'Gói cắt tóc & Nhộm',
+      time: '120 phút • chỉ dành cho nữ',
+      price: 595000,
+      categoryId: '195416b6-7ee4-4ed5-a429-543726d4193f',
+    },
+    option3: {
+      checked: false,
+      service: 'Gói nhộm & duỗi',
+      time: '120 phút • chỉ dành cho nữ',
+      price: 595000,
+      categoryId: 'de4e2294-15a2-4481-8de9-8fdf409e17f2',
+    },
+    option4: {
+      checked: false,
+      service: 'Gói Cắt, Nhộm & Tạo Kiểu',
+      time: '120 phút • chỉ dành cho nữ',
+      price: 595000,
+      categoryId: '669fad77-d833-4752-9fc5-32353463143d',
+    },
+  });
   const getListStylistFreeTime = useCallback(() => {
     if (currentStep === 2) {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
@@ -92,7 +124,6 @@ export default function Booking() {
           bookingDate,
         })
         .then((res) => {
-          console.log(res);
           const resultStylist = res.data;
           setStylists(resultStylist);
         })
@@ -131,6 +162,38 @@ export default function Booking() {
   useEffect(() => {
     getListTimeSlot();
   }, [getListTimeSlot]);
+
+  const getCategoryList = useCallback(() => {
+    if (currentStep === 0 && isEmpty(categories)) {
+      dispatch(setLoading(true));
+      categoryService
+        .list()
+        .then((res) => {
+          let categroriesResult = res.data.map((item, i) => {
+            if (i === 0) {
+              return {
+                ...item,
+                isActive: true,
+              };
+            } else {
+              return {
+                ...item,
+                isActive: false,
+              };
+            }
+          });
+          setCategories(categroriesResult);
+        })
+        .catch((err) => {})
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+    }
+  }, [currentStep]);
+
+  useEffect(() => {
+    getCategoryList();
+  }, [getCategoryList]);
 
   const handleChangeStep = (step?: number) => {
     const isAnyServiceChecked = Object.values(services).some((service) => service.checked);
@@ -176,34 +239,6 @@ export default function Booking() {
     }
   };
 
-  // this services will be call api to get data
-  const [services, setServices] = useState({
-    option1: {
-      checked: false,
-      service: 'Gói cắt tóc & Uốn',
-      time: '120 phút • chỉ dành cho nam',
-      price: 595000,
-    },
-    option2: {
-      checked: false,
-      service: 'Gói cắt tóc & Nhộm',
-      time: '120 phút • chỉ dành cho nữ',
-      price: 595000,
-    },
-    option3: {
-      checked: false,
-      service: 'Gói nhộm & duỗi',
-      time: '120 phút • chỉ dành cho nữ',
-      price: 595000,
-    },
-    option4: {
-      checked: false,
-      service: 'Gói Cắt, Nhộm & Tạo Kiểu',
-      time: '120 phút • chỉ dành cho nữ',
-      price: 595000,
-    },
-  });
-  const { option1, option2, option3, option4 } = services;
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setServices((prev) => ({
       ...prev,
@@ -216,6 +251,58 @@ export default function Booking() {
   const activeTime = times.find((item) => item.isActive);
   const stylistActive = stylists.find((item) => item.isActive);
 
+  const renderStepFirst = useMemo(() => {
+    const activeCategory = categories.find((item) => item.isActive)?.id;
+    const dataFilterFollowCategory = Object.fromEntries(
+      Object.entries(services).filter(([, option]) => option.categoryId === activeCategory),
+    );
+    return (
+      <FormControl fullWidth>
+        <FormGroup>
+          <Box display={'flex'} flexDirection={'column'} gap={4}>
+            {Object.entries(dataFilterFollowCategory).map(([key, value]) => {
+              return (
+                <BoxCardService>
+                  <Box>
+                    <Typography variant="h5" fontWeight={700}>
+                      {value.service}
+                    </Typography>
+                    <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                      {value.time}
+                    </Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {currencyFormat(value.price)}
+                    </Typography>
+                  </Box>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        style={{
+                          color: '#5C4ACE',
+                        }}
+                        icon={
+                          <SvgIcon
+                            style={{
+                              color: '#D9D9D9',
+                            }}
+                            component={AddBoxIcon}
+                          />
+                        }
+                        checked={value.checked}
+                        onChange={handleChange}
+                        name={key}
+                      />
+                    }
+                    label=""
+                  />
+                </BoxCardService>
+              );
+            })}
+          </Box>
+        </FormGroup>
+      </FormControl>
+    );
+  }, [services, categories]);
   return (
     <BoxBookingStyled>
       {' '}
@@ -262,166 +349,31 @@ export default function Booking() {
               </Typography>
               <Box height={20}></Box>
               <Box display={'flex'} gap={1}>
-                <ButtonPrimary severity="primary" padding={'9px 14px'} borderradius={20}>
-                  Combo
-                </ButtonPrimary>
-                <ButtonPrimary severity="cancel" padding={'9px 14px'} borderradius={20}>
-                  Cắt tóc
-                </ButtonPrimary>
-                <ButtonPrimary severity="cancel" padding={'9px 14px'} borderradius={20}>
-                  Nhộm tóc
-                </ButtonPrimary>
-                <ButtonPrimary severity="cancel" padding={'9px 14px'} borderradius={20}>
-                  Uốn tóc
-                </ButtonPrimary>
-                <ButtonPrimary severity="cancel" padding={'9px 14px'} borderradius={20}>
-                  Duỗi tóc
-                </ButtonPrimary>
+                {categories.map((item) => {
+                  return (
+                    <ButtonPrimary
+                      className={item.isActive ? 'active' : ''}
+                      severity="cancel"
+                      padding={'9px 14px'}
+                      borderradius={20}
+                      onClick={() => {
+                        setCategories((prevCate) =>
+                          prevCate.map((cate) =>
+                            cate.id === item.id
+                              ? { ...cate, isActive: true }
+                              : { ...cate, isActive: false },
+                          ),
+                        );
+                      }}
+                    >
+                      {item.name}
+                    </ButtonPrimary>
+                  );
+                })}
               </Box>
               <Box height={20}></Box>
 
-              <FormControl fullWidth>
-                <FormGroup>
-                  <Box display={'flex'} flexDirection={'column'} gap={4}>
-                    <BoxCardService>
-                      <Box>
-                        <Typography variant="h5" fontWeight={700}>
-                          Gói cắt tóc & Uốn
-                        </Typography>
-                        <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                          120 phút • chỉ dành cho nam
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
-                          595.000 VND
-                        </Typography>
-                      </Box>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            style={{
-                              color: '#5C4ACE',
-                            }}
-                            icon={
-                              <SvgIcon
-                                style={{
-                                  color: '#D9D9D9',
-                                }}
-                                component={AddBoxIcon}
-                              />
-                            }
-                            checked={option1.checked}
-                            onChange={handleChange}
-                            name="option1"
-                          />
-                        }
-                        label=""
-                      />
-                    </BoxCardService>
-                    <BoxCardService>
-                      <Box>
-                        <Typography variant="h5" fontWeight={700}>
-                          Gói cắt tóc & Nhộm
-                        </Typography>
-                        <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                          120 phút • chỉ dành cho nữ
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
-                          595.000 VND
-                        </Typography>
-                      </Box>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            style={{
-                              color: '#5C4ACE',
-                            }}
-                            icon={
-                              <SvgIcon
-                                style={{
-                                  color: '#D9D9D9',
-                                }}
-                                component={AddBoxIcon}
-                              />
-                            }
-                            checked={option2.checked}
-                            onChange={handleChange}
-                            name="option2"
-                          />
-                        }
-                        label=""
-                      />
-                    </BoxCardService>
-                    <BoxCardService>
-                      <Box>
-                        <Typography variant="h5" fontWeight={700}>
-                          Gói nhộm & duỗi
-                        </Typography>
-                        <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                          120 phút • chỉ dành cho nữ
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
-                          595.000 VND
-                        </Typography>
-                      </Box>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            style={{
-                              color: '#5C4ACE',
-                            }}
-                            icon={
-                              <SvgIcon
-                                style={{
-                                  color: '#D9D9D9',
-                                }}
-                                component={AddBoxIcon}
-                              />
-                            }
-                            checked={option3.checked}
-                            onChange={handleChange}
-                            name="option3"
-                          />
-                        }
-                        label=""
-                      />
-                    </BoxCardService>
-                    <BoxCardService>
-                      <Box>
-                        <Typography variant="h5" fontWeight={700}>
-                          Gói Cắt, Nhộm & Tạo Kiểu
-                        </Typography>
-                        <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                          120 phút • chỉ dành cho nam
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
-                          595.000 VND
-                        </Typography>
-                      </Box>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            style={{
-                              color: '#5C4ACE',
-                            }}
-                            icon={
-                              <SvgIcon
-                                style={{
-                                  color: '#D9D9D9',
-                                }}
-                                component={AddBoxIcon}
-                              />
-                            }
-                            checked={option4.checked}
-                            onChange={handleChange}
-                            name="option4"
-                          />
-                        }
-                        label=""
-                      />
-                    </BoxCardService>
-                  </Box>
-                </FormGroup>
-              </FormControl>
+              {renderStepFirst}
             </Box>
           ) : currentStep === 1 ? (
             <Box paddingRight={10}>
