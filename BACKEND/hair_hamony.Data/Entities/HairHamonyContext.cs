@@ -153,6 +153,10 @@ public partial class HairHamonyContext : DbContext
             entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.Combos)
+                .HasForeignKey(d => d.CategoryId)
+                .HasConstraintName("FK_Combos_Categories");
         });
 
         modelBuilder.Entity<ComboService>(entity =>
