@@ -49,17 +49,17 @@ function Login() {
     dispatch(setLoading(true));
     try {
       const payload: LoginPayLoad = {
-        phoneNumber: data.phoneNumber,
+        username: data.username,
         password: data.password,
       };
       const res = (await authService.login(payload)) as unknown as ResponseSuccessApi;
 
       if (res?.success) {
-        const { accessToken, refreshToken } = res.data as Token;
-        authContext.saveToken({ accessToken, refreshToken });
+        const { token, refreshToken } = res.data as Token;
+        authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
-      navigate(ADMIN_PATH.ADMIN);
+      navigate(-1);
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.message || error));
@@ -99,9 +99,9 @@ function Login() {
 
         <FormItem>
           <TextFieldElement
-            name={authProps.phoneNumber.propertyName}
+            name={authProps.username.propertyName}
             control={control}
-            label={authProps.phoneNumber.propertyLabel}
+            label={authProps.username.propertyLabel}
             placeholder="Your phone number"
             onKeyDown={handleKeyDown}
             autoFocus
