@@ -101,17 +101,19 @@ namespace hair_hamony.Business.Services.StaffServices
                 };
             }
 
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
-            {
-                throw new CException
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = "Tên đăng nhập đã tồn tại"
-                };
-            }
-
             var staff = _mapper.Map<Staff>(await GetById(id));
+            if (staff.Username != requestBody.Username)
+            {
+                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+                if (isExistedUsername)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Tên đăng nhập đã tồn tại"
+                    };
+                }
+            }
             _mapper.Map(requestBody, staff);
             if (requestBody.Avatar != null)
             {
@@ -175,7 +177,7 @@ namespace hair_hamony.Business.Services.StaffServices
 
         private async Task<bool> UsernameIsExisted(string username)
         {
-            var isExisted = await _context.Staffs.Select(staff => staff.Username == username).CountAsync() > 0;
+            var isExisted = await _context.Staffs.Where(staff => staff.Username == username).AnyAsync();
 
             return isExisted;
         }

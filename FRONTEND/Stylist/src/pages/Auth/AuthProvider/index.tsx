@@ -49,7 +49,7 @@ function AuthProvider({ children }) {
   useEffect(() => {
     if (token) {
       const { exp, email, role, id } = jwtDecode(token.token) as any;
-
+      
       if (Date.now() >= exp * 1000) {
         if (!token.refreshToken) {
           logout();
@@ -72,11 +72,9 @@ function AuthProvider({ children }) {
           });
       } else {
         const info: CredentialInfo = {
+          ...jwtDecode(token.token),
           acessToken: token.token,
           refreshToken: token.refreshToken,
-          email: email,
-          role: role,
-          id: id,
         };
         dispatch(setCredentialInfo<CredentialInfo>(info));
       }

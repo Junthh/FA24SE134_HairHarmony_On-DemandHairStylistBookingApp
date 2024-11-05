@@ -101,18 +101,19 @@ namespace hair_hamony.Business.Services.CustomerServices
                 };
             }
 
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
-            {
-                throw new CException
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = "Tên đăng nhập đã tồn tại"
-                };
-            }
-
             var customer = _mapper.Map<Customer>(await GetById(id));
-
+            if (customer.Username != requestBody.Username)
+            {
+                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
+                if (isExistedUsername)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Tên đăng nhập đã tồn tại"
+                    };
+                }
+            }
             _mapper.Map(requestBody, customer);
             if (requestBody.Avatar != null)
             {
@@ -145,7 +146,7 @@ namespace hair_hamony.Business.Services.CustomerServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Staff", id: customer.Id, email: "", phoneNumber: customer.PhoneNumber, username: customer.Username);
+            var token = _jwtHelper.GenerateJwtToken(role: "Customer", id: customer.Id, email: "", phoneNumber: customer.PhoneNumber, username: customer.Username);
             return (token, _mapper.Map<GetCustomerModel>(customer));
         }
 
@@ -176,7 +177,7 @@ namespace hair_hamony.Business.Services.CustomerServices
 
         private async Task<bool> UsernameIsExisted(string username)
         {
-            var isExisted = await _context.Customers.Select(customer => customer.Username == username).CountAsync() > 0;
+            var isExisted = await _context.Customers.Where(customer => customer.Username == username).AnyAsync();
 
             return isExisted;
         }

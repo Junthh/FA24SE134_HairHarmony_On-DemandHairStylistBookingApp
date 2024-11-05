@@ -4,7 +4,7 @@ import { showToast } from 'components/Common/Toast';
 import CheckboxElement from 'components/Form/CheckboxElement/CheckboxElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { LOGO } from 'configurations/logo';
-import { AUTH_PATH, OWNER_PATH } from 'configurations/paths/paths';
+import { AUTH_PATH, STAFF_PATH, STYLIST_PATH } from 'configurations/paths/paths';
 import * as colors from 'constants/colors';
 import { Token } from 'models/CredentialInfo.model';
 import { LoginPayLoad } from 'models/Request.model';
@@ -59,7 +59,7 @@ function Login() {
         authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
-      navigate(OWNER_PATH.DASHBOARD);
+      navigate(STYLIST_PATH.TIMEKEEPING);
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.message || error));

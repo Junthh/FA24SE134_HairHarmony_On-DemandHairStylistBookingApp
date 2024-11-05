@@ -7,13 +7,10 @@ import { LOGO } from 'configurations/logo';
 import ImageComponent from 'components/Common/Image/ImageComponent';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { useForm } from 'react-hook-form';
-import { postsService } from 'services/posts.service';
-import { showToast } from 'components/Common/Toast';
 import { handleError } from 'utils/helper';
 import { useNavigate } from 'react-router';
 import { USER_PATH } from 'configurations/paths/paths';
 import useModal from 'hooks/useModal';
-import { Dialog } from 'components/Common/Dialog';
 
 const FooterWrapper = styled('div')(() => ({
   display: 'flex',
@@ -126,30 +123,6 @@ export default function Footer() {
     formState: { errors },
   } = formContext;
 
-  const handleSubscribe = async () => {
-    try {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const email = getValues('email');
-      if (!email) {
-        showToast('error', 'Please input your email before subscribing !!!');
-        return;
-      }
-      if (!emailRegex.test(email)) {
-        showToast('error', 'Your email is invalid !!!');
-        return;
-      }
-
-      const res = (await postsService.subscribeEmail({ email })) as any;
-      if (res) {
-        showToast('success', 'Your email saved successfully!!!');
-        setValue('email', '');
-        return;
-      }
-      showToast('error', 'Some errors occurred !!!');
-    } catch (error) {
-      showToast('error', handleError(error.message || error));
-    }
-  };
 
   return (
     <FooterWrapper>

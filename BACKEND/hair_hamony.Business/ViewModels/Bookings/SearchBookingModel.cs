@@ -10,5 +10,6 @@
         public string? Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public Guid? CustomerId { get; set; }
+        public Guid? StaffId { get; set; }
     }
 }

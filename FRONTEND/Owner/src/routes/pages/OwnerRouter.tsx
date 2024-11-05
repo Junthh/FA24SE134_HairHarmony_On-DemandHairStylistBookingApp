@@ -10,7 +10,8 @@ const EmployeeWorkSchedulePage = lazy(() => import('pages/Owner/EmployeeWorkSche
 const AccountManagement = lazy(() => import('pages/Owner/AccountManagement'));
 const AppointmentManagement = lazy(() => import('pages/Owner/AppointmentManagement'));
 const Dashboard = lazy(() => import('pages/Owner/Dashboard'));
-const EmployeeList = lazy(() => import('pages/Owner/EmployeeList'));
+const EmployeeStaffList = lazy(() => import('pages/Owner/EmployeeStaffList'));
+const EmployeeStylistList = lazy(() => import('pages/Owner/EmployeeStylistList'));
 const EmployeeSalary = lazy(() => import('pages/Owner/EmployeeSalary'));
 const Feedback = lazy(() => import('pages/Owner/Feedback'));
 const News = lazy(() => import('pages/Owner/News'));
@@ -18,6 +19,7 @@ const PromotionList = lazy(() => import('pages/Owner/PromotionList'));
 const ServicesList = lazy(() => import('pages/Owner/ServicesList'));
 const TransactionList = lazy(() => import('pages/Owner/TransactionList'));
 const ComboList = lazy(() => import('pages/Owner/ComboList'));
+const CategoriesList = lazy(() => import('pages/Owner/CategoriesList'));
 
 //
 //
@@ -25,9 +27,9 @@ export const OwnerRouter = {
   path: '/',
   element: (
     <React.Suspense fallback={<LoadingOverlay loading={true} />}>
-      {/* <AuthProvider> */}
-      <OwnerPage />
-      {/* </AuthProvider> */}
+      <AuthProvider>
+        <OwnerPage />
+      </AuthProvider>
     </React.Suspense>
   ),
   children: [
@@ -41,8 +43,12 @@ export const OwnerRouter = {
       element: <Dashboard />,
     },
     {
-      path: `${OWNER_PATH.EMPLOYEE_LIST}`,
-      element: <EmployeeList />,
+      path: `${OWNER_PATH.EMPLOYEE_STAFF_LIST}`,
+      element: <EmployeeStaffList />,
+    },
+    {
+      path: `${OWNER_PATH.EMPLOYEE_STYLIST_LIST}`,
+      element: <EmployeeStylistList />,
     },
     {
       path: `${OWNER_PATH.EMPLOYEE_WORK_SCHEDULE}`,
@@ -51,6 +57,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.EMPLOYEE_SALARY}`,
       element: <EmployeeSalary />,
+    },
+    {
+      path: `${OWNER_PATH.CATEGORIES}`,
+      element: <CategoriesList />,
     },
     {
       path: `${OWNER_PATH.SERVICES}`,

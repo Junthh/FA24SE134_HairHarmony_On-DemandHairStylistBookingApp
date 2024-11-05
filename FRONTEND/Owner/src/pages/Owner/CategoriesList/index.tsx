@@ -34,12 +34,13 @@ import { selectServices, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
-import { comboServices } from 'services/combo.service';
 import { currencyFormat, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import SelectMultiElement from 'components/Form/SelectMultiElement';
-export default function ComboList() {
+import { categorysServices } from 'services/categorys.service';
+
+export default function CategoriesList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const services = useSelector(selectServices);
@@ -69,12 +70,7 @@ export default function ComboList() {
   const defaultValues = {
     id: '',
     name: '',
-    discount: 0,
-    totalPrice: 0,
-    duration: 0,
     image: '',
-    description: '',
-    comboService: null,
   };
   const formCombo = useForm<any>({
     defaultValues,
@@ -99,9 +95,9 @@ export default function ComboList() {
   }, [paging.size, paging.page]);
   const getCombosList = useCallback(({ size, page, name = '' }) => {
     dispatch(setLoading(true));
-    comboServices
+    categorysServices
       .list({ pageSize: size, pageIndex: page + 1, name })
-      .then((resultList: ListEmployeeSuccess) => {
+      .then((resultList: any) => {
         setPaging((prev) => ({
           ...prev,
           total: resultList.paging.total,
@@ -135,12 +131,6 @@ export default function ComboList() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
-      console.log(row);
-      const comboServices = row.comboServices.map((comboService) => comboService.service.id);
-      row = {
-        ...row,
-        comboService: comboServices,
-      };
       formCombo.reset(row);
       setImage(row.image);
       openModal();
@@ -151,15 +141,19 @@ export default function ComboList() {
     (row) => {
       dispatch(setLoading(true));
       setAnchorEl(null);
-      comboServices
+      categorysServices
         .delete(row.id)
-        .then((res: ListEmployeeSuccess) => {
+        .then((res: any) => {
           showToast('success', res.msg);
           dispatch(setLoading(false));
         })
         .catch((err) => {
           showToast('error', err.message);
           dispatch(setLoading(false));
+        })
+        .finally(() => {
+          const { size, page } = paging;
+          getCombosList({ size, page, name: formSearch.getValues('name') });
         });
     },
     [selectedRow],
@@ -180,19 +174,12 @@ export default function ComboList() {
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       const id = data.id;
-      const comboMap = data.comboServices.map((comboService) => comboService.service.id);
-      data = {
-        ...data,
-        services: JSON.stringify(comboMap),
-      };
-      delete data.comboServices;
-      delete data.comboService;
       data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));
-        comboServices
+        categorysServices
           .update(id, data)
-          .then((res) => {
+          .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
             getCombosList({ size, page, name: formSearch.getValues('name') });
@@ -205,9 +192,9 @@ export default function ComboList() {
           });
       } else {
         dispatch(setLoading(true));
-        comboServices
+        categorysServices
           .create(data)
-          .then((res) => {
+          .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
             getCombosList({ size, page, name: formSearch.getValues('name') });
@@ -247,49 +234,6 @@ export default function ComboList() {
                 control={control}
                 placeholder="Nhập tên dịch vụ"
                 label={'Tên dịch vụ'}
-                //   onKeyUp={handleKeyup}
-              />
-              <SelectMultiElement
-                name="comboService"
-                label="Loại dịch vụ"
-                control={control}
-                options={
-                  services &&
-                  Object.keys(services).map((id) => ({
-                    value: id,
-                    label: services[id].name,
-                  }))
-                }
-                placeholder="Select items"
-              />
-              <TextFieldElement
-                name="totalPrice"
-                control={control}
-                type="number"
-                placeholder="Nhập giá"
-                label={'Giá'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="duration"
-                control={control}
-                placeholder="Nhập khoản thời gian"
-                label={'Khoảng thời gian'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="discount"
-                control={control}
-                placeholder="Nhập giảm giá"
-                label={'Giảm giá'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextAreaElement
-                name="description"
-                control={control}
-                placeholder="Nhập mô tả"
-                label={'Mô tả'}
-
                 //   onKeyUp={handleKeyup}
               />
               <Box display={'flex'} justifyContent={'flex-end'}>
@@ -346,19 +290,13 @@ export default function ComboList() {
             <TableRow>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
-                Tên combo
+                Category Name
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Mô tả
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Combo service
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Trong khoản thời gian
+                Ngày tạo
               </StyledTableCell>{' '}
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Đơn giá
+                Ngày cập nhật
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
@@ -376,16 +314,11 @@ export default function ComboList() {
                 <StyledTableCell component="th" scope="row">
                   {row.name}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.description}</StyledTableCell>
                 <StyledTableCell align="right">
-                  {row.comboServices?.map((item) => item?.service?.name || '').join(', ')}
+                  {formatDate(row.createdDate, 'dd/MM/yyyy')}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.duration}/phút</StyledTableCell>
                 <StyledTableCell align="right">
-                  <span style={{ textDecoration: 'line-through' }}>
-                    {currencyFormat(row.totalPrice + row.discount)}
-                  </span>
-                  /{currencyFormat(row.totalPrice)}
+                  {formatDate(row.updatedDate, 'dd/MM/yyyy')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
@@ -437,7 +370,7 @@ export default function ComboList() {
           >
             <EditIcon />
             <Typography variant="body2" fontWeight={500}>
-              Edit service
+              Edit category
             </Typography>
           </Box>
           <Box
@@ -448,7 +381,7 @@ export default function ComboList() {
           >
             <DeleteIcon />
             <Typography variant="body2" fontWeight={500}>
-              Delete service
+              Delete category
             </Typography>
           </Box>
         </PopoverContent>

@@ -218,14 +218,6 @@ export default function EmployeeSalary() {
               width={'550px'}
             >
               <TextFieldElement
-                name="totalSalary"
-                control={control}
-                placeholder="Nhập totalSalary"
-                label={'totalSalary'}
-                disabled={!!selectedRow?.totalSalary}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
                 name="fullName"
                 control={control}
                 placeholder="Nhập Họ và tên"
@@ -261,6 +253,14 @@ export default function EmployeeSalary() {
                 placeholder="Chọn role"
                 label={'Roles'}
               ></SelectElement>
+              <TextFieldElement
+                name="totalSalary"
+                control={control}
+                placeholder="Nhập totalSalary"
+                label={'Tổng lương'}
+                disabled={!!selectedRow?.totalSalary}
+                //   onKeyUp={handleKeyup}
+              />
               <SelectElement
                 control={control}
                 name="status"
