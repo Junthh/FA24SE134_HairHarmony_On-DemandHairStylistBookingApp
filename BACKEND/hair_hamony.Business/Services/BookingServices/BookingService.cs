@@ -74,14 +74,21 @@ namespace hair_hamony.Business.Services.BookingServices
             using var transaction = _context.Database.BeginTransaction();
             try
             {
+                var stylist = _context.Stylists
+                    .FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
+
+                double expertFee = 0;
+                double totalPrice = 0;
+                double amoutToPaid = 0;
+
                 var bookingId = Guid.NewGuid();
                 var booking = _context.Bookings.Add(new Booking
                 {
                     Id = bookingId,
                     BookingDate = requestBody.BookingDate,
-                    ExpertFee = requestBody.ExpertFee,
-                    TotalPrice = requestBody.TotalPrice,
-                    AmoutToPaid = requestBody.AmoutToPaid,
+                    ExpertFee = expertFee,
+                    TotalPrice = totalPrice,
+                    AmoutToPaid = amoutToPaid,
                     LoyaltyPoints = requestBody.LoyaltyPoints,
                     CustomerId = requestBody.CustomerId,
                     StaffId = requestBody.StaffId,
@@ -105,7 +112,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 {
                     Id = paymentId,
                     PaymentDate = null,
-                    Price = requestBody.TotalPrice,
+                    Price = amoutToPaid,
                     PaymentMethod = null,
                     Status = "Initialize",
                     CreatedDate = DateTime.Now,
