@@ -160,7 +160,6 @@ export default function Booking() {
               acc[service.id] = { ...service, checked: false };
               return acc;
             }, {});
-          console.log(servicesResult);
           setServices(servicesResult);
           setCategories(categroriesResult);
         })
@@ -504,94 +503,99 @@ export default function Booking() {
           )}
         </Grid>
         <Grid item xs={4}>
-          <BoxCardBill>
-            {services &&
-              Object.keys(services).map((key) => {
-                return services[key].checked ? (
-                  <>
-                    <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-                      <Box>
-                        <Typography variant="h5" fontWeight={700}>
-                          {services[key].name}
-                        </Typography>
-                        <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                          {services[key].description}
+          {services &&
+          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) ? (
+            <BoxCardBill>
+              {services &&
+                Object.keys(services).map((key) => {
+                  return services[key].checked ? (
+                    <>
+                      <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Box>
+                          <Typography variant="h5" fontWeight={700}>
+                            {services[key].name}
+                          </Typography>
+                          <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                            {services[key].description}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body1" fontWeight={600}>
+                          {currencyFormat(services[key].price)}
                         </Typography>
                       </Box>
-                      <Typography variant="body1" fontWeight={600}>
-                        {currencyFormat(services[key].price)}
+                      <Box height={20}></Box>
+                    </>
+                  ) : null;
+                })}
+
+              {activeTime && date ? (
+                <>
+                  <Divider variant="fullWidth"></Divider>
+                  <Box height={10}></Box>
+                  <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Box>
+                      <Typography variant="h5" fontWeight={700}>
+                        Ngày cắt Giờ cắt
+                      </Typography>
+
+                      <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                        {activeTime ? `${activeTime?.startTime} - ${activeTime?.endTime}` : ''} Ngày{' '}
+                        {date ? formatDate(date.toString()) : ''}
                       </Typography>
                     </Box>
-                    <Box height={20}></Box>
-                  </>
-                ) : null;
-              })}
-
-            {activeTime && date ? (
-              <>
-                <Divider variant="fullWidth"></Divider>
-                <Box height={10}></Box>
-                <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Box>
-                    <Typography variant="h5" fontWeight={700}>
-                      Ngày cắt Giờ cắt
-                    </Typography>
-
-                    <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                      {activeTime ? `${activeTime?.startTime} - ${activeTime?.endTime}` : ''} Ngày{' '}
-                      {date ? formatDate(date.toString()) : ''}
-                    </Typography>
                   </Box>
-                </Box>
-              </>
-            ) : (
-              ''
-            )}
-            <Box height={20}></Box>
-            {stylistActive ? (
-              <>
-                {' '}
-                <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Box>
-                    <Typography variant="h5" fontWeight={700}>
-                      Thợ cắt
-                    </Typography>
-                    <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                      {`${stylistActive?.fullName} - ${stylistActive?.level}`}
-                    </Typography>
+                </>
+              ) : (
+                ''
+              )}
+              <Box height={20}></Box>
+              {stylistActive ? (
+                <>
+                  {' '}
+                  <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Box>
+                      <Typography variant="h5" fontWeight={700}>
+                        Thợ cắt
+                      </Typography>
+                      <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                        {`${stylistActive?.fullName} - ${stylistActive?.level}`}
+                      </Typography>
+                    </Box>
+                    {<Rating value={stylistActive?.rating} precision={0.5} />}
                   </Box>
-                  {<Rating value={stylistActive?.rating} precision={0.5} />}
-                </Box>
-                <Divider variant="fullWidth"></Divider>
-              </>
-            ) : (
-              <></>
-            )}
-            <Box height={20}></Box>
-            <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography variant="h5" fontWeight={700}>
-                Tổng tiền
-              </Typography>
-              <Typography variant="body1" fontWeight={600}>
-                {services &&
-                  currencyFormat(
-                    Object.values(services)
-                      .filter((option: any) => option.checked === true)
-                      .reduce((total, option: any) => total + option.price, 0),
-                  )}{' '}
-              </Typography>
-            </Box>
-            <Box height={40}></Box>
-            <ButtonPrimary
-              sx={{ width: '100%' }}
-              severity="primary"
-              padding={'9px 40px'}
-              borderradius={9}
-              onClick={() => handleChangeStep()}
-            >
-              {currentStep === 3 ? 'Xác nhận' : 'Tiếp tục'}
-            </ButtonPrimary>
-          </BoxCardBill>
+                  <Divider variant="fullWidth"></Divider>
+                </>
+              ) : (
+                <></>
+              )}
+              <Box height={20}></Box>
+              <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                <Typography variant="h5" fontWeight={700}>
+                  Tổng tiền
+                </Typography>
+                <Typography variant="body1" fontWeight={600}>
+                  {services &&
+                    currencyFormat(
+                      Object.values(services)
+                        .filter((option: any) => option.checked === true)
+                        .reduce((total, option: any) => total + option.price, 0),
+                    )}{' '}
+                </Typography>
+              </Box>
+              <Box height={40}></Box>
+              <ButtonPrimary
+                sx={{ width: '100%' }}
+                severity="primary"
+                padding={'9px 40px'}
+                borderradius={9}
+                onClick={() => handleChangeStep()}
+              >
+                {currentStep === 3 ? 'Xác nhận' : 'Tiếp tục'}
+              </ButtonPrimary>
+            </BoxCardBill>
+          ) : (
+            <></>
+          )}
         </Grid>
       </Grid>
     </BoxBookingStyled>
