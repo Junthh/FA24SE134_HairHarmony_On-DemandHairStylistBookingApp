@@ -40,37 +40,37 @@ export const theme = createTheme(
       },
     },
     typography: {
-      fontFamily: ['Raleway, sans-serif'].join(','),
+      fontFamily: ['Lato, sans-serif'].join(','),
       h1: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '38px',
         lineHeight: 1.4,
       },
       h2: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '28px',
         lineHeight: 1.4,
       },
       h3: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '24px',
         lineHeight: 1.4,
       },
       h4: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '20px',
         lineHeight: 1.4,
       },
       h5: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '18px',
@@ -78,14 +78,14 @@ export const theme = createTheme(
       },
       // bold body
       body1: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '18px',
         lineHeight: 1.8,
       },
       body2: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '16px',
@@ -93,7 +93,7 @@ export const theme = createTheme(
       },
       // bold label
       label1: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 400,
         fontSize: '14px',
@@ -101,7 +101,7 @@ export const theme = createTheme(
       },
       // regular label
       label2: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 700,
         fontSize: '14px',
@@ -109,7 +109,7 @@ export const theme = createTheme(
       },
       // bold small
       small1: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 500,
         fontSize: '14px',
@@ -117,7 +117,7 @@ export const theme = createTheme(
       },
       // regular small
       small2: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 500,
         fontSize: '12px',
@@ -125,7 +125,7 @@ export const theme = createTheme(
       },
       // bold smaller
       smaller1: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 500,
         fontSize: '10px',
@@ -133,7 +133,7 @@ export const theme = createTheme(
       },
       // regular smaller
       smaller2: {
-        fontFamily: 'Raleway, sans-serif',
+        fontFamily: 'Lato, sans-serif',
         fontStyle: 'normal',
         fontWeight: 500,
         fontSize: '8px',

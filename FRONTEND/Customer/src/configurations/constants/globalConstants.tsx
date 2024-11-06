@@ -4,6 +4,7 @@ import { env } from '../../env';
 export enum LOCAL_STORAGE_KEYS {
   AccessToken = 'token',
   RefreshToken = 'refreshToken',
+  CurrentPath = 'currentPath',
 }
 
 // save endpoint using in Ecocupid app

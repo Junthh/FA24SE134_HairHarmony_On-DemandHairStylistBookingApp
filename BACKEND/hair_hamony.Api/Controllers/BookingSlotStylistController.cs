@@ -4,6 +4,7 @@ using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.BookingSlotStylistServices;
 using hair_hamony.Business.ViewModels;
 using hair_hamony.Business.ViewModels.BookingSlotStylists;
+using hair_hamony.Business.ViewModels.Stylists;
 using Microsoft.AspNetCore.Mvc;
 
 namespace home_travel.API.Controllers
@@ -40,6 +41,33 @@ namespace home_travel.API.Controllers
                         Total = total
                     },
                     data: bookingSlotStylists
+                ));
+        }
+
+        /// <summary>
+        /// Endpoint for get all stylist in freetime
+        /// </summary>
+        /// <param name="bookingDate">A date of customer booking</param>
+        /// <param name="timeSlotId">A slot of customer booking</param>
+        /// <returns>List of stylist</returns>
+        /// <response code="200">Returns the list of stylist</response>
+        [HttpGet("StylistFreetime")]
+        [ProducesResponseType(typeof(ModelsResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public IActionResult GetListStylistFreetime(
+            [FromQuery] DateOnly bookingDate,
+            [FromQuery] Guid timeSlotId)
+        {
+            var stylists = _bookingSlotStylistService.GetListStylistFreetime(bookingDate, timeSlotId);
+
+            return Ok(new ModelsResponse<GetStylistModel>(
+                    paging: new PagingResponse()
+                    {
+                        Page = 1,
+                        Size = stylists.Count,
+                        Total = stylists.Count
+                    },
+                    data: stylists
                 ));
         }
 
