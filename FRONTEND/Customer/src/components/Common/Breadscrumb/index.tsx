@@ -18,12 +18,13 @@ const BreadscrumbStyle = styled.div`
       text-decoration: underline;
     }
   }
-  MuiTypography-body1 {
+  .MuiTypography-body1 {
     font-style: normal;
-    font-weight: 700;
     font-size: 18px;
     line-height: 1.8;
-    color: ${colors.b9};
+    &:hover {
+      cursor: pointer;
+    }
   }
   & img {
     padding: 0 12px;
@@ -32,7 +33,7 @@ const BreadscrumbStyle = styled.div`
 `;
 export type BreadScrumbProps = {
   currentStep: number;
-  options: { label: string; step: number }[];
+  options: { label: string; step: number; onClick?: () => void }[];
 };
 export default function Breadscrumb({ options, currentStep }: BreadScrumbProps) {
   return (
@@ -47,6 +48,9 @@ export default function Breadscrumb({ options, currentStep }: BreadScrumbProps) 
               variant="body1"
               fontWeight={isActive ? 700 : 400}
               color={isActive ? colors.dark : 'inherit'} // Optionally change color for active
+              onClick={() => {
+                item.onClick();
+              }}
             >
               {item.label}
             </Typography>

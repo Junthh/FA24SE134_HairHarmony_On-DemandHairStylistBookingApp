@@ -23,7 +23,11 @@ public partial class Combo
 
     public string? Description { get; set; }
 
+    public Guid? CategoryId { get; set; }
+
     public virtual ICollection<BookingDetail> BookingDetails { get; set; } = new List<BookingDetail>();
+
+    public virtual Category? Category { get; set; }
 
     public virtual ICollection<ComboService> ComboServices { get; set; } = new List<ComboService>();
 }

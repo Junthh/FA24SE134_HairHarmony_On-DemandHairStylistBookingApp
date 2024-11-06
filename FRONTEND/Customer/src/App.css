@@ -1,13 +1,13 @@
 body,
 html {
-  font-family: "Raleway", sans-serif;
+  font-family: "Lato", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
   background-color: #f9faff;
 }
 .MuiTypography-root{
-  font-family: "Raleway", sans-serif !important;
+  font-family: "Lato", sans-serif !important;
 }
 .mea-culpa-regular {
   font-family: "Mea Culpa", cursive;

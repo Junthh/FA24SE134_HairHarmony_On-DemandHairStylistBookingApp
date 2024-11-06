@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 export interface AuthKeys {
-  phoneNumber: string;
+  username: string;
   password: string;
   confirmPassword: string;
 }
@@ -14,20 +14,20 @@ type AuthProps = {
 };
 
 export const authProps: AuthProps = {
-  phoneNumber: { propertyLabel: 'Phone Number', propertyName: 'phoneNumber' },
+  username: { propertyLabel: 'Username', propertyName: 'username' },
   password: { propertyLabel: 'Password', propertyName: 'password' },
   confirmPassword: { propertyLabel: 'Confirm Password', propertyName: 'confirmPassword' },
 };
 
 // Form model
 export const registerFormDefaultValues = {
-  [authProps.phoneNumber.propertyName]: '',
+  [authProps.username.propertyName]: '',
   [authProps.password.propertyName]: '',
   [authProps.confirmPassword.propertyName]: '',
 };
 
 export const loginFormDefaultValues = {
-  [authProps.phoneNumber.propertyName]: '',
+  [authProps.username.propertyName]: '',
   [authProps.password.propertyName]: '',
 };
 
@@ -35,9 +35,7 @@ export const loginFormDefaultValues = {
 export const registerSchema = () => {
   return Yup.object().shape<any>({
     // Email
-    [authProps.phoneNumber.propertyName]: Yup.string()
-      .required(`Phone number is required.`)
-      .email('Your phone number is invalid format.'),
+    [authProps.username.propertyName]: Yup.string().required(`Username is required.`),
 
     // Password
     [authProps.password.propertyName]: Yup.string().required(`Password is required.`),
@@ -52,7 +50,7 @@ export const registerSchema = () => {
 export const loginSchema = () => {
   return Yup.object().shape<any>({
     // Email
-    [authProps.phoneNumber.propertyName]: Yup.string().required(`Phone number is required.`),
+    [authProps.username.propertyName]: Yup.string().required(`Username is required.`),
 
     // Password
     [authProps.password.propertyName]: Yup.string().required(`Password is required.`),

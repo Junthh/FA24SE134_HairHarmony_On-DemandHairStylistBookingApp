@@ -48,14 +48,14 @@ function Register() {
     dispatch(setLoading(true));
     try {
       const payload: RegisterPayload = {
-        phoneNumber: data.phoneNumber,
+        username: data.username,
         password: data.password,
       };
       const res = (await authService.register(payload)) as unknown as ResponseSuccessApi;
 
       if (res?.success) {
-        const { accessToken, refreshToken } = res.data as Token;
-        authContext.saveToken({ accessToken, refreshToken });
+        const { token, refreshToken } = res.data as Token;
+        authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
       navigate(ADMIN_PATH.ADMIN);
@@ -97,9 +97,9 @@ function Register() {
         </FormTitle>
         <FormItem>
           <TextFieldElement
-            name={authProps.phoneNumber.propertyName}
+            name={authProps.username.propertyName}
             control={control}
-            label={authProps.phoneNumber.propertyLabel}
+            label={authProps.username.propertyLabel}
             placeholder="Your phone number"
             onKeyDown={handleKeyDown}
             autoFocus

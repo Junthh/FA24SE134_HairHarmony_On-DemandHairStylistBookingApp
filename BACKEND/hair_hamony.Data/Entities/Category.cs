@@ -15,5 +15,7 @@ public partial class Category
 
     public string? Image { get; set; }
 
+    public virtual ICollection<Combo> Combos { get; set; } = new List<Combo>();
+
     public virtual ICollection<Service> Services { get; set; } = new List<Service>();
 }
