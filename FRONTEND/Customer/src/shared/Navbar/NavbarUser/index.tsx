@@ -5,6 +5,8 @@ import { ButtonPrimary } from 'pages/common/style/Button';
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NavbarStyled } from './styles';
+import { useSelector } from 'react-redux';
+import { selectCredentialInfo } from 'redux/Reducer';
 
 interface NavBarUserProps {
   onSidebarChange?: any;
@@ -13,6 +15,7 @@ interface NavBarUserProps {
 export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const credentialInfo = useSelector(selectCredentialInfo);
   // popover
   const [typePopover, setTypePopover] = useState<{
     type: string;
@@ -68,6 +71,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       );
     });
   }, [location]);
+  console.log(credentialInfo);
 
   return (
     <NavbarStyled typePopover={typePopover}>
@@ -82,16 +86,28 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       </Box>
       <Box className="nav-right">
         {renderNav}
-        <ButtonPrimary
-          severity="primary"
-          padding={'4px 12px'}
-          borderradius={'8px'}
-          fontWeight={400}
-          border={`1px solid ${colors.white}`}
-          onClick={() => navigate(`${AUTH_PATH.LOGIN}`)}
-        >
-          Đăng nhập
-        </ButtonPrimary>
+        {credentialInfo ? (
+          <ButtonPrimary
+            severity="primary"
+            padding={'4px 12px'}
+            borderradius={'8px'}
+            fontWeight={400}
+            border={`1px solid ${colors.white}`}
+          >
+            {'Wellcome ' + credentialInfo.Username}
+          </ButtonPrimary>
+        ) : (
+          <ButtonPrimary
+            severity="primary"
+            padding={'4px 12px'}
+            borderradius={'8px'}
+            fontWeight={400}
+            border={`1px solid ${colors.white}`}
+            onClick={() => navigate(`${AUTH_PATH.LOGIN}`)}
+          >
+            Đăng nhập
+          </ButtonPrimary>
+        )}
       </Box>
     </NavbarStyled>
   );
