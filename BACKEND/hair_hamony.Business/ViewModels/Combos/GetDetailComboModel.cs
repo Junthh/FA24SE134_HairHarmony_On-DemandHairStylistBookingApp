@@ -13,6 +13,7 @@ namespace hair_hamony.Business.ViewModels.Combos
         public string? Description { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public Guid? CategoryId { get; set; }
         public ICollection<GetDetailComboServiceModel>? ComboServices { get; set; }
     }
 }
