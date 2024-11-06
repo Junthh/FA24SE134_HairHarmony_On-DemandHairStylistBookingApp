@@ -3,9 +3,6 @@
     public class CreateInitBookingModel
     {
         public required DateOnly BookingDate { get; set; }
-        public double? ExpertFee { get; set; }
-        public double? TotalPrice { get; set; }
-        public double? AmoutToPaid { get; set; }
         public int? LoyaltyPoints { get; set; }
         public required Guid CustomerId { get; set; }
         public Guid? StaffId { get; set; }
