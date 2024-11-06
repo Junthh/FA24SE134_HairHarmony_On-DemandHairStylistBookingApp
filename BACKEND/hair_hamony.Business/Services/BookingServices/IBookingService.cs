@@ -11,5 +11,6 @@ namespace hair_hamony.Business.Services.BookingServices
         Task<GetBookingModel> Create(CreateBookingModel requestBody);
         Task<GetBookingModel> Update(Guid id, UpdateBookingModel requestBody);
         Task Delete(Guid id);
+        Task<GetBookingModel> Init(CreateInitBookingModel requestBody);
     }
 }
