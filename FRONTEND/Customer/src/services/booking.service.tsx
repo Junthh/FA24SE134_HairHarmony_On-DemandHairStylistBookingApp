@@ -35,6 +35,14 @@ class BookingServices {
       throw error;
     }
   }
+  async bookingInit(body) {
+    try {
+      const resData = await axios.post(`${ENDPOINTS.ApiPrefix}/Bookings/Init`, body);
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const bookingServices = new BookingServices();

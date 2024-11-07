@@ -32,7 +32,7 @@ import { bookingServices } from 'services/booking.service';
 import { currencyFormat } from 'utils/helper';
 import { showToast } from 'components/Common/Toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectLoading, setLoading } from 'redux/Reducer';
+import { selectCredentialInfo, selectLoading, setLoading } from 'redux/Reducer';
 import SkeletonTime from './components/SkeletonTime';
 import { categoryService } from 'services/category.service';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -80,6 +80,7 @@ export default function Booking() {
   const [times, setTimes] = useState([]);
   const [stylists, setStylists] = useState([]);
   const dispatch = useDispatch();
+  const credentialInfo = useSelector(selectCredentialInfo);
   const isLoading = useSelector(selectLoading);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -200,19 +201,48 @@ export default function Booking() {
           showToast('warning', 'Vui lòng chọn stylist!');
           return;
         }
+        dispatch(setLoading(true));
         const serviceChecked = Object.entries(services)
           .filter(([, option]: any) => option.checked)
           .map(([id, option]: any) => ({ id, ...option }));
         const timeChecked = times.find((time) => time.isActive);
-        const stylistChecked = stylists.find((item) => item.isActive);
-        const timeSlotId = times.find((time) => time.isActive);
+        const stylistId = stylists.find((item) => item.isActive)?.id;
+        const timeSlotId = times.find((time) => time.isActive)?.id;
         const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
-        console.log('serviceChecked', serviceChecked);
-        console.log('timeChecked', timeChecked);
-        console.log('stylistChecked', stylistChecked);
-        console.log('date time', { timeSlotId, bookingDate });
-
-        navigate('/appointment');
+        const combos = serviceChecked
+          .filter((item) => item.categoryId === categories[0].id)
+          .map((item) => ({
+            id: item.id,
+            totalPrice: item.price,
+            discount: item.discount ?? 0,
+          }));
+        const servicesResult = serviceChecked
+          .filter((item) => item.categoryId !== categories[0].id)
+          .map((item) => ({
+            id: item.id,
+            price: item.price,
+          }));
+        const payload = {
+          bookingDate,
+          customerId: credentialInfo.Id,
+          timeSlotId,
+          stylistId,
+          combos,
+          services: servicesResult,
+        };
+        bookingServices
+          .bookingInit(payload)
+          .then((res) => {
+            showToast('success', 'Đặt lịch thành công');
+            navigate('/appointment');
+          })
+          .catch((err) => {
+            showToast('error', err.msg);
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+        return;
       }
       setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
     }
@@ -376,7 +406,7 @@ export default function Booking() {
                     },
                   }}
                   disableHighlightToday
-                  // disablePast
+                  disablePast
                   showDaysOutsideCurrentMonth
                   value={date}
                   onChange={(newValue) => setDate(newValue)}
