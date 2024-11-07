@@ -78,6 +78,22 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for init flow booking
+        /// </summary>
+        /// <param name="requestBody">An obj contains input info of a booking</param>
+        /// <returns>A booking within status 201 or error status</returns>
+        /// <response code="201">Returns the booking</response>
+        [HttpPost("Init")]
+        [ProducesResponseType(typeof(BaseResponse<GetBookingModel>), StatusCodes.Status201Created)]
+        public async Task<IActionResult> Init(CreateInitBookingModel requestBody)
+        {
+            return Ok(new BaseResponse<GetBookingModel>(
+                    statusCode: 201, data: await _bookingService.Init(requestBody),
+                    msg: SuccessMessageResponse.CREATED_REQUEST
+                ));
+        }
+
+        /// <summary>
         /// Endpoint for booking edit booking
         /// </summary>
         /// <param name="id"></param>
