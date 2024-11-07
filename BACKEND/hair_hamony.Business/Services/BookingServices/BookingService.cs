@@ -95,7 +95,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     Status = "Initialize",
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
-                });
+                }).Entity;
 
                 var transactionId = Guid.NewGuid();
                 _context.Transactions.Add(new Transaction
@@ -147,7 +147,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = 0; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
                             CheckStylistBusy(requestBody.BookingDate, timeSlotNext.Id, requestBody.StylistId);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
@@ -169,7 +169,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             Id = paymentDetailId,
                             CreatedDate = DateTime.Now,
                             Price = serviceModel.Price,
-                            PaymentId = paymentDetailId,
+                            PaymentId = paymentId,
                         });
 
                         _context.TransactionDetails.Add(new TransactionDetail
@@ -209,7 +209,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = 0; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
                             CheckStylistBusy(requestBody.BookingDate, timeSlotNext.Id, requestBody.StylistId);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
@@ -231,7 +231,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             Id = paymentDetailId,
                             CreatedDate = DateTime.Now,
                             Price = comboModel.TotalPrice,
-                            PaymentId = paymentDetailId,
+                            PaymentId = paymentId,
                         });
 
                         _context.TransactionDetails.Add(new TransactionDetail
@@ -262,9 +262,9 @@ namespace hair_hamony.Business.Services.BookingServices
             var stylists = _bookingSlotStylistService
                     .GetListStylistFreetime(bookingDate, timeSlotId);
 
-            var stylistBooked = stylists.Any(stylist => stylist.Id == stylistId);
+            var isStylistFreeTime = stylists.Any(stylist => stylist.Id == stylistId);
 
-            if (stylistBooked == true)
+            if (!isStylistFreeTime)
             {
                 throw new CException
                 {
