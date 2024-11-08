@@ -57,7 +57,7 @@ namespace hair_hamony.Business.Services.BookingServices
             query = query.GetWithSearch(searchBookingModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
-            query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();\
+            query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
 
             var results = _mapper.Map<IList<GetDetailBookingModel>>(query);
 
