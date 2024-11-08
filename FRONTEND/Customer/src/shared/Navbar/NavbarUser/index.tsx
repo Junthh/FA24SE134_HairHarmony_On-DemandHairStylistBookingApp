@@ -1,4 +1,4 @@
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Link, Popover, Typography } from '@mui/material';
 import { AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import * as colors from 'constants/colors';
 import { ButtonPrimary } from 'pages/common/style/Button';
@@ -7,6 +7,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { NavbarStyled } from './styles';
 import { useSelector } from 'react-redux';
 import { selectCredentialInfo } from 'redux/Reducer';
+import PopoverContent from 'pages/common/PopoverContent';
+import { AuthConsumer } from 'pages/Auth/AuthProvider';
 
 interface NavBarUserProps {
   onSidebarChange?: any;
@@ -16,11 +18,17 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const credentialInfo = useSelector(selectCredentialInfo);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
   // popover
   const [typePopover, setTypePopover] = useState<{
     type: string;
     open: boolean;
   }>();
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const [navOptions] = useState([
     {
       link: USER_PATH.HOME,
@@ -86,16 +94,50 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       </Box>
       <Box className="nav-right">
         {renderNav}
-        {credentialInfo ? (
-          <ButtonPrimary
-            severity="primary"
-            padding={'4px 12px'}
-            borderradius={'8px'}
-            fontWeight={400}
-            border={`1px solid ${colors.white}`}
-          >
-            {'Wellcome ' + credentialInfo.Username}
-          </ButtonPrimary>
+        {credentialInfo?.Username ? (
+          <>
+            <ButtonPrimary
+              severity="primary"
+              padding={'4px 12px'}
+              borderradius={'8px'}
+              fontWeight={400}
+              border={`1px solid ${colors.white}`}
+              onClick={(event) => {
+                setAnchorEl(event.currentTarget);
+              }}
+            >
+              {'Wellcome ' + credentialInfo.Username}
+            </ButtonPrimary>
+            <Popover
+              id={id}
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              <PopoverContent>
+                <Box
+                  padding={'10px 20px'}
+                  className="content"
+                  onClick={() => {
+                    localStorage.clear();
+                    navigate(AUTH_PATH.LOGIN);
+                  }}
+                >
+                  <Typography variant="body2" fontWeight={500}>
+                    Đăng xuất
+                  </Typography>
+                </Box>
+              </PopoverContent>
+            </Popover>
+          </>
         ) : (
           <ButtonPrimary
             severity="primary"
