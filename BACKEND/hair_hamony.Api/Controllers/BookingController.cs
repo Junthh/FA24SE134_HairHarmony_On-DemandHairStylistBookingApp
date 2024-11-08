@@ -24,7 +24,7 @@ namespace home_travel.API.Controllers
         /// <returns>List of booking</returns>
         /// <response code="200">Returns the list of booking</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetBookingModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailBookingModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<BookingEnum.BookingSort> paginationModel,
@@ -32,7 +32,7 @@ namespace home_travel.API.Controllers
         {
             var (bookings, total) = await _bookingService.GetAll(paginationModel, searchBookingModel);
 
-            return Ok(new ModelsResponse<GetBookingModel>(
+            return Ok(new ModelsResponse<GetDetailBookingModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,

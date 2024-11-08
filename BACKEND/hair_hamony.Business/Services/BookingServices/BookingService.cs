@@ -9,7 +9,6 @@ using hair_hamony.Business.ViewModels.Bookings;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace hair_hamony.Business.Services.BookingServices
 {
@@ -45,14 +44,22 @@ namespace hair_hamony.Business.Services.BookingServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel, SearchBookingModel searchBookingModel)
+        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel, SearchBookingModel searchBookingModel)
         {
-            var query = _context.Bookings.AsQueryable();
+            var query = _context.Bookings
+                .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
+                .ThenInclude(bookingSlotStylist => bookingSlotStylist.Stylist)
+                .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
+                .ThenInclude(bookingSlotStylist => bookingSlotStylist.TimeSlot)
+                .AsQueryable();
             query = query.GetWithSearch(searchBookingModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
-            query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetBookingModel>>(query);
+            query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();\
+
+            var results = _mapper.Map<IList<GetDetailBookingModel>>(query);
 
             return (results, total);
         }
