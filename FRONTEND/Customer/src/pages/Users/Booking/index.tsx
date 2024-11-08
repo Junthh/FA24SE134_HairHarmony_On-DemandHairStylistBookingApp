@@ -416,8 +416,9 @@ export default function Booking() {
                 <Grid container spacing={2}>
                   {times.map((item) => {
                     return (
-                      <Grid item xs={3}>
+                      <Grid item xs={2}>
                         <ButtonPrimary
+                          fullWidth
                           severity="cancel"
                           padding={'16px 18px'}
                           sx={{ color: 'black !important' }}
@@ -433,7 +434,7 @@ export default function Booking() {
                             );
                           }}
                         >
-                          {item.startTime} - {item.endTime}
+                          {item.startTime}
                         </ButtonPrimary>
                       </Grid>
                     );
@@ -569,8 +570,8 @@ export default function Booking() {
                       </Typography>
 
                       <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                        {activeTime ? `${activeTime?.startTime} - ${activeTime?.endTime}` : ''} Ngày{' '}
-                        {date ? formatDate(date.toString()) : ''}
+                        {activeTime ? `${activeTime?.startTime} giờ` : ''}, ngày{' '}
+                        {date ? formatDate(date.toString(), 'dd/MM/yyyy') : ''}
                       </Typography>
                     </Box>
                   </Box>
