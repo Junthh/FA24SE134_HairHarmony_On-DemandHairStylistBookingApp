@@ -1,21 +1,7 @@
-import { Avatar, Box, Divider, Rating, Typography, useMediaQuery } from '@mui/material';
-import React, { memo } from 'react';
-import Default from 'assets/pics/default.jpeg';
-import VN from 'assets/pics/VN.png';
-import { TagStyled, TagStyledWrapper, TagTextStyled } from '../style/TagContent';
-import * as colors from 'constants/colors';
-import { CardBoxImageVideo } from './styles';
-import { PostModel, PostTypeEnum } from 'models/Posts.model';
-import { calculateTimeCreateAt } from 'utils/datetime';
-import YoutubePlayer from '../YoutubeVideo/YoutubeVideo';
-import { getYoutubeId } from 'utils/helper';
-import PlayerComponent from '../PlayerComponent/PlayerComponent';
-import DOMPurify from 'dompurify';
-import { theme } from 'theme';
-import { CountriesEnum, countriesFlag } from 'models/Country.model';
-import { ICONS } from 'configurations/icons';
 import styled from '@emotion/styled';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Box, Divider, Rating, Typography } from '@mui/material';
+import { memo } from 'react';
 interface CardContentImageProps {
   item?: any;
   onViewDetail?: (p: any) => void;
@@ -25,6 +11,8 @@ const CardContentImagesSyled = styled(Box)({
   textAlign: 'center',
   '& img': {
     borderRadius: 12,
+    width: 280,
+    height: 280,
   },
   '& .star': {
     display: 'flex',
@@ -43,7 +31,6 @@ const CardContentAboutImagesSyled = styled(Box)({
 });
 function CardContentImage(props: CardContentImageProps) {
   const { item, onViewDetail, type = '' } = props;
-  console.log(item);
 
   return type === 'NEWS' ? (
     <CardContentAboutImagesSyled>
@@ -66,9 +53,9 @@ function CardContentImage(props: CardContentImageProps) {
   ) : (
     <CardContentImagesSyled>
       <Box className="content">
-        <img src={item?.user?.avatar} alt="" />
+        <img src={item?.avatar} alt="" />
         <Typography fontWeight={600} variant="h3" textAlign={'center'}>
-          {item?.user?.fullName}
+          {item?.fullName}
         </Typography>
         <Box className="star">
           <Typography fontFamily={'GFS Didot !important'} component="legend">
