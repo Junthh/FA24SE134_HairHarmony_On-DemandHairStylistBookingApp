@@ -15,15 +15,15 @@ import * as colors from 'constants/colors';
 const BoxCard = styled(Box)<{ type? }>(({ type = '' }) => ({
   backgroundColor: 'rgba(27, 77, 74, 0.06)',
   borderRadius: '16px',
-  width: 480,
-  height: 390,
+  width: '100%',
+  height: 'auto',
   overflow: 'hidden', // Ensure the border radius is applied
   '&:hover': {
     cursor: 'pointer',
   },
   '& img': {
-    width: '480px !important',
-    height: 280,
+    width: '100%',
+    height: 260,
     objectFit: 'cover',
   },
   '& svg': {

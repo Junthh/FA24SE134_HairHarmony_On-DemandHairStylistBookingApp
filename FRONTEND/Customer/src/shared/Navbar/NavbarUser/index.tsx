@@ -79,8 +79,6 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       );
     });
   }, [location]);
-  console.log(credentialInfo);
-
   return (
     <NavbarStyled typePopover={typePopover}>
       <Box className="nav-left">
@@ -123,6 +121,18 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
               }}
             >
               <PopoverContent>
+                <Box
+                  padding={'10px 20px'}
+                  className="content"
+                  onClick={() => {
+                    handleClose()
+                    navigate(USER_PATH.APPOINTMENT)
+                  }}
+                >
+                  <Typography variant="body2" fontWeight={500}>
+                    Lịch sử đặt lịch
+                  </Typography>
+                </Box>
                 <Box
                   padding={'10px 20px'}
                   className="content"
