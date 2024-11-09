@@ -148,11 +148,16 @@ namespace hair_hamony.Business.Services.CategoryServices
                 };
             }
             var category = _mapper.Map<Category>(await GetById(id));
+            var oldImage = category.Image;
             _mapper.Map(requestBody, category);
             if (requestBody.Image != null)
             {
                 var file = await _fileService.UploadFile(requestBody.Image);
                 category.Image = file.Url;
+            }
+            else
+            {
+                category.Image = oldImage;
             }
             category.UpdatedDate = DateTime.Now;
 

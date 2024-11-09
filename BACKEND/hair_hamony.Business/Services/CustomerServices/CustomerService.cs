@@ -51,6 +51,7 @@ namespace hair_hamony.Business.Services.CustomerServices
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             customer.Password = passwordHashed;
             customer.Status = "Active";
+            customer.LoyaltyPoints = 0;
             customer.CreatedDate = DateTime.Now;
 
             await _context.Customers.AddAsync(customer);
