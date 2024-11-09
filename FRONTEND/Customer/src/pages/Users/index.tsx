@@ -47,7 +47,15 @@ export default function Users() {
       </Box>
       <Box height={60}></Box>
       <Box>
-        <Outlet />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '60vh',
+          }}
+        >
+          <Outlet />
+        </Box>
         <Footer />
       </Box>
     </Box>

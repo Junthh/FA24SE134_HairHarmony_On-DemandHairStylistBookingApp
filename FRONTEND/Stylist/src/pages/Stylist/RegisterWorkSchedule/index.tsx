@@ -44,6 +44,8 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PopoverContent from 'pages/common/PopoverContent';
+import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import SelectMultiElement from 'components/Form/SelectMultiElement';
 const RegisterWorkScheduleStyled = styled(Box)({
   padding: '10px 20px',
   '& .card-total': {
@@ -112,6 +114,13 @@ export default function RegisterWorkSchedule() {
     mode: 'onChange',
     resolver: yupResolver(schemaUser),
   });
+  const schema = Yup.object().shape<any>({});
+  const formSearch = useForm<any>({
+    defaultValues: {},
+    mode: 'onChange',
+    resolver: yupResolver(schema),
+  });
+  const { handleSubmit: handleSubmitSearch, control: controlSearch } = formSearch;
   const {
     control,
     watch,
@@ -121,26 +130,33 @@ export default function RegisterWorkSchedule() {
     handleSubmit,
   } = formRegisterWorkship;
 
-  useEffect(() => {
-    getWorkshipStylistList({
-      size: paging.size,
-      page: paging.page,
-    });
-  }, [paging.size, paging.page]);
+  const getWorkshipStylistList = useCallback(
+    ({ size, page, stylistId, registerDate }: any) => {
+      dispatch(setLoading(true));
+      workshipService
+        .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, stylistId, registerDate })
+        .then((resultList: any) => {
+          setPaging((prev) => ({
+            ...prev,
+            total: resultList.paging.total,
+          }));
+          setRows(resultList.data);
+          dispatch(setLoading(false));
+        });
+    },
+    [paging.size, paging.page, credentialInfo.Id],
+  );
 
-  const getWorkshipStylistList = useCallback(({ size, page, name = '' }) => {
-    dispatch(setLoading(true));
-    workshipService
-      .listWorkshipStylist({ pageSize: size, pageIndex: page + 1 })
-      .then((resultList: any) => {
-        setPaging((prev) => ({
-          ...prev,
-          total: resultList.paging.total,
-        }));
-        setRows(resultList.data);
-        dispatch(setLoading(false));
+  useEffect(() => {
+    if (credentialInfo.Id) {
+      getWorkshipStylistList({
+        size: paging.size,
+        page: paging.page,
+        stylistId: credentialInfo.Id,
+        registerDate: formSearch.getValues('registerDate'),
       });
-  }, []);
+    }
+  }, [getWorkshipStylistList]);
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
@@ -156,7 +172,7 @@ export default function RegisterWorkSchedule() {
           .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getWorkshipStylistList({ size, page });
+            getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
             handleClose();
             closeModal();
           })
@@ -171,7 +187,7 @@ export default function RegisterWorkSchedule() {
           .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getWorkshipStylistList({ size, page });
+            getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
             handleClose();
             closeModal();
           })
@@ -219,7 +235,7 @@ export default function RegisterWorkSchedule() {
         })
         .finally(() => {
           const { size, page } = paging;
-          getWorkshipStylistList({ size, page });
+          getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
         });
     },
     [selectedRow, paging],
@@ -236,6 +252,18 @@ export default function RegisterWorkSchedule() {
   ) => {
     setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
+  const handleSearch = useCallback(
+    handleSubmitSearch((data: any) => {
+      if (data) {
+        getWorkshipStylistList({
+          ...paging,
+          stylistId: credentialInfo.Id,
+          registerDate: formatDate(data.registerDate, 'yyyy-MM-dd'),
+        });
+      }
+    }),
+    [paging],
+  );
   const renderDialog = useMemo(() => {
     return (
       <Dialog
@@ -261,7 +289,7 @@ export default function RegisterWorkSchedule() {
                 label={'Ngày đăng ký'}
                 //   onKeyUp={handleKeyup}
               />
-              <SelectElement
+              <SelectMultiElement
                 name="workshipId"
                 label="Ca làm việc"
                 control={control}
@@ -284,12 +312,19 @@ export default function RegisterWorkSchedule() {
         }
       ></Dialog>
     );
-  }, [isOpen]);
+  }, [isOpen, workships]);
   return (
     <RegisterWorkScheduleStyled>
       <BoxHeaderSearch>
         <Box className="search-left">
-          <Box width={'50%'}></Box>
+          <FormContainer formContext={formSearch}>
+            <Box width={'100%'} display={'flex'} gap={2}>
+              <DatePickerElement name="registerDate" label={''} control={controlSearch} />
+              <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={() => handleSearch()}>
+                <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
+              </ButtonPrimary>
+            </Box>
+          </FormContainer>
         </Box>
         <Box className="search-right">
           <ButtonPrimary
@@ -308,7 +343,7 @@ export default function RegisterWorkSchedule() {
       </BoxHeaderSearch>
       <Box height={20}></Box>
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        {/* <Grid item xs={4}>
           <Box className="card-analyst">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateCalendar />
@@ -329,19 +364,19 @@ export default function RegisterWorkSchedule() {
               </ButtonPrimary>
             </Box>
           </Box>
-        </Grid>
-        <Grid item xs={8}>
+        </Grid> */}
+        <Grid item xs={12}>
           <Box className="card-analyst">
-            <Typography variant="h2" fontWeight={'700'}>
+            {/* <Typography variant="h2" fontWeight={'700'}>
               Ca làm việc đã đăng ký
-            </Typography>
-            <Box height={20}></Box>
+            </Typography> */}
+            {/* <Box height={20}></Box> */}
             <Divider variant="fullWidth"></Divider>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead style={{ background: '#2D3748' }}>
                   <TableRow>
-                    <StyledTableCell style={{ color: 'white' }} align="right">
+                    <StyledTableCell style={{ color: 'white' }} align="left">
                       Ngày đăng ký
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="right">
@@ -368,7 +403,7 @@ export default function RegisterWorkSchedule() {
                 <TableBody>
                   {rows.map((row, i) => (
                     <StyledTableRow key={i}>
-                      <StyledTableCell align="right">
+                      <StyledTableCell align="left">
                         {formatDate(row.registerDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
                       <StyledTableCell align="right">

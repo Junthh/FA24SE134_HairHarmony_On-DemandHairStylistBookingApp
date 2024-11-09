@@ -32,9 +32,10 @@ import { bookingServices } from 'services/booking.service';
 import { currencyFormat } from 'utils/helper';
 import { showToast } from 'components/Common/Toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectLoading, setLoading } from 'redux/Reducer';
+import { selectCredentialInfo, selectLoading, setLoading } from 'redux/Reducer';
 import SkeletonTime from './components/SkeletonTime';
 import { categoryService } from 'services/category.service';
+import CircleIcon from '@mui/icons-material/Circle';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -79,40 +80,12 @@ export default function Booking() {
   const [times, setTimes] = useState([]);
   const [stylists, setStylists] = useState([]);
   const dispatch = useDispatch();
+  const credentialInfo = useSelector(selectCredentialInfo);
   const isLoading = useSelector(selectLoading);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   // this services will be call api to get data
-  const [services, setServices] = useState({
-    option1: {
-      checked: false,
-      service: 'Gói cắt tóc & Uốn',
-      time: '120 phút • chỉ dành cho nam',
-      price: 595000,
-      categoryId: '195416b6-7ee4-4ed5-a429-543726d4193f',
-    },
-    option2: {
-      checked: false,
-      service: 'Gói cắt tóc & Nhộm',
-      time: '120 phút • chỉ dành cho nữ',
-      price: 595000,
-      categoryId: '195416b6-7ee4-4ed5-a429-543726d4193f',
-    },
-    option3: {
-      checked: false,
-      service: 'Gói nhộm & duỗi',
-      time: '120 phút • chỉ dành cho nữ',
-      price: 595000,
-      categoryId: 'de4e2294-15a2-4481-8de9-8fdf409e17f2',
-    },
-    option4: {
-      checked: false,
-      service: 'Gói Cắt, Nhộm & Tạo Kiểu',
-      time: '120 phút • chỉ dành cho nữ',
-      price: 595000,
-      categoryId: '669fad77-d833-4752-9fc5-32353463143d',
-    },
-  });
+  const [services, setServices] = useState<any>();
   const getListStylistFreeTime = useCallback(() => {
     if (currentStep === 2) {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
@@ -167,7 +140,7 @@ export default function Booking() {
     if (currentStep === 0 && isEmpty(categories)) {
       dispatch(setLoading(true));
       categoryService
-        .list()
+        .listComboAndServices()
         .then((res) => {
           let categroriesResult = res.data.map((item, i) => {
             if (i === 0) {
@@ -182,6 +155,13 @@ export default function Booking() {
               };
             }
           });
+          const servicesResult = res.data
+            .flatMap((item) => item.services)
+            .reduce((acc, service) => {
+              acc[service.id] = { ...service, checked: false };
+              return acc;
+            }, {});
+          setServices(servicesResult);
           setCategories(categroriesResult);
         })
         .catch((err) => {})
@@ -196,7 +176,7 @@ export default function Booking() {
   }, [getCategoryList]);
 
   const handleChangeStep = (step?: number) => {
-    const isAnyServiceChecked = Object.values(services).some((service) => service.checked);
+    const isAnyServiceChecked = Object.values(services).some((service: any) => service.checked);
     if (currentStep === 0 && !isAnyServiceChecked) {
       showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
       return;
@@ -221,19 +201,48 @@ export default function Booking() {
           showToast('warning', 'Vui lòng chọn stylist!');
           return;
         }
+        dispatch(setLoading(true));
         const serviceChecked = Object.entries(services)
-          .filter(([, option]) => option.checked)
-          .map(([id, option]) => ({ id, ...option }));
+          .filter(([, option]: any) => option.checked)
+          .map(([id, option]: any) => ({ id, ...option }));
         const timeChecked = times.find((time) => time.isActive);
-        const stylistChecked = stylists.find((item) => item.isActive);
-        const timeSlotId = times.find((time) => time.isActive);
+        const stylistId = stylists.find((item) => item.isActive)?.id;
+        const timeSlotId = times.find((time) => time.isActive)?.id;
         const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
-        console.log('serviceChecked', serviceChecked);
-        console.log('timeChecked', timeChecked);
-        console.log('stylistChecked', stylistChecked);
-        console.log('date time', { timeSlotId, bookingDate });
-
-        navigate('/appointment');
+        const combos = serviceChecked
+          .filter((item) => item.categoryId === categories[0].id)
+          .map((item) => ({
+            id: item.id,
+            totalPrice: item.price,
+            discount: item.discount ?? 0,
+          }));
+        const servicesResult = serviceChecked
+          .filter((item) => item.categoryId !== categories[0].id)
+          .map((item) => ({
+            id: item.id,
+            price: item.price,
+          }));
+        const payload = {
+          bookingDate,
+          customerId: credentialInfo.Id,
+          timeSlotId,
+          stylistId,
+          combos,
+          services: servicesResult,
+        };
+        bookingServices
+          .bookingInit(payload)
+          .then((res) => {
+            showToast('success', 'Đặt lịch thành công');
+            navigate('/appointment');
+          })
+          .catch((err) => {
+            showToast('error', err.msg);
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+        return;
       }
       setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
     }
@@ -253,51 +262,55 @@ export default function Booking() {
 
   const renderStepFirst = useMemo(() => {
     const activeCategory = categories.find((item) => item.isActive)?.id;
-    const dataFilterFollowCategory = Object.fromEntries(
-      Object.entries(services).filter(([, option]) => option.categoryId === activeCategory),
-    );
+    const dataFilterFollowCategory =
+      services &&
+      Object.fromEntries(
+        Object.entries(services)?.filter(([, option]: any) => option.categoryId === activeCategory),
+      );
     return (
       <FormControl fullWidth>
         <FormGroup>
           <Box display={'flex'} flexDirection={'column'} gap={4}>
-            {Object.entries(dataFilterFollowCategory).map(([key, value]) => {
-              return (
-                <BoxCardService>
-                  <Box>
-                    <Typography variant="h5" fontWeight={700}>
-                      {value.service}
-                    </Typography>
-                    <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                      {value.time}
-                    </Typography>
-                    <Typography variant="body1" fontWeight={600}>
-                      {currencyFormat(value.price)}
-                    </Typography>
-                  </Box>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        style={{
-                          color: '#5C4ACE',
-                        }}
-                        icon={
-                          <SvgIcon
-                            style={{
-                              color: '#D9D9D9',
-                            }}
-                            component={AddBoxIcon}
-                          />
-                        }
-                        checked={value.checked}
-                        onChange={handleChange}
-                        name={key}
-                      />
-                    }
-                    label=""
-                  />
-                </BoxCardService>
-              );
-            })}
+            {dataFilterFollowCategory &&
+              Object.entries(dataFilterFollowCategory).map(([key, value]: any) => {
+                return (
+                  <BoxCardService>
+                    <Box>
+                      <Typography variant="h5" fontWeight={700}>
+                        {value.name}
+                      </Typography>
+                      <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                        {value.duration} /phút <CircleIcon sx={{ paddingTop: '12px', width: 10 }} />{' '}
+                        {value.description}
+                      </Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {currencyFormat(value.price)}
+                      </Typography>
+                    </Box>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          style={{
+                            color: '#5C4ACE',
+                          }}
+                          icon={
+                            <SvgIcon
+                              style={{
+                                color: '#D9D9D9',
+                              }}
+                              component={AddBoxIcon}
+                            />
+                          }
+                          checked={value.checked}
+                          onChange={handleChange}
+                          name={key}
+                        />
+                      }
+                      label=""
+                    />
+                  </BoxCardService>
+                );
+              })}
           </Box>
         </FormGroup>
       </FormControl>
@@ -393,7 +406,7 @@ export default function Booking() {
                     },
                   }}
                   disableHighlightToday
-                  // disablePast
+                  disablePast
                   showDaysOutsideCurrentMonth
                   value={date}
                   onChange={(newValue) => setDate(newValue)}
@@ -403,8 +416,9 @@ export default function Booking() {
                 <Grid container spacing={2}>
                   {times.map((item) => {
                     return (
-                      <Grid item xs={3}>
+                      <Grid item xs={2}>
                         <ButtonPrimary
+                          fullWidth
                           severity="cancel"
                           padding={'16px 18px'}
                           sx={{ color: 'black !important' }}
@@ -420,7 +434,7 @@ export default function Booking() {
                             );
                           }}
                         >
-                          {item.startTime} - {item.endTime}
+                          {item.startTime}
                         </ButtonPrimary>
                       </Grid>
                     );
@@ -520,86 +534,99 @@ export default function Booking() {
           )}
         </Grid>
         <Grid item xs={4}>
-          <BoxCardBill>
-            {Object.keys(services).map((key) => {
-              return services[key].checked ? (
+          {services &&
+          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) ? (
+            <BoxCardBill>
+              {services &&
+                Object.keys(services).map((key) => {
+                  return services[key].checked ? (
+                    <>
+                      <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Box>
+                          <Typography variant="h5" fontWeight={700}>
+                            {services[key].name}
+                          </Typography>
+                          <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                            {services[key].description}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body1" fontWeight={600}>
+                          {currencyFormat(services[key].price)}
+                        </Typography>
+                      </Box>
+                      <Box height={20}></Box>
+                    </>
+                  ) : null;
+                })}
+
+              {activeTime && date ? (
                 <>
+                  <Divider variant="fullWidth"></Divider>
+                  <Box height={10}></Box>
                   <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
                     <Box>
                       <Typography variant="h5" fontWeight={700}>
-                        {services[key].service}
+                        Ngày cắt Giờ cắt
                       </Typography>
+
                       <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                        {services[key].time}
+                        {activeTime ? `${activeTime?.startTime} giờ` : ''}, ngày{' '}
+                        {date ? formatDate(date.toString(), 'dd/MM/yyyy') : ''}
                       </Typography>
                     </Box>
-                    <Typography variant="body1" fontWeight={600}>
-                      {currencyFormat(services[key].price)}
-                    </Typography>
                   </Box>
-                  <Box height={20}></Box>
                 </>
-              ) : null;
-            })}
-            <Divider variant="fullWidth"></Divider>
-            <Box height={10}></Box>
-            {activeTime && date ? (
+              ) : (
+                ''
+              )}
+              <Box height={20}></Box>
+              {stylistActive ? (
+                <>
+                  {' '}
+                  <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Box>
+                      <Typography variant="h5" fontWeight={700}>
+                        Thợ cắt
+                      </Typography>
+                      <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                        {`${stylistActive?.fullName} - ${stylistActive?.level}`}
+                      </Typography>
+                    </Box>
+                    {<Rating value={stylistActive?.rating} precision={0.5} />}
+                  </Box>
+                  <Divider variant="fullWidth"></Divider>
+                </>
+              ) : (
+                <></>
+              )}
+              <Box height={20}></Box>
               <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-                <Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    Ngày cắt Giờ cắt
-                  </Typography>
-
-                  <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                    {activeTime ? `${activeTime?.startTime} - ${activeTime?.endTime}` : ''} Ngày{' '}
-                    {date ? formatDate(date.toString()) : ''}
-                  </Typography>
-                </Box>
+                <Typography variant="h5" fontWeight={700}>
+                  Tổng tiền
+                </Typography>
+                <Typography variant="body1" fontWeight={600}>
+                  {services &&
+                    currencyFormat(
+                      Object.values(services)
+                        .filter((option: any) => option.checked === true)
+                        .reduce((total, option: any) => total + option.price, 0),
+                    )}{' '}
+                </Typography>
               </Box>
-            ) : (
-              ''
-            )}
-            <Box height={20}></Box>
-            {stylistActive ? (
-              <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-                <Box>
-                  <Typography variant="h5" fontWeight={700}>
-                    Thợ cắt
-                  </Typography>
-                  <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                    {`${stylistActive?.fullName} - ${stylistActive?.level}`}
-                  </Typography>
-                </Box>
-                {<Rating value={stylistActive?.rating} precision={0.5} />}
-              </Box>
-            ) : (
-              <></>
-            )}
-            <Divider variant="fullWidth"></Divider>
-            <Box height={20}></Box>
-            <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography variant="h5" fontWeight={700}>
-                Tổng tiền
-              </Typography>
-              <Typography variant="body1" fontWeight={600}>
-                {currencyFormat(
-                  Object.values(services)
-                    .filter((option) => option.checked === true)
-                    .reduce((total, option) => total + option.price, 0),
-                )}{' '}
-              </Typography>
-            </Box>
-            <Box height={120}></Box>
-            <ButtonPrimary
-              sx={{ width: '100%' }}
-              severity="primary"
-              padding={'9px 40px'}
-              borderradius={9}
-              onClick={() => handleChangeStep()}
-            >
-              {currentStep === 3 ? 'Xác nhận' : 'Tiếp tục'}
-            </ButtonPrimary>
-          </BoxCardBill>
+              <Box height={40}></Box>
+              <ButtonPrimary
+                sx={{ width: '100%' }}
+                severity="primary"
+                padding={'9px 40px'}
+                borderradius={9}
+                onClick={() => handleChangeStep()}
+              >
+                {currentStep === 3 ? 'Xác nhận' : 'Tiếp tục'}
+              </ButtonPrimary>
+            </BoxCardBill>
+          ) : (
+            <></>
+          )}
         </Grid>
       </Grid>
     </BoxBookingStyled>
