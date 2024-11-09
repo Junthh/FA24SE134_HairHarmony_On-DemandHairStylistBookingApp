@@ -44,6 +44,8 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PopoverContent from 'pages/common/PopoverContent';
+import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import SelectMultiElement from 'components/Form/SelectMultiElement';
 const RegisterWorkScheduleStyled = styled(Box)({
   padding: '10px 20px',
   '& .card-total': {
@@ -112,6 +114,13 @@ export default function RegisterWorkSchedule() {
     mode: 'onChange',
     resolver: yupResolver(schemaUser),
   });
+  const schema = Yup.object().shape<any>({});
+  const formSearch = useForm<any>({
+    defaultValues: {},
+    mode: 'onChange',
+    resolver: yupResolver(schema),
+  });
+  const { handleSubmit: handleSubmitSearch, control: controlSearch } = formSearch;
   const {
     control,
     watch,
@@ -121,27 +130,33 @@ export default function RegisterWorkSchedule() {
     handleSubmit,
   } = formRegisterWorkship;
 
-  useEffect(() => {
-    getWorkshipStylistList({
-      size: paging.size,
-      page: paging.page,
-      stylistId: credentialInfo.Id,
-    });
-  }, [paging.size, paging.page]);
+  const getWorkshipStylistList = useCallback(
+    ({ size, page, stylistId, registerDate }: any) => {
+      dispatch(setLoading(true));
+      workshipService
+        .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, stylistId, registerDate })
+        .then((resultList: any) => {
+          setPaging((prev) => ({
+            ...prev,
+            total: resultList.paging.total,
+          }));
+          setRows(resultList.data);
+          dispatch(setLoading(false));
+        });
+    },
+    [paging.size, paging.page, credentialInfo.Id],
+  );
 
-  const getWorkshipStylistList = useCallback(({ size, page, stylistId }) => {
-    dispatch(setLoading(true));
-    workshipService
-      .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, stylistId })
-      .then((resultList: any) => {
-        setPaging((prev) => ({
-          ...prev,
-          total: resultList.paging.total,
-        }));
-        setRows(resultList.data);
-        dispatch(setLoading(false));
+  useEffect(() => {
+    if (credentialInfo.Id) {
+      getWorkshipStylistList({
+        size: paging.size,
+        page: paging.page,
+        stylistId: credentialInfo.Id,
+        registerDate: formSearch.getValues('registerDate'),
       });
-  }, []);
+    }
+  }, [getWorkshipStylistList]);
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
@@ -237,6 +252,18 @@ export default function RegisterWorkSchedule() {
   ) => {
     setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
+  const handleSearch = useCallback(
+    handleSubmitSearch((data: any) => {
+      if (data) {
+        getWorkshipStylistList({
+          ...paging,
+          stylistId: credentialInfo.Id,
+          registerDate: formatDate(data.registerDate, 'yyyy-MM-dd'),
+        });
+      }
+    }),
+    [paging],
+  );
   const renderDialog = useMemo(() => {
     return (
       <Dialog
@@ -262,7 +289,7 @@ export default function RegisterWorkSchedule() {
                 label={'Ngày đăng ký'}
                 //   onKeyUp={handleKeyup}
               />
-              <SelectElement
+              <SelectMultiElement
                 name="workshipId"
                 label="Ca làm việc"
                 control={control}
@@ -285,12 +312,19 @@ export default function RegisterWorkSchedule() {
         }
       ></Dialog>
     );
-  }, [isOpen]);
+  }, [isOpen, workships]);
   return (
     <RegisterWorkScheduleStyled>
       <BoxHeaderSearch>
         <Box className="search-left">
-          <Box width={'50%'}></Box>
+          <FormContainer formContext={formSearch}>
+            <Box width={'100%'} display={'flex'} gap={2}>
+              <DatePickerElement name="registerDate" label={''} control={controlSearch} />
+              <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={() => handleSearch()}>
+                <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
+              </ButtonPrimary>
+            </Box>
+          </FormContainer>
         </Box>
         <Box className="search-right">
           <ButtonPrimary
