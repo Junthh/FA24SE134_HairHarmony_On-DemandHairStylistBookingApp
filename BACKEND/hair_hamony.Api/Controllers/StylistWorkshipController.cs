@@ -68,10 +68,10 @@ namespace home_travel.API.Controllers
         /// <returns>A stylistWorkship within status 201 or error status</returns>
         /// <response code="201">Returns the stylistWorkship</response>
         [HttpPost]
-        [ProducesResponseType(typeof(BaseResponse<GetStylistWorkshipModel>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BaseResponse<IList<GetStylistWorkshipModel>>), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(CreateStylistWorkshipModel requestBody)
         {
-            return Ok(new BaseResponse<GetStylistWorkshipModel>(
+            return Ok(new BaseResponse<IList<GetStylistWorkshipModel>>(
                     statusCode: 201, data: await _stylistWorkshipService.Create(requestBody),
                     msg: SuccessMessageResponse.CREATED_REQUEST
                 ));

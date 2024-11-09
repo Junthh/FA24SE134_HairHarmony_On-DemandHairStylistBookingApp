@@ -21,16 +21,39 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
             _mapper = mapper;
         }
 
-        public async Task<GetStylistWorkshipModel> Create(CreateStylistWorkshipModel requestBody)
+        public async Task<IList<GetStylistWorkshipModel>> Create(CreateStylistWorkshipModel requestBody)
         {
-            var stylistWorkship = _mapper.Map<StylistWorkship>(requestBody);
-            stylistWorkship.CreatedDate = DateTime.Now;
-            stylistWorkship.UpdatedDate = DateTime.Now;
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var stylistWorkships = new List<StylistWorkship>();
+                if (requestBody.WorkshipIds != null && requestBody.WorkshipIds.Any())
+                {
+                    foreach (var workshipId in requestBody.WorkshipIds)
+                    {
+                        var stylistWorkship = new StylistWorkship
+                        {
+                            RegisterDate = requestBody.RegisterDate,
+                            CreatedDate = DateTime.Now,
+                            UpdatedDate = DateTime.Now,
+                            WorkshipId = workshipId,
+                            StylistId = requestBody.StylistId,
+                        };
+                        _context.StylistWorkships.Add(stylistWorkship);
+                        stylistWorkships.Add(stylistWorkship);
+                    }
+                }
 
-            await _context.StylistWorkships.AddAsync(stylistWorkship);
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return _mapper.Map<IList<GetStylistWorkshipModel>>(stylistWorkships);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
 
-            return _mapper.Map<GetStylistWorkshipModel>(stylistWorkship);
         }
 
         public async Task Delete(Guid id)
