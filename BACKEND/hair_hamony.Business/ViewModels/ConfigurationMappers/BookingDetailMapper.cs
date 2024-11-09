@@ -11,6 +11,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
             configuration.CreateMap<BookingDetail, GetBookingDetailModel>().ReverseMap();
             configuration.CreateMap<BookingDetail, CreateBookingDetailModel>().ReverseMap();
             configuration.CreateMap<BookingDetail, UpdateBookingDetailModel>().ReverseMap();
+            configuration.CreateMap<BookingDetail, GetDetailBookingDetailModel>().ReverseMap();
         }
     }
 }

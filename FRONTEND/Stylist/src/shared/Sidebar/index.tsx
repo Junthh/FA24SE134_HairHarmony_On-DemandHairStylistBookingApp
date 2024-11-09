@@ -9,7 +9,7 @@ import { SidebarStyled } from './styles';
 const routes = [
   {
     path: STYLIST_PATH.TIMEKEEPING,
-    name: 'Chấm công',
+    name: 'Đăng kí lịch làm',
     icon: <ICONS.IconTimekeeping />,
   },
   {
