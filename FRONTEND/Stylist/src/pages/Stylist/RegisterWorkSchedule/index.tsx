@@ -45,6 +45,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PopoverContent from 'pages/common/PopoverContent';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import SelectMultiElement from 'components/Form/SelectMultiElement';
 const RegisterWorkScheduleStyled = styled(Box)({
   padding: '10px 20px',
   '& .card-total': {
@@ -288,7 +289,7 @@ export default function RegisterWorkSchedule() {
                 label={'Ngày đăng ký'}
                 //   onKeyUp={handleKeyup}
               />
-              <SelectElement
+              <SelectMultiElement
                 name="workshipId"
                 label="Ca làm việc"
                 control={control}
@@ -311,7 +312,7 @@ export default function RegisterWorkSchedule() {
         }
       ></Dialog>
     );
-  }, [isOpen]);
+  }, [isOpen, workships]);
   return (
     <RegisterWorkScheduleStyled>
       <BoxHeaderSearch>
