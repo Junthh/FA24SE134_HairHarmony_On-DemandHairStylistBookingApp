@@ -11,6 +11,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
             configuration.CreateMap<BookingSlotStylist, GetBookingSlotStylistModel>().ReverseMap();
             configuration.CreateMap<BookingSlotStylist, CreateBookingSlotStylistModel>().ReverseMap();
             configuration.CreateMap<BookingSlotStylist, UpdateBookingSlotStylistModel>().ReverseMap();
+            configuration.CreateMap<BookingSlotStylist, GetDetailBookingSlotStylistModel>().ReverseMap();
         }
     }
 }
