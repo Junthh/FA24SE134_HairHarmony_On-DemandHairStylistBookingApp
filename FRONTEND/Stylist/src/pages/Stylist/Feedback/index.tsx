@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Box,
@@ -18,6 +18,9 @@ import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement'
 import { ICONS } from 'configurations/icons';
 import { ButtonPrimary } from 'pages/common/style/Button';
 import * as colors from 'constants/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCredentialInfo, setLoading } from 'redux/Reducer';
+import { feedbackService } from 'services/feedback.service';
 const FeedbackStyled = styled(Box)({
   padding: '20px 40px',
   '& .card-feedback': {
@@ -69,6 +72,14 @@ const BoxDot = styled(Box)({
   marginRight: 8,
 });
 export default function Feedback() {
+  const dispatch = useDispatch();
+  const [paging, setPaging] = useState({
+    size: 10,
+    page: 0,
+    total: 0,
+  });
+  const credentialInfo = useSelector(selectCredentialInfo);
+  const [rows, setRows] = useState([]);
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
     defaultValues: {},
@@ -82,6 +93,31 @@ export default function Feedback() {
     getValues,
     formState: { errors },
   } = formSearch;
+  const getFeedbackByStylist = useCallback(
+    ({ size, page, stylistId }: any) => {
+      dispatch(setLoading(true));
+      feedbackService
+        .list({ pageSize: size, pageIndex: page + 1, stylistId })
+        .then((resultList: any) => {
+          setPaging((prev) => ({
+            ...prev,
+            total: resultList.paging.total,
+          }));
+          setRows(resultList.data);
+          dispatch(setLoading(false));
+        });
+    },
+    [paging.size, paging.page, credentialInfo.Id],
+  );
+  useEffect(() => {
+    if (credentialInfo.Id) {
+      getFeedbackByStylist({
+        size: paging.size,
+        page: paging.page,
+        stylistId: credentialInfo.Id,
+      });
+    }
+  }, [getFeedbackByStylist]);
   return (
     <FeedbackStyled>
       <FormContainer formContext={formSearch}>
