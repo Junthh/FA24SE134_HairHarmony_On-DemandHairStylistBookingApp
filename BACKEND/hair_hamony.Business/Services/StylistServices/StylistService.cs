@@ -114,12 +114,16 @@ namespace hair_hamony.Business.Services.StylistServices
                     };
                 }
             }
-
+            var oldAvatar = stylist.Avatar;
             _mapper.Map(requestBody, stylist);
             if (requestBody.Avatar != null)
             {
                 var file = await _fileService.UploadFile(requestBody.Avatar);
                 stylist.Avatar = file.Url;
+            }
+            else
+            {
+                stylist.Avatar = oldAvatar;
             }
 
             _context.Stylists.Update(stylist);

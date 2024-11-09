@@ -135,6 +135,48 @@ namespace hair_hamony.Business.Commons
                     query = query.Where(exp);
                 }
 
+                if (value != null && value is DateOnly)
+                {
+                    // Build expression tree
+                    //--entity
+                    var param = Expression.Parameter(typeof(TEntity), "entity");
+                    //--entity.{PropertyName}
+
+                    var entityProp = Expression.Property(param, prop.Name);
+                    var convert = Expression.Convert(entityProp, typeof(DateOnly));
+                    //--searchValue
+                    var searchValue = Expression.Constant(value);
+                    var searchValueNonNull = Expression.Convert(searchValue, typeof(DateOnly));
+
+                    //--entity.{PropertyName}.Contains(searchValue)
+                    var body = Expression.Equal(convert, searchValueNonNull);
+                    //--entity => entity.{PropertyName}.Contains(searchValue)
+                    var exp = Expression.Lambda<Func<TEntity, bool>>(body, param);
+                    //entity.{PropertyName}.Contains(searchValue)
+                    query = query.Where(exp);
+                }
+
+                if (value != null && value is TimeOnly)
+                {
+                    // Build expression tree
+                    //--entity
+                    var param = Expression.Parameter(typeof(TEntity), "entity");
+                    //--entity.{PropertyName}
+
+                    var entityProp = Expression.Property(param, prop.Name);
+                    var convert = Expression.Convert(entityProp, typeof(TimeOnly));
+                    //--searchValue
+                    var searchValue = Expression.Constant(value);
+                    var searchValueNonNull = Expression.Convert(searchValue, typeof(TimeOnly));
+
+                    //--entity.{PropertyName}.Contains(searchValue)
+                    var body = Expression.Equal(convert, searchValueNonNull);
+                    //--entity => entity.{PropertyName}.Contains(searchValue)
+                    var exp = Expression.Lambda<Func<TEntity, bool>>(body, param);
+                    //entity.{PropertyName}.Contains(searchValue)
+                    query = query.Where(exp);
+                }
+
                 if (value != null && value is byte)
                 {
                     // Build expression tree

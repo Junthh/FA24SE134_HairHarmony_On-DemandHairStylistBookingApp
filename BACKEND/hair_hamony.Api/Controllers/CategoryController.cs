@@ -44,6 +44,29 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for get all category with service and combo
+        /// </summary>
+        /// <returns>List of category with service and combo</returns>
+        /// <response code="200">Returns the list of category with service and combo</response>
+        [HttpGet("ComboAndService")]
+        [ProducesResponseType(typeof(ModelsResponse<GetCategoryOfComboAndServiceModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public IActionResult GetCategoryOfComboAndService()
+        {
+            var categorys = _categoryService.GetCategoryOfComboAndService();
+
+            return Ok(new ModelsResponse<GetCategoryOfComboAndServiceModel>(
+                    paging: new PagingResponse()
+                    {
+                        Page = 1,
+                        Size = categorys.Count,
+                        Total = categorys.Count
+                    },
+                    data: categorys
+                ));
+        }
+
+        /// <summary>
         /// Endpoint for get category by Id
         /// </summary>
         /// <param name="id">Id of category</param>

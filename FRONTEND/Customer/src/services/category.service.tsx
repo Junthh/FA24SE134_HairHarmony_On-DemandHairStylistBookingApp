@@ -20,6 +20,16 @@ class CategoryService {
       throw error;
     }
   }
+  async listComboAndServices() {
+    try {
+      const resData: ListServiceSuccess = await axios.get(
+        `${ENDPOINTS.ApiPrefix}/Categorys/ComboAndService`,
+      );
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const categoryService = new CategoryService();
