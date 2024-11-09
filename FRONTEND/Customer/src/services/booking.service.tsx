@@ -35,6 +35,24 @@ class BookingServices {
       throw error;
     }
   }
+  async listBookingHistory(params = {}) {
+    try {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/Bookings`, {
+        params,
+      });
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async bookingInit(body) {
+    try {
+      const resData = await axios.post(`${ENDPOINTS.ApiPrefix}/Bookings/Init`, body);
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const bookingServices = new BookingServices();

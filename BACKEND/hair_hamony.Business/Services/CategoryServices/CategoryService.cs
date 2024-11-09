@@ -61,6 +61,70 @@ namespace hair_hamony.Business.Services.CategoryServices
             return (results, total);
         }
 
+        public IList<GetCategoryOfComboAndServiceModel> GetCategoryOfComboAndService()
+        {
+            var categorys = _context.Categories.ToList();
+
+            var results = new List<GetCategoryOfComboAndServiceModel>();
+            foreach (var category in categorys)
+            {
+                var services = new List<GetCategoryOfComboAndServiceModel.ServiceModel>();
+
+                var listService = _context.Services.Where(service => service.CategoryId == category.Id).ToList();
+                if (listService.Any())
+                {
+                    foreach (var item in listService)
+                    {
+                        services.Add(new GetCategoryOfComboAndServiceModel.ServiceModel
+                        {
+                            CategoryId = item.CategoryId,
+                            CreatedDate = item.CreatedDate,
+                            Description = item.Description,
+                            Duration = item.Duration,
+                            Id = item.Id,
+                            Name = item.Name,
+                            Image = item.Image,
+                            Price = item.Price,
+                            UpdatedDate = item.UpdatedDate,
+                        });
+                    }
+                }
+
+                var listCombo = _context.Combos.Where(combo => combo.CategoryId == category.Id).ToList();
+                if (listCombo.Any())
+                {
+                    foreach (var item in listCombo)
+                    {
+                        services.Add(new GetCategoryOfComboAndServiceModel.ServiceModel
+                        {
+                            CategoryId = item.CategoryId,
+                            CreatedDate = item.CreatedDate,
+                            Description = item.Description,
+                            Duration = item.Duration,
+                            Id = item.Id,
+                            Name = item.Name,
+                            Image = item.Image,
+                            Price = item.TotalPrice,
+                            Discount = item.Discount,
+                            UpdatedDate = item.UpdatedDate,
+                        });
+                    }
+                }
+
+                results.Add(new GetCategoryOfComboAndServiceModel
+                {
+                    CreatedDate = category.CreatedDate,
+                    Id = category.Id,
+                    Name = category.Name,
+                    Image = category.Image,
+                    UpdatedDate = category.UpdatedDate,
+                    Services = services
+                });
+            }
+
+            return results;
+        }
+
         public async Task<GetCategoryModel> GetById(Guid id)
         {
             var category = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(category => category.Id == id)

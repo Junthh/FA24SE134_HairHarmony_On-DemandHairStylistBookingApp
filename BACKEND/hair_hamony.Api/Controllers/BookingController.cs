@@ -24,7 +24,7 @@ namespace home_travel.API.Controllers
         /// <returns>List of booking</returns>
         /// <response code="200">Returns the list of booking</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetBookingModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailBookingModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<BookingEnum.BookingSort> paginationModel,
@@ -32,7 +32,7 @@ namespace home_travel.API.Controllers
         {
             var (bookings, total) = await _bookingService.GetAll(paginationModel, searchBookingModel);
 
-            return Ok(new ModelsResponse<GetBookingModel>(
+            return Ok(new ModelsResponse<GetDetailBookingModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,
@@ -73,6 +73,22 @@ namespace home_travel.API.Controllers
         {
             return Ok(new BaseResponse<GetBookingModel>(
                     statusCode: 201, data: await _bookingService.Create(requestBody),
+                    msg: SuccessMessageResponse.CREATED_REQUEST
+                ));
+        }
+
+        /// <summary>
+        /// Endpoint for init flow booking
+        /// </summary>
+        /// <param name="requestBody">An obj contains input info of a booking</param>
+        /// <returns>A booking within status 201 or error status</returns>
+        /// <response code="201">Returns the booking</response>
+        [HttpPost("Init")]
+        [ProducesResponseType(typeof(BaseResponse<GetBookingModel>), StatusCodes.Status201Created)]
+        public async Task<IActionResult> Init(CreateInitBookingModel requestBody)
+        {
+            return Ok(new BaseResponse<GetBookingModel>(
+                    statusCode: 201, data: await _bookingService.Init(requestBody),
                     msg: SuccessMessageResponse.CREATED_REQUEST
                 ));
         }
