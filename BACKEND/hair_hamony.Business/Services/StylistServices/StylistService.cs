@@ -52,6 +52,7 @@ namespace hair_hamony.Business.Services.StylistServices
             stylist.Password = passwordHashed;
             stylist.Status = "Active";
             stylist.CreatedDate = DateTime.Now;
+            stylist.Rating = 0;
 
             await _context.Stylists.AddAsync(stylist);
             await _context.SaveChangesAsync();
