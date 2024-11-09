@@ -48,12 +48,17 @@ namespace hair_hamony.Business.Services.BookingServices
         {
             var query = _context.Bookings
                 .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.Combo)
+                .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.Service)
+                .Include(booking => booking.BookingDetails)
                 .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
                 .ThenInclude(bookingSlotStylist => bookingSlotStylist.Stylist)
                 .Include(booking => booking.BookingDetails)
                 .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
                 .ThenInclude(bookingSlotStylist => bookingSlotStylist.TimeSlot)
                 .AsQueryable();
+
             query = query.GetWithSearch(searchBookingModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
