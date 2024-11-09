@@ -86,7 +86,7 @@ function Staff() {
     } else if (name === STYLIST_PATH.FEEDBACK.split('/')[1]) {
       setTabName('Feedback');
     } else if (name === STYLIST_PATH.TIMEKEEPING.split('/')[1]) {
-      setTabName('Chấm công');
+      setTabName('Đăng kí lịch làm');
     }
   }, [location]);
 
@@ -120,7 +120,7 @@ function Staff() {
         <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
           <Avatar src="" />
-          {/* <EmailWrapper>
+          <EmailWrapper>
             <Typography
               variant="body2"
               fontWeight={700}
@@ -131,9 +131,9 @@ function Staff() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {email}
+              {credentialInfo?.Username}
             </Typography>
-          </EmailWrapper> */}
+          </EmailWrapper>
           <ArrowDropDownIcon sx={{ color: '#F2FFE3' }} />
           {toggle && (
             <Box

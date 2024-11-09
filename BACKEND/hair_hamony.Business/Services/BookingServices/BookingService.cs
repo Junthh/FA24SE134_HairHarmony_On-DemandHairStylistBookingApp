@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.BookingSlotStylistServices;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Bookings;
 using hair_hamony.Data.Entities;
@@ -15,10 +16,13 @@ namespace hair_hamony.Business.Services.BookingServices
     {
         private readonly HairHamonyContext _context;
         private readonly IMapper _mapper;
-        public BookingService(IMapper mapper)
+        private readonly IBookingSlotStylistService _bookingSlotStylistService;
+
+        public BookingService(IMapper mapper, IBookingSlotStylistService bookingSlotStylistService)
         {
             _context = new HairHamonyContext();
             _mapper = mapper;
+            _bookingSlotStylistService = bookingSlotStylistService;
         }
 
         public async Task<GetBookingModel> Create(CreateBookingModel requestBody)
@@ -40,14 +44,22 @@ namespace hair_hamony.Business.Services.BookingServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel, SearchBookingModel searchBookingModel)
+        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel, SearchBookingModel searchBookingModel)
         {
-            var query = _context.Bookings.AsQueryable();
+            var query = _context.Bookings
+                .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
+                .ThenInclude(bookingSlotStylist => bookingSlotStylist.Stylist)
+                .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
+                .ThenInclude(bookingSlotStylist => bookingSlotStylist.TimeSlot)
+                .AsQueryable();
             query = query.GetWithSearch(searchBookingModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetBookingModel>>(query);
+
+            var results = _mapper.Map<IList<GetDetailBookingModel>>(query);
 
             return (results, total);
         }
@@ -62,6 +74,211 @@ namespace hair_hamony.Business.Services.BookingServices
                 };
 
             return _mapper.Map<GetBookingModel>(booking);
+        }
+
+        public async Task<GetBookingModel> Init(CreateInitBookingModel requestBody)
+        {
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var stylist = _context.Stylists
+                    .FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
+
+                double expertFee = 0;
+                double totalPrice = 0;
+                double amoutToPaid = 0;
+
+                var bookingId = Guid.NewGuid();
+                var booking = _context.Bookings.Add(new Booking
+                {
+                    Id = bookingId,
+                    BookingDate = requestBody.BookingDate,
+                    ExpertFee = expertFee,
+                    TotalPrice = totalPrice,
+                    AmoutToPaid = amoutToPaid,
+                    LoyaltyPoints = requestBody.LoyaltyPoints,
+                    CustomerId = requestBody.CustomerId,
+                    StaffId = requestBody.StaffId,
+                    Status = "Initialize",
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now,
+                }).Entity;
+
+                var transactionId = Guid.NewGuid();
+                _context.Transactions.Add(new Transaction
+                {
+                    Id = transactionId,
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now,
+                    Status = "Initialize",
+                    BookingId = bookingId,
+                });
+
+                var paymentId = Guid.NewGuid();
+                _context.Payments.Add(new Payment
+                {
+                    Id = paymentId,
+                    PaymentDate = null,
+                    Price = amoutToPaid,
+                    PaymentMethod = null,
+                    Status = "Initialize",
+                    CreatedDate = DateTime.Now,
+                    BookingId = bookingId
+                });
+
+                int countTimeSlot = 0;
+                var timeSlot = _context.TimeSlots.FirstOrDefault(timeSlot => timeSlot.Id == requestBody.TimeSlotId);
+
+                if (requestBody.Services != null && requestBody.Services.Any())
+                {
+                    foreach (var serviceModel in requestBody.Services)
+                    {
+                        var service = _context.Services
+                            .AsNoTracking()
+                            .FirstOrDefault(service => service.Id == serviceModel.Id);
+
+                        var bookingDetailId = Guid.NewGuid();
+                        _context.BookingDetails.Add(new BookingDetail
+                        {
+                            Id = bookingDetailId,
+                            Price = serviceModel.Price,
+                            ServiceId = serviceModel.Id,
+                            Duration = service.Duration,
+                            BookingId = bookingId,
+                            CreatedDate = DateTime.Now
+                        });
+
+                        int countServiceDuration = (int)Math.Ceiling(service.Duration!.Value / (decimal)60);
+                        countTimeSlot += countServiceDuration;
+
+                        for (int i = 0; i < countServiceDuration; i++)
+                        {
+                            var timeSlotNext = _context.TimeSlots
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
+                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext.Id, requestBody.StylistId);
+
+                            _context.BookingSlotStylists.Add(new BookingSlotStylist
+                            {
+                                Status = "Booked",
+                                BookingDate = requestBody.BookingDate,
+                                CreatedDate = DateTime.Now,
+                                UpdatedDate = DateTime.Now,
+                                BookingDetailId = bookingDetailId,
+                                TimeSlotId = timeSlotNext.Id,
+                                StylistId = requestBody.StylistId,
+                                StylistWorkshipId = null // ?
+                            });
+                        }
+
+                        var paymentDetailId = Guid.NewGuid();
+                        _context.PaymentDetails.Add(new PaymentDetail
+                        {
+                            Id = paymentDetailId,
+                            CreatedDate = DateTime.Now,
+                            Price = serviceModel.Price,
+                            PaymentId = paymentId,
+                        });
+
+                        _context.TransactionDetails.Add(new TransactionDetail
+                        {
+                            LoyaltyPoints = requestBody.LoyaltyPoints,
+                            Status = "Scheduled",
+                            CreatedDate = DateTime.Now,
+                            TransactionId = transactionId,
+                            BookingDetailId = bookingDetailId,
+                            PaymentDetailId = paymentDetailId
+                        });
+                    }
+                }
+
+                if (requestBody.Combos != null && requestBody.Combos.Any())
+                {
+                    foreach (var comboModel in requestBody.Combos)
+                    {
+                        var combo = _context.Combos
+                            .AsNoTracking()
+                            .FirstOrDefault(combo => combo.Id == comboModel.Id);
+
+                        var bookingDetailId = Guid.NewGuid();
+                        _context.BookingDetails.Add(new BookingDetail
+                        {
+                            Id = bookingDetailId,
+                            Price = comboModel.TotalPrice,
+                            ComboId = comboModel.Id,
+                            Duration = combo.Duration,
+                            BookingId = bookingId,
+                            CreatedDate = DateTime.Now
+                        });
+
+                        int countServiceDuration = (int)Math.Ceiling(combo.Duration!.Value / (decimal)60);
+                        countTimeSlot += countServiceDuration;
+
+                        for (int i = 0; i < countServiceDuration; i++)
+                        {
+                            var timeSlotNext = _context.TimeSlots
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
+                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext.Id, requestBody.StylistId);
+
+                            _context.BookingSlotStylists.Add(new BookingSlotStylist
+                            {
+                                Status = "Booked",
+                                BookingDate = requestBody.BookingDate,
+                                CreatedDate = DateTime.Now,
+                                UpdatedDate = DateTime.Now,
+                                BookingDetailId = bookingDetailId,
+                                TimeSlotId = timeSlotNext.Id,
+                                StylistId = requestBody.StylistId,
+                                StylistWorkshipId = null // ?
+                            });
+                        }
+
+                        var paymentDetailId = Guid.NewGuid();
+                        _context.PaymentDetails.Add(new PaymentDetail
+                        {
+                            Id = paymentDetailId,
+                            CreatedDate = DateTime.Now,
+                            Price = comboModel.TotalPrice,
+                            PaymentId = paymentId,
+                        });
+
+                        _context.TransactionDetails.Add(new TransactionDetail
+                        {
+                            LoyaltyPoints = requestBody.LoyaltyPoints,
+                            Status = "Scheduled",
+                            CreatedDate = DateTime.Now,
+                            TransactionId = transactionId,
+                            BookingDetailId = bookingDetailId,
+                            PaymentDetailId = paymentDetailId
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return _mapper.Map<GetBookingModel>(booking);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        private void CheckStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
+        {
+            var stylists = _bookingSlotStylistService
+                    .GetListStylistFreetime(bookingDate, timeSlotId);
+
+            var isStylistFreeTime = stylists.Any(stylist => stylist.Id == stylistId);
+
+            if (!isStylistFreeTime)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Thợ cắt tóc không rảnh trong khoảng thời gian khách hàng đã đặt lịch"
+                };
+            }
         }
 
         public async Task<GetBookingModel> Update(Guid id, UpdateBookingModel requestBody)

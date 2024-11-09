@@ -51,9 +51,9 @@ export const UsersRouter = {
     {
       path: USER_PATH.APPOINTMENT,
       element: (
-        // <AuthProvider>
-        <Appointment />
-        // </AuthProvider>
+        <AuthProvider>
+          <Appointment />
+        </AuthProvider>
       ),
     },
     {

@@ -7,6 +7,7 @@ namespace hair_hamony.Business.Services.CategoryServices
     public interface ICategoryService
     {
         Task<(IList<GetCategoryModel>, int)> GetAll(PagingParam<CategoryEnum.CategorySort> paginationModel, SearchCategoryModel searchCategoryModel);
+        IList<GetCategoryOfComboAndServiceModel> GetCategoryOfComboAndService();
         Task<GetCategoryModel> GetById(Guid id);
         Task<GetCategoryModel> Create(CreateCategoryModel requestBody);
         Task<GetCategoryModel> Update(Guid id, UpdateCategoryModel requestBody);
