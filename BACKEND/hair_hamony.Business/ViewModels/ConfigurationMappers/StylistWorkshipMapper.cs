@@ -10,6 +10,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
         {
             configuration.CreateMap<StylistWorkship, GetStylistWorkshipModel>().ReverseMap();
             configuration.CreateMap<StylistWorkship, UpdateStylistWorkshipModel>().ReverseMap();
+            configuration.CreateMap<StylistWorkship, GetDetailStylistWorkshipModel>().ReverseMap();
         }
     }
 }

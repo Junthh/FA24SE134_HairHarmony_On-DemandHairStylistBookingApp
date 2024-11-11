@@ -76,14 +76,19 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetStylistWorkshipModel>, int)> GetAll(PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel, SearchStylistWorkshipModel searchStylistWorkshipModel)
+        public async Task<(IList<GetDetailStylistWorkshipModel>, int)> GetAll(
+            PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
+            SearchStylistWorkshipModel searchStylistWorkshipModel)
         {
-            var query = _context.StylistWorkships.AsQueryable();
+            var query = _context.StylistWorkships
+                .Include(stylistWorkship => stylistWorkship.Workship)
+                .Include(stylistWorkship => stylistWorkship.Stylist)
+                .AsQueryable();
             query = query.GetWithSearch(searchStylistWorkshipModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetStylistWorkshipModel>>(query);
+            var results = _mapper.Map<IList<GetDetailStylistWorkshipModel>>(query);
 
             return (results, total);
         }
