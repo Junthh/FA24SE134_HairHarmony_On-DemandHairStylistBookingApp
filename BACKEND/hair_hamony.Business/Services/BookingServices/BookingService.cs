@@ -44,9 +44,13 @@ namespace hair_hamony.Business.Services.BookingServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel, SearchBookingModel searchBookingModel)
+        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel,
+            SearchBookingModel searchBookingModel,
+            string? customerPhoneNumber)
         {
             var query = _context.Bookings
+                .Include(booking => booking.Customer)
+                .Include(booking => booking.Staff)
                 .Include(booking => booking.BookingDetails)
                 .ThenInclude(bookingDetail => bookingDetail.Combo)
                 .Include(booking => booking.BookingDetails)
@@ -58,6 +62,11 @@ namespace hair_hamony.Business.Services.BookingServices
                 .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
                 .ThenInclude(bookingSlotStylist => bookingSlotStylist.TimeSlot)
                 .AsQueryable();
+
+            if (customerPhoneNumber != null)
+            {
+                query = query.Where(booking => booking.Customer!.PhoneNumber!.Contains(customerPhoneNumber));
+            }
 
             query = query.GetWithSearch(searchBookingModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
