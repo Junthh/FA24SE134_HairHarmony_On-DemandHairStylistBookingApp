@@ -41,6 +41,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import CheckSuccess from 'components/Common/CheckSuccess';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -82,7 +83,7 @@ const BoxStylistCard = styled(Box)({
 
 export default function Booking() {
   const [date, setDate] = React.useState<Dayjs | null>(dayjs);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(5);
   const [times, setTimes] = useState([]);
   const [stylists, setStylists] = useState([]);
   const dispatch = useDispatch();
@@ -645,13 +646,46 @@ export default function Booking() {
                 >
                   Chúc mừng bạn đã đặt lịch thành công!!
                 </h1>
+                <Box height={40}></Box>
+                <CheckSuccess></CheckSuccess>
+                <Box height={40}></Box>
+
+                <ButtonPrimary
+                  sx={{ width: '35%', margin: '0 auto' }}
+                  severity="primary"
+                  padding={'9px 40px'}
+                  borderradius={9}
+                  onClick={() => {
+                    handleChangeStep(0);
+                    setServices((prev) => {
+                      const updatedServices = Object.fromEntries(
+                        Object.entries(prev).map(([key, value]: any) => [
+                          key,
+                          {
+                            ...value,
+                            checked: false,
+                          },
+                        ]),
+                      );
+                      return updatedServices;
+                    });
+                    setDate(dayjs);
+                    setTimes((prevTimes) =>
+                      prevTimes.map((time) => ({ ...time, isActive: false })),
+                    );
+                    setStylists([]);
+                  }}
+                >
+                  Đặt lịch thêm
+                </ButtonPrimary>
               </Box>
             </>
           )}
         </Grid>
         <Grid item xs={4}>
           {services &&
-          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) ? (
+          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) &&
+          currentStep !== 5 ? (
             <BoxCardBill>
               {services &&
                 Object.keys(services).map((key) => {
