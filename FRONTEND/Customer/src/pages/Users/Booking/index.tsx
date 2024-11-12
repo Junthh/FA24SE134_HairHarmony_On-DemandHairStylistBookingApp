@@ -83,7 +83,7 @@ const BoxStylistCard = styled(Box)({
 
 export default function Booking() {
   const [date, setDate] = React.useState<Dayjs | null>(dayjs);
-  const [currentStep, setCurrentStep] = useState(5);
+  const [currentStep, setCurrentStep] = useState(0);
   const [times, setTimes] = useState([]);
   const [stylists, setStylists] = useState([]);
   const dispatch = useDispatch();
