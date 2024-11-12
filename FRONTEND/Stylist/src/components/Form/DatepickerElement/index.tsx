@@ -70,6 +70,7 @@ export default function DatePickerElement<TFieldValues extends FieldValues>({
           return (
             <DatePicker
               views={views}
+              format={inputFormat}
               {...rest}
               value={value || ''}
               onChange={onChange}

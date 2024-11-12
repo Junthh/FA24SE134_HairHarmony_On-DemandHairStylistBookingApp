@@ -63,7 +63,7 @@ const RegisterWorkScheduleStyled = styled(Box)({
   },
   '& .card-analyst': {
     boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
-    minHeight: 500,
+    minHeight: 50,
     width: '100%',
     padding: '20px 40px',
     borderRadius: 20,
@@ -246,7 +246,6 @@ export default function RegisterWorkSchedule() {
       page: newPage,
     }));
   };
-
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -287,21 +286,39 @@ export default function RegisterWorkSchedule() {
                 name="registerDate"
                 control={control}
                 label={'Ngày đăng ký'}
+                format="dd-MM-yyyy"
                 //   onKeyUp={handleKeyup}
               />
-              <SelectMultiElement
-                name="workshipId"
-                label="Ca làm việc"
-                control={control}
-                options={
-                  workships &&
-                  Object.keys(workships).map((id) => ({
-                    value: id,
-                    label: `${workships[id].startTime} - ${workships[id].endTime}`,
-                  }))
-                }
-                placeholder="Chọn ca làm việc"
-              />
+              {selectedRow ? (
+                <SelectElement
+                  name="workshipId"
+                  label="Ca làm việc"
+                  control={control}
+                  options={
+                    workships &&
+                    Object.keys(workships).map((id) => ({
+                      value: id,
+                      label: `${workships[id].startTime} - ${workships[id].endTime}`,
+                    }))
+                  }
+                  placeholder="Chọn ca làm việc"
+                />
+              ) : (
+                <SelectMultiElement
+                  name="workshipId"
+                  label="Ca làm việc"
+                  control={control}
+                  options={
+                    workships &&
+                    Object.keys(workships).map((id) => ({
+                      value: id,
+                      label: `${workships[id].startTime} - ${workships[id].endTime}`,
+                    }))
+                  }
+                  placeholder="Chọn ca làm việc"
+                />
+              )}
+
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
                   Lưu
@@ -319,7 +336,12 @@ export default function RegisterWorkSchedule() {
         <Box className="search-left">
           <FormContainer formContext={formSearch}>
             <Box width={'100%'} display={'flex'} gap={2}>
-              <DatePickerElement name="registerDate" label={''} control={controlSearch} />
+              <DatePickerElement
+                disableHighlightToday
+                name="registerDate"
+                label={''}
+                control={controlSearch}
+              />
               <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={() => handleSearch()}>
                 <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
               </ButtonPrimary>

@@ -30,13 +30,22 @@ namespace hair_hamony.Business.Services.CustomerServices
 
         public async Task<GetCustomerModel> Create(CreateCustomerModel requestBody)
         {
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
+            var isUsernameExisted = await IsUsernameExisted(requestBody.Username);
+            if (isUsernameExisted)
             {
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+            var isPhoneNumberExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+            if (isPhoneNumberExisted)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Số điện thoại đã tồn tại"
                 };
             }
 
@@ -51,6 +60,7 @@ namespace hair_hamony.Business.Services.CustomerServices
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             customer.Password = passwordHashed;
             customer.Status = "Active";
+            customer.LoyaltyPoints = 0;
             customer.CreatedDate = DateTime.Now;
 
             await _context.Customers.AddAsync(customer);
@@ -104,13 +114,25 @@ namespace hair_hamony.Business.Services.CustomerServices
             var customer = _mapper.Map<Customer>(await GetById(id));
             if (customer.Username != requestBody.Username)
             {
-                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-                if (isExistedUsername)
+                var isExisted = await IsUsernameExisted(requestBody.Username);
+                if (isExisted)
                 {
                     throw new CException
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
                         ErrorMessage = "Tên đăng nhập đã tồn tại"
+                    };
+                }
+            }
+            if (customer.PhoneNumber != requestBody.PhoneNumber)
+            {
+                var isExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+                if (isExisted)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Số điện thoại đã tồn tại"
                     };
                 }
             }
@@ -180,9 +202,16 @@ namespace hair_hamony.Business.Services.CustomerServices
             return _mapper.Map<GetCustomerModel>(customer);
         }
 
-        private async Task<bool> UsernameIsExisted(string username)
+        private async Task<bool> IsUsernameExisted(string username)
         {
             var isExisted = await _context.Customers.Where(customer => customer.Username == username).AnyAsync();
+
+            return isExisted;
+        }
+
+        private async Task<bool> IsPhoneNumberExisted(string phoneNumber)
+        {
+            var isExisted = await _context.Customers.Where(customer => customer.PhoneNumber == phoneNumber).AnyAsync();
 
             return isExisted;
         }
