@@ -106,7 +106,7 @@ export default function RegisterWorkSchedule() {
   const defaultValues = {
     id: '',
     registerDate: new Date(),
-    workshipId: '',
+    workshipIds: '',
     stylistId: '',
   };
   const formRegisterWorkship = useForm<any>({
@@ -291,7 +291,7 @@ export default function RegisterWorkSchedule() {
               />
               {selectedRow ? (
                 <SelectElement
-                  name="workshipId"
+                  name="workshipIds"
                   label="Ca làm việc"
                   control={control}
                   options={
@@ -305,7 +305,7 @@ export default function RegisterWorkSchedule() {
                 />
               ) : (
                 <SelectMultiElement
-                  name="workshipId"
+                  name="workshipIds"
                   label="Ca làm việc"
                   control={control}
                   options={
