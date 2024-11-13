@@ -153,7 +153,7 @@ export default function ScheduleList() {
               <StyledTableCell style={{ color: 'white' }} align="left">
                 STT
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
+              <StyledTableCell style={{ color: 'white' }} align="right">
                 Họ và tên
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
