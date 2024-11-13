@@ -1,4 +1,6 @@
 ﻿using hair_hamony.Business.ViewModels.BookingDetails;
+using hair_hamony.Business.ViewModels.Customers;
+using hair_hamony.Business.ViewModels.Staffs;
 
 namespace hair_hamony.Business.ViewModels.Bookings
 {
@@ -16,5 +18,7 @@ namespace hair_hamony.Business.ViewModels.Bookings
         public Guid? CustomerId { get; set; }
         public Guid? StaffId { get; set; }
         public ICollection<GetDetailBookingDetailModel>? BookingDetails { get; set; } = new List<GetDetailBookingDetailModel>();
+        public GetCustomerModel? Customer { get; set; }
+        public GetStaffModel? Staff { get; set; }
     }
 }

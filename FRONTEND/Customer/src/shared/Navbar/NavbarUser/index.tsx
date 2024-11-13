@@ -5,10 +5,11 @@ import { ButtonPrimary } from 'pages/common/style/Button';
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NavbarStyled } from './styles';
-import { useSelector } from 'react-redux';
-import { selectCredentialInfo } from 'redux/Reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCredentialInfo, setCredentialInfo } from 'redux/Reducer';
 import PopoverContent from 'pages/common/PopoverContent';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
+import { CredentialInfo } from 'models/CredentialInfo.model';
 
 interface NavBarUserProps {
   onSidebarChange?: any;
@@ -17,6 +18,7 @@ interface NavBarUserProps {
 export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const credentialInfo = useSelector(selectCredentialInfo);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -125,8 +127,8 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
                   padding={'10px 20px'}
                   className="content"
                   onClick={() => {
-                    handleClose()
-                    navigate(USER_PATH.APPOINTMENT)
+                    handleClose();
+                    navigate(USER_PATH.APPOINTMENT);
                   }}
                 >
                   <Typography variant="body2" fontWeight={500}>
@@ -139,6 +141,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
                   onClick={() => {
                     localStorage.clear();
                     navigate(AUTH_PATH.LOGIN);
+                    dispatch(setCredentialInfo<CredentialInfo>({}));
                   }}
                 >
                   <Typography variant="body2" fontWeight={500}>

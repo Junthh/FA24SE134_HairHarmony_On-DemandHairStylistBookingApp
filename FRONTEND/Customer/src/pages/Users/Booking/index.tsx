@@ -36,6 +36,12 @@ import { selectCredentialInfo, selectLoading, setLoading } from 'redux/Reducer';
 import SkeletonTime from './components/SkeletonTime';
 import { categoryService } from 'services/category.service';
 import CircleIcon from '@mui/icons-material/Circle';
+import { FormContainer } from 'components/Form/FormContainer';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import CheckSuccess from 'components/Common/CheckSuccess';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -74,18 +80,81 @@ const BoxStylistCard = styled(Box)({
   },
 });
 //
+
 export default function Booking() {
   const [date, setDate] = React.useState<Dayjs | null>(dayjs);
   const [currentStep, setCurrentStep] = useState(0);
   const [times, setTimes] = useState([]);
   const [stylists, setStylists] = useState([]);
   const dispatch = useDispatch();
+  const baseSteps = [
+    {
+      step: 0,
+      label: 'Dịch vụ',
+      onClick: () => handleChangeStep(0),
+    },
+    {
+      step: 1,
+      label: 'Thời gian',
+      onClick: () => handleChangeStep(1),
+    },
+    {
+      step: 2,
+      label: 'Stylist',
+      onClick: () => {
+        /* handleChangeStep(2); */
+      },
+    },
+    {
+      step: 3,
+      label: 'Xác nhận',
+      onClick: () => {
+        /* handleChangeStep(3); */
+      },
+    },
+  ];
+  const optionsWithAdditionalStep = [
+    ...baseSteps,
+    {
+      step: 4,
+      label: 'Nhập thông tin',
+      onClick: () => {
+        /* handleChangeStep(4); */
+      },
+    },
+  ];
   const credentialInfo = useSelector(selectCredentialInfo);
   const isLoading = useSelector(selectLoading);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   // this services will be call api to get data
   const [services, setServices] = useState<any>();
+  const [optionsStep, setOptionsStep] = useState(
+    isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps],
+  );
+  const schemaUser = Yup.object().shape<any>({});
+  const defaultValues = {
+    customerFullName: '',
+    customerPhoneNummber: '',
+  };
+  const formUser = useForm<any>({
+    defaultValues,
+    mode: 'onChange',
+    resolver: yupResolver(schemaUser),
+  });
+  const {
+    control,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+    handleSubmit,
+  } = formUser;
+  // Optional: if `credentialInfo` changes and needs dynamic handling
+  useEffect(() => {
+    setOptionsStep(isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps]);
+  }, [credentialInfo]);
+
   const getListStylistFreeTime = useCallback(() => {
     if (currentStep === 2) {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
@@ -176,78 +245,124 @@ export default function Booking() {
   }, [getCategoryList]);
 
   const handleChangeStep = (step?: number) => {
-    const isAnyServiceChecked = Object.values(services).some((service: any) => service.checked);
-    if (currentStep === 0 && !isAnyServiceChecked) {
-      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
-      return;
-    }
-    const isActiveTime = times.some((time) => time.isActive);
-    if (currentStep === 1 && (!isActiveTime || isEmpty(date))) {
-      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
-      return;
-    }
-    const stylistActive = stylists.some((item) => item.isActive);
-    if (stylists.length > 0) {
-      if (currentStep === 2 && !stylistActive) {
+    if (isEmpty(step?.toString())) {
+      const isAnyServiceChecked = Object.values(services).some((service: any) => service.checked);
+      if (currentStep === 0 && !isAnyServiceChecked) {
         showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
         return;
       }
+      const isActiveTime = times.some((time) => time.isActive);
+      if (currentStep === 1 && (!isActiveTime || isEmpty(date))) {
+        showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+        return;
+      }
+      const stylistActive = stylists.some((item) => item.isActive);
+      if (stylists.length > 0) {
+        if (currentStep === 2 && !stylistActive) {
+          showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+          return;
+        }
+      }
     }
+
     if (step?.toString()) {
       setCurrentStep(step);
     } else {
-      if (currentStep === 3 && !step) {
-        if (!stylistActive) {
-          showToast('warning', 'Vui lòng chọn stylist!');
-          return;
-        }
-        dispatch(setLoading(true));
-        const serviceChecked = Object.entries(services)
-          .filter(([, option]: any) => option.checked)
-          .map(([id, option]: any) => ({ id, ...option }));
-        const timeChecked = times.find((time) => time.isActive);
-        const stylistId = stylists.find((item) => item.isActive)?.id;
-        const timeSlotId = times.find((time) => time.isActive)?.id;
-        const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
-        const combos = serviceChecked
-          .filter((item) => item.categoryId === categories[0].id)
-          .map((item) => ({
-            id: item.id,
-            totalPrice: item.price,
-            discount: item.discount ?? 0,
-          }));
-        const servicesResult = serviceChecked
-          .filter((item) => item.categoryId !== categories[0].id)
-          .map((item) => ({
-            id: item.id,
-            price: item.price,
-          }));
-        const payload = {
-          bookingDate,
-          customerId: credentialInfo.Id,
-          timeSlotId,
-          stylistId,
-          combos,
-          services: servicesResult,
-        };
-        bookingServices
-          .bookingInit(payload)
-          .then((res) => {
-            showToast('success', 'Đặt lịch thành công');
-            navigate('/appointment');
-          })
-          .catch((err) => {
-            showToast('error', err.msg);
-          })
-          .finally(() => {
-            dispatch(setLoading(false));
-          });
-        return;
+      let payload = normalizePayload();
+      if (!isEmpty(credentialInfo)) {
+        handleBookingWithUser(step, payload);
+      } else {
+        handleBookingUserNotLogin(step, payload);
       }
-      setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
     }
   };
+  const normalizePayload = () => {
+    const serviceChecked = Object.entries(services)
+      .filter(([, option]: any) => option.checked)
+      .map(([id, option]: any) => ({ id, ...option }));
+    const timeChecked = times.find((time) => time.isActive);
+    const stylistId = stylists.find((item) => item.isActive)?.id;
+    const timeSlotId = times.find((time) => time.isActive)?.id;
+    const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
+    const combos = serviceChecked
+      .filter((item) => item.categoryId === categories[0].id)
+      .map((item) => ({
+        id: item.id,
+        totalPrice: item.price,
+        discount: item.discount ?? 0,
+      }));
+    const servicesResult = serviceChecked
+      .filter((item) => item.categoryId !== categories[0].id)
+      .map((item) => ({
+        id: item.id,
+        price: item.price,
+      }));
+    let payload = {
+      bookingDate,
+      customerId: credentialInfo.Id,
+      timeSlotId,
+      stylistId,
+      combos,
+      services: servicesResult,
+    };
+    return !isEmpty(credentialInfo)
+      ? payload
+      : {
+          ...payload,
+          customerFullName: formUser.getValues('customerFullName'),
+          customerPhoneNummber: formUser.getValues('customerPhoneNummber'),
+        };
+  };
 
+  const handleBookingWithUser = (step, payload) => {
+    if (currentStep === 3 && !step) {
+      if (!stylistActive) {
+        showToast('warning', 'Vui lòng chọn stylist!');
+        return;
+      }
+      dispatch(setLoading(true));
+      bookingServices
+        .bookingInit(payload)
+        .then((res) => {
+          showToast('success', 'Đặt lịch thành công');
+          navigate('/appointment');
+        })
+        .catch((err) => {
+          showToast('error', err.msg);
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+      return;
+    }
+    setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
+  };
+  const handleBookingUserNotLogin = (step, payload) => {
+    if (currentStep === 3 && !step) {
+      if (!stylistActive) {
+        showToast('warning', 'Vui lòng chọn stylist!');
+        return;
+      }
+    }
+    if (currentStep === 4 && !step) {
+      dispatch(setLoading(true));
+      bookingServices
+        .bookingInit(payload)
+        .then((res) => {
+          showToast('success', 'Đặt lịch thành công');
+          // navigate('/appointment');
+          setCurrentStep(5);
+        })
+        .catch((err) => {
+          showToast('error', err.msg);
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+      return;
+    }
+    setCurrentStep((prev) => (prev === 5 ? 0 : prev + 1));
+  };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setServices((prev) => ({
       ...prev,
@@ -319,39 +434,7 @@ export default function Booking() {
   return (
     <BoxBookingStyled>
       {' '}
-      <Breadscrumb
-        currentStep={currentStep}
-        options={[
-          {
-            step: 0,
-            label: 'Dịch vụ',
-            onClick: () => {
-              handleChangeStep(0);
-            },
-          },
-          {
-            step: 1,
-            label: 'Thời gian',
-            onClick: () => {
-              handleChangeStep(1);
-            },
-          },
-          {
-            step: 2,
-            label: 'Stylist',
-            onClick: () => {
-              // handleChangeStep(2);
-            },
-          },
-          {
-            step: 3,
-            label: 'Xác nhận',
-            onClick: () => {
-              // handleChangeStep(3);
-            },
-          },
-        ]}
-      />
+      <Breadscrumb currentStep={currentStep} options={optionsStep[0]} />
       <Box height={20}></Box>
       <Grid container spacing={2}>
         <Grid item xs={7}>
@@ -406,7 +489,7 @@ export default function Booking() {
                     },
                   }}
                   disableHighlightToday
-                  disablePast
+                  // disablePast
                   showDaysOutsideCurrentMonth
                   value={date}
                   onChange={(newValue) => setDate(newValue)}
@@ -529,13 +612,80 @@ export default function Booking() {
                 cảm của bạn và rất mong được gặp bạn.
               </Typography>
             </Box>
+          ) : currentStep === 4 ? (
+            <Box sx={{ width: 400, margin: '0 auto' }}>
+              <Typography textAlign={'center'} variant="h2" fontWeight={700}>
+                Vui lòng nhập thông tin
+              </Typography>
+              <Box height={20}></Box>
+              <FormContainer formContext={formUser}>
+                <TextFieldElement
+                  name="customerFullName"
+                  control={control}
+                  placeholder="Nhập Họ và tên"
+                  label={'Họ và tên'}
+                  //   onKeyUp={handleKeyup}
+                />
+                <Box height={10}></Box>
+                <TextFieldElement
+                  name="customerPhoneNummber"
+                  control={control}
+                  type="number"
+                  placeholder="Nhập số điện thoại"
+                  label={'Số điện thoại'}
+                  //   onKeyUp={handleKeyup}
+                />
+              </FormContainer>
+            </Box>
           ) : (
-            <></>
+            <>
+              <Box paddingRight={20}>
+                <h1
+                  className="mea-culpa-regular"
+                  style={{ cursor: 'pointer', textAlign: 'center' }}
+                >
+                  Chúc mừng bạn đã đặt lịch thành công!!
+                </h1>
+                <Box height={40}></Box>
+                <CheckSuccess></CheckSuccess>
+                <Box height={40}></Box>
+
+                <ButtonPrimary
+                  sx={{ width: '35%', margin: '0 auto' }}
+                  severity="primary"
+                  padding={'9px 40px'}
+                  borderradius={9}
+                  onClick={() => {
+                    handleChangeStep(0);
+                    setServices((prev) => {
+                      const updatedServices = Object.fromEntries(
+                        Object.entries(prev).map(([key, value]: any) => [
+                          key,
+                          {
+                            ...value,
+                            checked: false,
+                          },
+                        ]),
+                      );
+                      return updatedServices;
+                    });
+                    setDate(dayjs);
+                    setTimes((prevTimes) =>
+                      prevTimes.map((time) => ({ ...time, isActive: false })),
+                    );
+                    setStylists([]);
+                  }}
+                >
+                  Đặt lịch thêm
+                </ButtonPrimary>
+              </Box>
+            </>
           )}
         </Grid>
         <Grid item xs={4}>
           {services &&
-          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) ? (
+          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) &&
+          currentStep !== 5 ? (
             <BoxCardBill>
               {services &&
                 Object.keys(services).map((key) => {
@@ -621,7 +771,7 @@ export default function Booking() {
                 borderradius={9}
                 onClick={() => handleChangeStep()}
               >
-                {currentStep === 3 ? 'Xác nhận' : 'Tiếp tục'}
+                {currentStep === 3 || currentStep === 4 ? 'Xác nhận' : 'Tiếp tục'}
               </ButtonPrimary>
             </BoxCardBill>
           ) : (

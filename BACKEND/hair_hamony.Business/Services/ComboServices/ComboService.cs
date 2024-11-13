@@ -118,6 +118,7 @@ namespace hair_hamony.Business.Services.ComboServices
                     };
                 }
                 var combo = _mapper.Map<Combo>(await GetById(id));
+                var oldImage = combo.Image;
                 _mapper.Map(requestBody, combo);
                 combo.UpdatedDate = DateTime.Now;
                 if (requestBody.Image != null)
@@ -125,13 +126,17 @@ namespace hair_hamony.Business.Services.ComboServices
                     var file = await _fileService.UploadFile(requestBody.Image);
                     combo.Image = file.Url;
                 }
+                else
+                {
+                    combo.Image = oldImage;
+                }
                 _context.Combos.Update(combo);
                 await _context.SaveChangesAsync();
 
                 if (requestBody.Services != null)
                 {
                     await _context.ComboServices.Where(comboService => comboService.ComboId == id).ExecuteDeleteAsync();
-                    
+
                     foreach (Guid _id in requestBody.Services)
                     {
                         await _context.ComboServices.AddAsync(new Data.Entities.ComboService
