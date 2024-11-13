@@ -181,10 +181,12 @@ export default function ComboList() {
     handleSubmit((data: any) => {
       const id = data.id;
       const comboMap = data.comboServices.map((comboService) => comboService.service.id);
-      data = {
-        ...data,
-        services: JSON.stringify(comboMap),
-      };
+      comboMap.map((item) => {
+        data = {
+          ...data,
+          services: item,
+        };
+      })
       delete data.comboServices;
       delete data.comboService;
       data = objectToFormData(data);
