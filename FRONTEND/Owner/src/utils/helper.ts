@@ -83,8 +83,10 @@ export const objectToFormData = (obj, form = new FormData(), namespace = '') => 
       if (obj[key] instanceof File) {
         form.append(formKey, obj[key]);
       } else if (obj[key] instanceof Array) {
+        console.log(obj[key])
         obj[key].forEach((value, index) => {
-          const arrayKey = `${formKey}[${index}]`;
+          const arrayKey = `${formKey}`;
+          console.log(arrayKey)
           if (value instanceof Object) {
             objectToFormData(value, form, arrayKey);
           } else {
