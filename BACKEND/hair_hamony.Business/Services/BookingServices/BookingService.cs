@@ -44,9 +44,17 @@ namespace hair_hamony.Business.Services.BookingServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel, SearchBookingModel searchBookingModel)
+        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel,
+            SearchBookingModel searchBookingModel,
+            string? customerPhoneNumber)
         {
             var query = _context.Bookings
+                .Include(booking => booking.Customer)
+                .Include(booking => booking.Staff)
+                .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.Combo)
+                .Include(booking => booking.BookingDetails)
+                .ThenInclude(bookingDetail => bookingDetail.Service)
                 .Include(booking => booking.BookingDetails)
                 .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
                 .ThenInclude(bookingSlotStylist => bookingSlotStylist.Stylist)
@@ -54,6 +62,12 @@ namespace hair_hamony.Business.Services.BookingServices
                 .ThenInclude(bookingDetail => bookingDetail.BookingSlotStylists)
                 .ThenInclude(bookingSlotStylist => bookingSlotStylist.TimeSlot)
                 .AsQueryable();
+
+            if (customerPhoneNumber != null)
+            {
+                query = query.Where(booking => booking.Customer!.PhoneNumber!.Contains(customerPhoneNumber));
+            }
+
             query = query.GetWithSearch(searchBookingModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
@@ -84,9 +98,51 @@ namespace hair_hamony.Business.Services.BookingServices
                 var stylist = _context.Stylists
                     .FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
 
-                double expertFee = 0;
+                double expertFee = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE")!.Value!.Value;
                 double totalPrice = 0;
-                double amoutToPaid = 0;
+                double totalDiscount = 0;
+
+                if (requestBody.Services != null && requestBody.Services.Any())
+                {
+                    foreach (var item in requestBody.Services)
+                    {
+                        totalPrice += item.Price!.Value;
+                    }
+                }
+                if (requestBody.Combos != null && requestBody.Combos.Any())
+                {
+                    foreach (var item in requestBody.Combos)
+                    {
+                        totalPrice += item.TotalPrice!.Value;
+                        totalDiscount += item.Discount!.Value;
+                    }
+                }
+
+                double amoutToPaid = totalPrice - totalDiscount;
+
+                var customerId = Guid.NewGuid();
+
+                // staff đặt lịch hoặc customer đặt lịch nhưng không đăng kí tài khoản
+                if (requestBody.CustomerId == null)
+                {
+                    var customer = _context.Customers.FirstOrDefault(customer => customer.PhoneNumber == requestBody.CustomerPhoneNummber);
+                    if (customer == null)
+                    {
+                        _context.Customers.Add(new Customer
+                        {
+                            Id = customerId,
+                            FullName = requestBody.CustomerFullName,
+                            PhoneNumber = requestBody.CustomerPhoneNummber,
+                            LoyaltyPoints = 0,
+                            CreatedDate = DateTime.Now,
+                            Status = "Active"
+                        });
+                    }
+                    else
+                    {
+                        customerId = customer.Id;
+                    }
+                }
 
                 var bookingId = Guid.NewGuid();
                 var booking = _context.Bookings.Add(new Booking
@@ -97,7 +153,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     TotalPrice = totalPrice,
                     AmoutToPaid = amoutToPaid,
                     LoyaltyPoints = requestBody.LoyaltyPoints,
-                    CustomerId = requestBody.CustomerId,
+                    CustomerId = requestBody.CustomerId ?? customerId,
                     StaffId = requestBody.StaffId,
                     Status = "Initialize",
                     CreatedDate = DateTime.Now,

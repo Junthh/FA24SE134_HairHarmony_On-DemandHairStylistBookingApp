@@ -9,6 +9,7 @@ using hair_hamony.Business.ViewModels.Services;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using static Azure.Core.HttpHeader;
 
 namespace hair_hamony.Business.Services.ServiceServices
 {
@@ -83,12 +84,17 @@ namespace hair_hamony.Business.Services.ServiceServices
                 };
             }
             var service = _mapper.Map<Service>(await GetById(id));
+            var oldImage = service.Image;
             _mapper.Map(requestBody, service);
             service.UpdatedDate = DateTime.Now;
             if (requestBody.Image != null)
             {
                 var file = await _fileService.UploadFile(requestBody.Image);
                 service.Image = file.Url;
+            }
+            else
+            {
+                service.Image = oldImage;
             }
 
             _context.Services.Update(service);
