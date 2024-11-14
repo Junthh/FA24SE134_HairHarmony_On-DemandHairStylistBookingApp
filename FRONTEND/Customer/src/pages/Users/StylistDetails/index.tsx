@@ -5,6 +5,8 @@ import styled from '@emotion/styled';
 import { ButtonPrimary } from 'pages/common/style/Button';
 import StylistImage1 from '../StylistDetails/mock/stylist-image-1.png';
 import StylistImage2 from '../StylistDetails/mock/stylist-image-2.png';
+import { useNavigate } from 'react-router-dom';
+import { USER_PATH } from 'configurations/paths/paths';
 
 const BoxImageLeft = styled(Box)({
   marginTop: '40px',
@@ -48,6 +50,7 @@ const BoxEvaluate = styled(Box)({
   },
 });
 export default function StylistDetails() {
+  const navigate = useNavigate();
   return (
     <Grid container spacing={2} paddingLeft={10} marginTop={15} marginBottom={10}>
       <Grid item xs={3}>
@@ -101,7 +104,9 @@ export default function StylistDetails() {
             border={'1px solid #969696'}
             // color={'#969696'}
             fontWeight={700}
-            onClick={() => {}}
+            onClick={() => {
+              navigate(USER_PATH.BOOKING);
+            }}
           >
             Đặt lịch ngay
           </ButtonPrimary>
