@@ -4,7 +4,9 @@
     {
         public required DateOnly BookingDate { get; set; }
         public int? LoyaltyPoints { get; set; }
-        public required Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
+        public string? CustomerFullName { get; set; }
+        public string? CustomerPhoneNummber { get; set; }
         public Guid? StaffId { get; set; }
         public required Guid TimeSlotId { get; set; }
         public required Guid StylistId { get; set; }
