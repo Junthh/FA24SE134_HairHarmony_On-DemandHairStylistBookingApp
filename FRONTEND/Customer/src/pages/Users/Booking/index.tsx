@@ -167,6 +167,7 @@ export default function Booking() {
         })
         .then((res) => {
           const resultStylist = res.data;
+
           setStylists(resultStylist);
         })
         .catch((err) => {})
@@ -186,12 +187,14 @@ export default function Booking() {
       bookingServices
         .listTimeSlots()
         .then((res) => {
-          let timeSlots = res.data.map((item) => ({
-            ...item,
-            startTime: item.startTime.split(':').slice(0, 2).join(':'),
-            endTime: item.endTime.split(':').slice(0, 2).join(':'),
-            isActive: false,
-          }));
+          let timeSlots = res.data
+            .map((item) => ({
+              ...item,
+              startTime: item.startTime.split(':').slice(0, 2).join(':'),
+              endTime: item.endTime.split(':').slice(0, 2).join(':'),
+              isActive: false,
+            }))
+            .sort((a, b) => a.startTime.localeCompare(b.startTime));
           setTimes(timeSlots);
         })
         .catch((err) => {})
@@ -497,31 +500,35 @@ export default function Booking() {
               </LocalizationProvider>
               {!isLoading ? (
                 <Grid container spacing={2}>
-                  {times.map((item) => {
-                    return (
-                      <Grid item xs={2}>
-                        <ButtonPrimary
-                          fullWidth
-                          severity="cancel"
-                          padding={'16px 18px'}
-                          sx={{ color: 'black !important' }}
-                          border={'1px solid black'}
-                          className={item.isActive ? 'active' : ''}
-                          onClick={() => {
-                            setTimes((prevTimes) =>
-                              prevTimes.map((time) =>
-                                time.id === item.id
-                                  ? { ...time, isActive: true }
-                                  : { ...time, isActive: false },
-                              ),
-                            );
-                          }}
-                        >
-                          {item.startTime}
-                        </ButtonPrimary>
-                      </Grid>
-                    );
-                  })}
+                  <Grid item xs={2}></Grid>
+                  <Grid container spacing={2} item xs={8}>
+                    {times.map((item) => {
+                      return (
+                        <Grid item xs={4}>
+                          <ButtonPrimary
+                            fullWidth
+                            severity="cancel"
+                            padding={'16px 18px'}
+                            sx={{ color: 'black !important' }}
+                            border={'1px solid black'}
+                            className={item.isActive ? 'active' : ''}
+                            onClick={() => {
+                              setTimes((prevTimes) =>
+                                prevTimes.map((time) =>
+                                  time.id === item.id
+                                    ? { ...time, isActive: true }
+                                    : { ...time, isActive: false },
+                                ),
+                              );
+                            }}
+                          >
+                            {item.startTime}
+                          </ButtonPrimary>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                  <Grid item xs={2}></Grid>
                 </Grid>
               ) : (
                 <SkeletonTime />
