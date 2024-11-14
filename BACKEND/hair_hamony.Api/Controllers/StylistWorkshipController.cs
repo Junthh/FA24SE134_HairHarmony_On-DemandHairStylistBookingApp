@@ -21,6 +21,8 @@ namespace home_travel.API.Controllers
         /// </summary>
         /// <param name="searchStylistWorkshipModel">An object contains value wanna search</param>
         /// <param name="paginationModel">An object contains paging criteria</param>
+        /// <param name="startDate">A start date wanna search by register date</param>
+        /// <param name="endDate">A end date wanna search by register date</param>
         /// <returns>List of stylistWorkship</returns>
         /// <response code="200">Returns the list of stylistWorkship</response>
         [HttpGet]
@@ -28,9 +30,13 @@ namespace home_travel.API.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
-            [FromQuery] SearchStylistWorkshipModel searchStylistWorkshipModel)
+            [FromQuery] SearchStylistWorkshipModel searchStylistWorkshipModel,
+            [FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
         {
-            var (stylistWorkships, total) = await _stylistWorkshipService.GetAll(paginationModel, searchStylistWorkshipModel);
+            var (stylistWorkships, total) = await _stylistWorkshipService.GetAll(
+                paginationModel,
+                searchStylistWorkshipModel,
+                startDate, endDate);
 
             return Ok(new ModelsResponse<GetDetailStylistWorkshipModel>(
                     paging: new PagingResponse()
