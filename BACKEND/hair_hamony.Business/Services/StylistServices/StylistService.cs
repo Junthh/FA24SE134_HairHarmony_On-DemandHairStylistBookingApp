@@ -174,7 +174,14 @@ namespace hair_hamony.Business.Services.StylistServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Stylist", id: stylist.Id, email: "", phoneNumber: stylist.PhoneNumber, username: stylist.Username);
+            var token = _jwtHelper.GenerateJwtToken(
+                role: "Stylist",
+                id: stylist.Id,
+                email: "",
+                phoneNumber: stylist.PhoneNumber,
+                username: stylist.Username,
+                fullName: stylist.FullName
+            );
             return (token, _mapper.Map<GetStylistModel>(stylist));
         }
 
