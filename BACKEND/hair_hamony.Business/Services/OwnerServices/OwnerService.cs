@@ -30,13 +30,22 @@ namespace hair_hamony.Business.Services.OwnerServices
 
         public async Task<GetOwnerModel> Create(CreateOwnerModel requestBody)
         {
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
+            var isUsernameExisted = await IsUsernameExisted(requestBody.Username);
+            if (isUsernameExisted)
             {
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+            var isPhoneNumberExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+            if (isPhoneNumberExisted)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Số điện thoại đã tồn tại"
                 };
             }
 
@@ -104,13 +113,25 @@ namespace hair_hamony.Business.Services.OwnerServices
             var owner = _mapper.Map<Owner>(await GetById(id));
             if (owner.Username != requestBody.Username)
             {
-                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-                if (isExistedUsername)
+                var isExisted = await IsUsernameExisted(requestBody.Username);
+                if (isExisted)
                 {
                     throw new CException
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
                         ErrorMessage = "Tên đăng nhập đã tồn tại"
+                    };
+                }
+            }
+            if (owner.PhoneNumber != requestBody.PhoneNumber)
+            {
+                var isExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+                if (isExisted)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Số điện thoại đã tồn tại"
                     };
                 }
             }
@@ -180,9 +201,16 @@ namespace hair_hamony.Business.Services.OwnerServices
             return _mapper.Map<GetOwnerModel>(owner);
         }
 
-        private async Task<bool> UsernameIsExisted(string username)
+        private async Task<bool> IsUsernameExisted(string username)
         {
             var isExisted = await _context.Owners.Where(owner => owner.Username == username).AnyAsync();
+
+            return isExisted;
+        }
+
+        private async Task<bool> IsPhoneNumberExisted(string phoneNumber)
+        {
+            var isExisted = await _context.Owners.Where(owner => owner.PhoneNumber == phoneNumber).AnyAsync();
 
             return isExisted;
         }

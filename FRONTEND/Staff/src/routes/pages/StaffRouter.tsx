@@ -1,7 +1,6 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { STAFF_PATH, STATE } from 'configurations/paths/paths';
 import AuthProvider from 'pages/Auth/AuthProvider';
-import ScheduleList from 'pages/Staff/ScheduleList';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -9,6 +8,7 @@ import { Navigate } from 'react-router-dom';
 const StaffPage = lazy(() => import('pages/Staff'));
 //
 const BookingHistory = lazy(() => import('pages/Staff/BookingHistory'));
+const ScheduleList = lazy(() => import('pages/Staff/ScheduleList'));
 const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
 
 // const StaffArticleDetails = lazy(() => import('pages/Staff/Article/ArticleDetails'));
