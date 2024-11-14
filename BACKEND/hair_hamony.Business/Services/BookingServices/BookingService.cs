@@ -160,6 +160,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     TotalPrice = totalPrice,
                     AmoutToPaid = amoutToPaid,
                     LoyaltyPoints = requestBody.LoyaltyPoints,
+                    IsRandomStylist = requestBody.IsRandomStylist,
                     CustomerId = requestBody.CustomerId ?? customerId,
                     StaffId = requestBody.StaffId,
                     Status = "Initialize",
