@@ -25,6 +25,9 @@ const MainContainerStyled = styled(Box)({
   zIndex: 1,
   background: colors.white,
   height: '100%',
+  overflow: 'scroll',
+  maxHeight: 'calc(100% - 80px)',
+  paddingLeft: '20px',
 });
 
 const InfoAccountStyled = styled(Box)({
