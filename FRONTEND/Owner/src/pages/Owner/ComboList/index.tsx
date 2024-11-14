@@ -180,10 +180,9 @@ export default function ComboList() {
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       const id = data.id;
-      const comboMap = data.comboServices.map((comboService) => comboService.service.id);
       data = {
         ...data,
-        services: JSON.stringify(comboMap),
+        services: data.comboService,
       };
       delete data.comboServices;
       delete data.comboService;
@@ -245,13 +244,13 @@ export default function ComboList() {
               <TextFieldElement
                 name="name"
                 control={control}
-                placeholder="Nhập tên dịch vụ"
-                label={'Tên dịch vụ'}
+                placeholder="Nhập tên combo"
+                label={'Tên combo'}
                 //   onKeyUp={handleKeyup}
               />
               <SelectMultiElement
                 name="comboService"
-                label="Loại dịch vụ"
+                label="Dịch vụ"
                 control={control}
                 options={
                   services &&

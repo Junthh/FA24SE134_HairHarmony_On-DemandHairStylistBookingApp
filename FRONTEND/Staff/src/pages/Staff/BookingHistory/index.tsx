@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -16,6 +15,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { FormContainer } from 'components/Form/FormContainer';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
@@ -44,73 +44,53 @@ const rows = [
     '19/06/2024',
     '0392748419',
     'Jhon Alex',
+    '14:00',
+    '-',
+    'Cắt Nhộm',
     '600,000 VND',
-    'Tiền mặt',
-    '20/6/2024',
-    'Completed',
   ),
   createData(
-    'Trần Thị An',
+    'Ánh Nguyên Nghị',
     '19/06/2024',
     '0392748419',
     'Jhon Alex',
+    '14:00',
+    '-',
+    'Cắt Nhộm',
     '600,000 VND',
-    'Tiền mặt',
-    '20/6/2024',
-    'Cancle',
   ),
   createData(
-    'Đỗ Xuân Minh',
+    'Ánh Nguyên Nghị',
     '19/06/2024',
     '0392748419',
     'Jhon Alex',
+    '14:00',
+    '-',
+    'Cắt Nhộm',
     '600,000 VND',
-    'Tiền mặt',
-    '20/6/2024',
-    'Cancle',
   ),
   createData(
-    'Hồ Xuân Xuân',
+    'Ánh Nguyên Nghị',
     '19/06/2024',
     '0392748419',
     'Jhon Alex',
+    '14:00',
+    '-',
+    'Cắt Nhộm',
     '600,000 VND',
-    'Tiền mặt',
-    '20/6/2024',
-    'Completed',
-  ),
-  createData(
-    'Na Linh An',
-    '19/06/2024',
-    '0392748419',
-    'Jhon Alex',
-    '600,000 VND',
-    'Tiền mặt',
-    '20/6/2024',
-    'Completed',
-  ),
-  createData(
-    'Trần Hưu Nghị',
-    '19/06/2024',
-    '0392748419',
-    'Jhon Alex',
-    '600,000 VND',
-    'Tiền mặt',
-    '20/6/2024',
-    'Completed',
   ),
 ];
 function createData(
   name: string,
-  dateBooking: string,
+  date: string,
   phone: string,
   nameStylist: string,
+  time: string,
+  service: string,
+  combo: string,
   price: string,
-  paymentBy: string,
-  dateEnd: string,
-  status: string,
 ) {
-  return { name, dateBooking, phone, nameStylist, price, paymentBy, dateEnd, status };
+  return { name, date, phone, nameStylist, time, service, combo, price };
 }
 
 export default function BookingHistory() {
@@ -150,7 +130,16 @@ export default function BookingHistory() {
             </ButtonPrimary>
             <Box width={'50%'}></Box>
           </Box>
-          <Box className="search-right"></Box>
+          <Box className="search-right">
+            <ButtonPrimary
+              severity="primary"
+              padding={'9px 14px'}
+              //   onClick={() => navigate(`${STATE.CREATE}`)}
+            >
+              <ControlPointIcon />
+              &nbsp; Thêm mới
+            </ButtonPrimary>
+          </Box>
         </BoxHeaderSearch>
       </FormContainer>
       <Box height={40}></Box>
@@ -162,7 +151,7 @@ export default function BookingHistory() {
                 Họ và tên
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày đặt lịch
+                Ngày làm
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Số điện thoại
@@ -171,16 +160,16 @@ export default function BookingHistory() {
                 Stylist
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
+                Thời gian
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Dịch vụ
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
+                Combo
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="right">
                 Tổng tiền
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Thanh toán
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày kết thúc
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Trạng thái
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
@@ -191,13 +180,13 @@ export default function BookingHistory() {
                 <StyledTableCell component="th" scope="row">
                   {row.name}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.dateBooking}</StyledTableCell>
+                <StyledTableCell align="right">{row.date}</StyledTableCell>
                 <StyledTableCell align="right">{row.phone}</StyledTableCell>
                 <StyledTableCell align="right">{row.nameStylist}</StyledTableCell>
+                <StyledTableCell align="right">{row.time}</StyledTableCell>
+                <StyledTableCell align="right">{row.service}</StyledTableCell>
+                <StyledTableCell align="right">{row.combo}</StyledTableCell>
                 <StyledTableCell align="right">{row.price}</StyledTableCell>
-                <StyledTableCell align="right">{row.paymentBy}</StyledTableCell>
-                <StyledTableCell align="right">{row.dateEnd}</StyledTableCell>
-                <StyledTableCell align="right">{row.status}</StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton>
                     <ICONS.IconThreeDot />
