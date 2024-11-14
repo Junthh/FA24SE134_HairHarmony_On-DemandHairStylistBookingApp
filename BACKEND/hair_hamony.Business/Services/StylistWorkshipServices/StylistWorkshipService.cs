@@ -78,12 +78,21 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
 
         public async Task<(IList<GetDetailStylistWorkshipModel>, int)> GetAll(
             PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
-            SearchStylistWorkshipModel searchStylistWorkshipModel)
+            SearchStylistWorkshipModel searchStylistWorkshipModel,
+            DateOnly? startDate, DateOnly? endDate)
         {
             var query = _context.StylistWorkships
                 .Include(stylistWorkship => stylistWorkship.Workship)
                 .Include(stylistWorkship => stylistWorkship.Stylist)
                 .AsQueryable();
+
+            if (startDate != null && endDate != null)
+            {
+                query = query.Where(stylistWorkship =>
+                    stylistWorkship.RegisterDate >= startDate && stylistWorkship.RegisterDate <= endDate
+                );
+            }
+
             query = query.GetWithSearch(searchStylistWorkshipModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
