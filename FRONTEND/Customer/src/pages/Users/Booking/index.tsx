@@ -166,7 +166,15 @@ export default function Booking() {
           bookingDate,
         })
         .then((res) => {
-          const resultStylist = res.data;
+          const defaultStylist = [
+            {
+              id: 1,
+              fullName: 'Chọn stylist bất kỳ',
+              level: 'None',
+              isActive: false,
+            },
+          ];
+          const resultStylist = defaultStylist.concat(res.data);
 
           setStylists(resultStylist);
         })
@@ -300,7 +308,7 @@ export default function Booking() {
         id: item.id,
         price: item.price,
       }));
-    let payload = {
+    let payload: any = {
       bookingDate,
       customerId: credentialInfo.Id,
       timeSlotId,
@@ -308,6 +316,14 @@ export default function Booking() {
       combos,
       services: servicesResult,
     };
+    if (stylistId === 1) {
+      payload = {
+        ...payload,
+        isRandomStylist: true,
+      };
+      delete payload.stylistId;
+    }
+
     return !isEmpty(credentialInfo)
       ? payload
       : {
@@ -541,25 +557,28 @@ export default function Booking() {
               </Typography>
               <Box height={25}></Box>
               <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <BoxStylistCard
-                    onClick={() => {
-                      const randomIndex = Math.floor(Math.random() * stylists.length);
-                      const newData = stylists.map((item, index) => ({
-                        ...item,
-                        isActive: index === randomIndex ? true : item.isActive || false,
-                      }));
-                      setStylists(newData);
-                    }}
-                  >
-                    <IconStylist />
-                    <Typography variant="h4" fontWeight={700}>
-                      Chọn stylist bất kỳ
-                    </Typography>
-                  </BoxStylistCard>
-                </Grid>
-                {stylists.map((item) => {
-                  return (
+                {stylists.map((item, index) => {
+                  return index === 0 ? (
+                    <Grid item xs={4}>
+                      <BoxStylistCard
+                        className={item.isActive ? 'active' : ''}
+                        onClick={() => {
+                          setStylists((prevStylist) =>
+                            prevStylist.map((sty) =>
+                              sty.id === item.id
+                                ? { ...sty, isActive: true }
+                                : { ...sty, isActive: false },
+                            ),
+                          );
+                        }}
+                      >
+                        <IconStylist className={item.isActive ? 'active' : ''} />
+                        <Typography variant="h4" fontWeight={700}>
+                          Chọn stylist bất kỳ
+                        </Typography>
+                      </BoxStylistCard>
+                    </Grid>
+                  ) : (
                     <Grid item xs={4}>
                       <BoxStylistCard
                         className={item.isActive ? 'active' : ''}

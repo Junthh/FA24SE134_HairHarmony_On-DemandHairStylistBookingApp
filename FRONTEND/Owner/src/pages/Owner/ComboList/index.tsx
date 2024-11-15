@@ -30,7 +30,7 @@ import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled'
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectServices, setLoading } from 'redux/Reducer';
+import { selectCategorys, selectServices, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
@@ -43,6 +43,8 @@ export default function ComboList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const services = useSelector(selectServices);
+  const categorys = useSelector(selectCategorys);
+
   const [image, setImage] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -247,6 +249,19 @@ export default function ComboList() {
                 placeholder="Nhập tên combo"
                 label={'Tên combo'}
                 //   onKeyUp={handleKeyup}
+              />
+              <SelectElement
+                name="categoryId"
+                label="Loại dịch vụ"
+                control={control}
+                options={
+                  categorys &&
+                  Object.keys(categorys).map((id) => ({
+                    value: id,
+                    label: categorys[id].name,
+                  }))
+                }
+                placeholder="Select items"
               />
               <SelectMultiElement
                 name="comboService"
