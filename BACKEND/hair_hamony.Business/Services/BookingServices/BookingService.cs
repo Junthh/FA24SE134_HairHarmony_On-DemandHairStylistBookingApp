@@ -98,7 +98,10 @@ namespace hair_hamony.Business.Services.BookingServices
                 Stylist? stylist;
                 if (requestBody.IsRandomStylist == true)
                 {
-                    stylist = _context.Stylists.FirstOrDefault();
+                    var stylistFreeTimes = _bookingSlotStylistService
+                       .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
+
+                    stylist = _mapper.Map<Stylist>(stylistFreeTimes.FirstOrDefault());
                 }
                 else
                 {
