@@ -27,6 +27,8 @@ public partial class Booking
 
     public Guid? StaffId { get; set; }
 
+    public bool? IsRandomStylist { get; set; }
+
     public virtual ICollection<BookingDetail> BookingDetails { get; set; } = new List<BookingDetail>();
 
     public virtual Customer? Customer { get; set; }
