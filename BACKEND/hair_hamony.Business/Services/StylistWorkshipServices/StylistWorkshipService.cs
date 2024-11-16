@@ -33,7 +33,9 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                     {
                         var stylistWorkship = _context.StylistWorkships
                             .FirstOrDefault(stylistWorkship =>
-                                stylistWorkship.RegisterDate == requestBody.RegisterDate && stylistWorkship.WorkshipId == workshipId
+                                stylistWorkship.RegisterDate == requestBody.RegisterDate 
+                                && stylistWorkship.WorkshipId == workshipId
+                                && stylistWorkship.StylistId == requestBody.StylistId
                             );
 
                         if (stylistWorkship != null)
@@ -129,6 +131,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                             .FirstOrDefault(stylistWorkship =>
                                 stylistWorkship.RegisterDate == requestBody.RegisterDate
                                 && stylistWorkship.WorkshipId == requestBody.WorkshipId
+                                && stylistWorkship.StylistId == requestBody.StylistId
                             );
 
             if (stylistWorkship != null)
