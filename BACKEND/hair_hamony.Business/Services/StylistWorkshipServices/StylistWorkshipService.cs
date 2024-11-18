@@ -44,8 +44,8 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                             throw new CException
                             {
                                 StatusCode = StatusCodes.Status400BadRequest,
-                                ErrorMessage = $"Ca làm việc {workship.StartTime} - {workship.EndTime} ngày " +
-                                    $"{requestBody.RegisterDate.Value.ToString("dd/MM/yyyy")}" +
+                                ErrorMessage = $"Ca làm việc {workship.StartTime.Value.ToString("HH:mm")} - {workship.EndTime.Value.ToString("HH:mm")} ngày " +
+                                    $"{requestBody.RegisterDate.Value.ToString("dd/MM/yyyy")} " +
                                     $"đã được đăng ký, vui lòng chọn ca làm việc khác"
                             };
                         }
@@ -142,7 +142,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Ca làm việc {workship.StartTime} - {workship.EndTime} ngày " +
+                    ErrorMessage = $"Ca làm việc {workship.StartTime.Value.ToString("HH:mm")} - {workship.EndTime.Value.ToString("HH:mm")} ngày " +
                             $"{requestBody.RegisterDate.Value.ToString("dd/MM/yyyy")}" +
                             $"đã được đăng ký, vui lòng chọn ca làm việc khác"
                 };
