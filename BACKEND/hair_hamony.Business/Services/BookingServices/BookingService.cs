@@ -108,7 +108,6 @@ namespace hair_hamony.Business.Services.BookingServices
                     stylist = _context.Stylists.FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
                 }
 
-                double expertFee = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE")!.Value!.Value;
                 double totalPrice = 0;
                 double totalDiscount = 0;
 
@@ -126,6 +125,10 @@ namespace hair_hamony.Business.Services.BookingServices
                         totalPrice += item.TotalPrice!.Value;
                         totalDiscount += item.Discount!.Value;
                     }
+                }
+                if (requestBody.ExpertFee != null)
+                {
+                    totalPrice = totalPrice * requestBody.ExpertFee.Value;
                 }
 
                 double amoutToPaid = totalPrice - totalDiscount;
@@ -159,7 +162,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 {
                     Id = bookingId,
                     BookingDate = requestBody.BookingDate,
-                    ExpertFee = expertFee,
+                    ExpertFee = requestBody.ExpertFee,
                     TotalPrice = totalPrice,
                     AmoutToPaid = amoutToPaid,
                     LoyaltyPoints = requestBody.LoyaltyPoints,
