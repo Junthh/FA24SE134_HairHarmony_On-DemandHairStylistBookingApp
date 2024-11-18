@@ -7,6 +7,7 @@
         public double? TotalPrice { get; set; }
         public double? AmoutToPaid { get; set; }
         public int? LoyaltyPoints { get; set; }
+        public bool? IsRandomStylist { get; set; }
         public string? Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public Guid? CustomerId { get; set; }

@@ -95,8 +95,18 @@ namespace hair_hamony.Business.Services.BookingServices
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                var stylist = _context.Stylists
-                    .FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
+                Stylist? stylist;
+                if (requestBody.IsRandomStylist == true)
+                {
+                    var stylistFreeTimes = _bookingSlotStylistService
+                       .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
+
+                    stylist = _mapper.Map<Stylist>(stylistFreeTimes.FirstOrDefault());
+                }
+                else
+                {
+                    stylist = _context.Stylists.FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
+                }
 
                 double expertFee = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE")!.Value!.Value;
                 double totalPrice = 0;
@@ -153,6 +163,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     TotalPrice = totalPrice,
                     AmoutToPaid = amoutToPaid,
                     LoyaltyPoints = requestBody.LoyaltyPoints,
+                    IsRandomStylist = requestBody.IsRandomStylist,
                     CustomerId = requestBody.CustomerId ?? customerId,
                     StaffId = requestBody.StaffId,
                     Status = "Initialize",
@@ -199,7 +210,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             Id = bookingDetailId,
                             Price = serviceModel.Price,
                             ServiceId = serviceModel.Id,
-                            Duration = service.Duration,
+                            Duration = service!.Duration,
                             BookingId = bookingId,
                             CreatedDate = DateTime.Now
                         });
@@ -211,7 +222,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
-                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext.Id, requestBody.StylistId);
+                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -221,7 +232,7 @@ namespace hair_hamony.Business.Services.BookingServices
                                 UpdatedDate = DateTime.Now,
                                 BookingDetailId = bookingDetailId,
                                 TimeSlotId = timeSlotNext.Id,
-                                StylistId = requestBody.StylistId,
+                                StylistId = stylist!.Id,
                                 StylistWorkshipId = null // ?
                             });
                         }
@@ -273,7 +284,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
-                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext.Id, requestBody.StylistId);
+                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -283,7 +294,7 @@ namespace hair_hamony.Business.Services.BookingServices
                                 UpdatedDate = DateTime.Now,
                                 BookingDetailId = bookingDetailId,
                                 TimeSlotId = timeSlotNext.Id,
-                                StylistId = requestBody.StylistId,
+                                StylistId = stylist!.Id,
                                 StylistWorkshipId = null // ?
                             });
                         }
