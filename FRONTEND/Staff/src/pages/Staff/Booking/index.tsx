@@ -25,7 +25,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import { ReactComponent as IconStylist } from 'assets/pics/icons/icon-stylist.svg';
 import { ICONS } from 'configurations/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { active } from '../../../constants/colors';
 import { formatDate } from 'utils/datetime';
 import { isEmpty } from 'lodash';
 import { bookingServices } from 'services/booking.service';
@@ -43,7 +42,7 @@ import * as Yup from 'yup';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import CheckSuccess from 'components/Common/CheckSuccess';
 const BoxBookingStyled = styled(Box)({
-  padding: '40px 140px',
+  padding: '40px 80px',
 });
 //
 const BoxCardService = styled(Box)({
@@ -129,9 +128,10 @@ export default function Booking() {
   const [categories, setCategories] = useState([]);
   // this services will be call api to get data
   const [services, setServices] = useState<any>();
-  const [optionsStep, setOptionsStep] = useState(
-    isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps],
-  );
+  // const [optionsStep, setOptionsStep] = useState(
+  //   isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps],
+  // );
+  const [optionsStep, setOptionsStep] = useState([optionsWithAdditionalStep]);
   const schemaUser = Yup.object().shape({
     customerFullName: Yup.string().required('Họ và tên không được trống'),
     customerPhoneNummber: Yup.string()
@@ -156,9 +156,9 @@ export default function Booking() {
     handleSubmit,
   } = formUser;
   // Optional: if `credentialInfo` changes and needs dynamic handling
-  useEffect(() => {
-    setOptionsStep(isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps]);
-  }, [credentialInfo]);
+  // useEffect(() => {
+  //   setOptionsStep(isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps]);
+  // }, [credentialInfo]);
 
   const getListStylistFreeTime = useCallback(() => {
     if (currentStep === 2) {
@@ -283,28 +283,24 @@ export default function Booking() {
 
     if (step?.toString()) {
       setCurrentStep(step);
-    } else {
-      let payload = normalizePayload();
-      if (!isEmpty(credentialInfo) && (step === 3 || currentStep === 3)) {
-        const isValid = await formUser.trigger();
+    } else if (step === 4 || currentStep === 4) {
+      const isValid = await formUser.trigger();
 
-        // If validation fails, return errors
-        if (!isValid) {
-          const errors = formUser.formState.errors;
-          console.error('Validation failed:', errors);
-          return;
-        }
-        handleBookingWithUser(step, payload);
-      } else if (isEmpty(credentialInfo) && (step === 4 || currentStep === 4)) {
-        const isValid = await formUser.trigger();
-        // If validation fails, return errors
-        if (!isValid) {
-          const errors = formUser.formState.errors;
-          console.error('Validation failed:', errors);
-          return;
-        }
+      // If validation fails, return errors
+      if (!isValid) {
+        const errors = formUser.formState.errors;
+        console.error('Validation failed:', errors);
+        return;
+      } else {
+        let payload = normalizePayload();
+        // if (!isEmpty(credentialInfo)) {
+        //   handleBookingWithUser(step, payload);
+        // } else {
         handleBookingUserNotLogin(step, payload);
+        // }
       }
+    } else {
+      setCurrentStep((prev) => (prev === 5 ? 0 : prev + 1));
     }
   };
   const normalizePayload = () => {
@@ -330,7 +326,7 @@ export default function Booking() {
       }));
     let payload: any = {
       bookingDate,
-      customerId: credentialInfo.Id,
+      staffId: credentialInfo.Id,
       timeSlotId,
       stylistId,
       combos,
@@ -344,38 +340,43 @@ export default function Booking() {
       delete payload.stylistId;
     }
 
-    return !isEmpty(credentialInfo)
-      ? payload
-      : {
-          ...payload,
-          customerFullName: formUser.getValues('customerFullName'),
-          customerPhoneNummber: formUser.getValues('customerPhoneNummber'),
-        };
+    // return !isEmpty(credentialInfo)
+    //   ? payload
+    //   : {
+    //       ...payload,
+    //       customerFullName: formUser.getValues('customerFullName'),
+    //       customerPhoneNummber: formUser.getValues('customerPhoneNummber'),
+    //     };
+    return {
+      ...payload,
+      customerFullName: formUser.getValues('customerFullName'),
+      customerPhoneNummber: formUser.getValues('customerPhoneNummber'),
+    };
   };
 
-  const handleBookingWithUser = (step, payload) => {
-    if (currentStep === 3 && !step) {
-      if (!stylistActive) {
-        showToast('warning', 'Vui lòng chọn stylist!');
-        return;
-      }
-      dispatch(setLoading(true));
-      bookingServices
-        .bookingInit(payload)
-        .then((res) => {
-          showToast('success', 'Đặt lịch thành công');
-          navigate('/appointment');
-        })
-        .catch((err) => {
-          showToast('error', err.msg);
-        })
-        .finally(() => {
-          dispatch(setLoading(false));
-        });
-      return;
-    }
-    setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
-  };
+  // const handleBookingWithUser = (step, payload) => {
+  //   if (currentStep === 3 && !step) {
+  //     if (!stylistActive) {
+  //       showToast('warning', 'Vui lòng chọn stylist!');
+  //       return;
+  //     }
+  //     dispatch(setLoading(true));
+  //     bookingServices
+  //       .bookingInit(payload)
+  //       .then((res) => {
+  //         showToast('success', 'Đặt lịch thành công');
+  //         navigate('/appointment');
+  //       })
+  //       .catch((err) => {
+  //         showToast('error', err.msg);
+  //       })
+  //       .finally(() => {
+  //         dispatch(setLoading(false));
+  //       });
+  //     return;
+  //   }
+  //   setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
+  // };
   const handleBookingUserNotLogin = (step, payload) => {
     if (currentStep === 3 && !step) {
       if (!stylistActive) {
@@ -476,9 +477,9 @@ export default function Booking() {
       <Breadscrumb currentStep={currentStep} options={optionsStep[0]} />
       <Box height={20}></Box>
       <Grid container spacing={2}>
-        <Grid item xs={7}>
+        <Grid item xs={8}>
           {currentStep === 0 ? (
-            <Box paddingRight={20}>
+            <Box paddingRight={10}>
               <Typography variant="h2" fontWeight={700}>
                 Chọn dịch vụ
               </Typography>
@@ -643,7 +644,7 @@ export default function Booking() {
                 border={'1px solid black'}
                 fullWidth
               >
-                <ICONS.IconStore /> &nbsp; &nbsp; &nbsp; &nbsp; Thanh toán tại địa điểm
+                &nbsp; &nbsp; &nbsp; &nbsp; Thanh toán tại địa điểm
               </ButtonPrimary>
               <Box height={20}></Box>
               <Typography variant="h6" fontWeight={600}>
@@ -720,6 +721,7 @@ export default function Booking() {
                       prevTimes.map((time) => ({ ...time, isActive: false })),
                     );
                     setStylists([]);
+                    formUser.reset(defaultValues);
                   }}
                 >
                   Đặt lịch thêm
