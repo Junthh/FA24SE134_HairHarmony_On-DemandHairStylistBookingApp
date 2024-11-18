@@ -62,7 +62,7 @@ function Login() {
       navigate(OWNER_PATH.DASHBOARD);
     } catch (error) {
       dispatch(setLoading(false));
-      showToast('error', handleError(error.message || error));
+      showToast('error', handleError(error.msg || error));
     }
   });
 
