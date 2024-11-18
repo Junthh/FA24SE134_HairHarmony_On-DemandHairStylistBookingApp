@@ -18,12 +18,13 @@ const BreadscrumbStyle = styled.div`
       text-decoration: underline;
     }
   }
-  MuiTypography-body1 {
+  .MuiTypography-body1 {
     font-style: normal;
-    font-weight: 700;
     font-size: 18px;
     line-height: 1.8;
-    color: ${colors.b9};
+    &:hover {
+      cursor: pointer;
+    }
   }
   & img {
     padding: 0 12px;
@@ -31,30 +32,40 @@ const BreadscrumbStyle = styled.div`
   }
 `;
 export type BreadScrumbProps = {
-  options: { label: string; url: string }[];
+  currentStep: number;
+  options: { label: string; step: number; onClick?: () => void }[];
 };
-export default function Breadscrumb({ options }: BreadScrumbProps) {
+export default function Breadscrumb({ options, currentStep }: BreadScrumbProps) {
   return (
     <BreadscrumbStyle>
       {options.map((item, index) => {
-        if (options.length - 1 === index) {
-          return (
-            <Typography variant="body1" fontWeight={700} key={index}>
+        const isLastItem = index === options.length - 1; // Check if it's the last item
+        const isActive = item.step === currentStep; // Check if the item is active
+
+        return (
+          <Box key={index} display="flex" alignItems="center">
+            <Typography
+              variant="body1"
+              fontWeight={isActive ? 700 : 400}
+              color={isActive ? colors.dark : 'inherit'} // Optionally change color for active
+              onClick={() => {
+                item.onClick();
+              }}
+            >
               {item.label}
             </Typography>
-          );
-        } else {
-          return (
-            <Box key={index} display={'flex'} alignItems={'center'}>
-              <Link key="1" to={item.url}>
-                <Typography variant="body1">{item.label}</Typography>
-              </Link>
-              <Box width={12}></Box>
-              <ArrowForwardIosIcon sx={{ fontSize: 16, color: '#B9B9B9' }} />
-              <Box width={12}></Box>
-            </Box>
-          );
-        }
+            {/* Only show the arrow if it's not the last item */}
+            {!isLastItem && (
+              <>
+                <Box width={12} />
+                <ArrowForwardIosIcon
+                  sx={{ fontSize: 16, color: isActive ? colors.dark : 'inherit' }}
+                />
+                <Box width={12} />
+              </>
+            )}
+          </Box>
+        );
       })}
     </BreadscrumbStyle>
   );

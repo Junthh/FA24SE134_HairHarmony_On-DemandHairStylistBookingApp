@@ -10,6 +10,7 @@ const StaffPage = lazy(() => import('pages/Staff'));
 const BookingHistory = lazy(() => import('pages/Staff/BookingHistory'));
 const ScheduleList = lazy(() => import('pages/Staff/ScheduleList'));
 const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
+const Booking = lazy(() => import('pages/Staff/Booking'));
 
 // const StaffArticleDetails = lazy(() => import('pages/Staff/Article/ArticleDetails'));
 // const StaffOurReaderStories = lazy(() => import('pages/Staff/OurReaderStories'));
@@ -37,7 +38,11 @@ export const StaffRouter = {
   children: [
     {
       path: '/',
-      element: <Navigate to={`${STAFF_PATH.SCHEDULE_LIST}`} replace />,
+      element: <Navigate to={`${STAFF_PATH.BOOKING}`} replace />,
+    },
+    {
+      path: `${STAFF_PATH.BOOKING}`,
+      element: <Booking />,
     },
     //
     {
