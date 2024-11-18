@@ -172,7 +172,14 @@ namespace hair_hamony.Business.Services.StaffServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Staff", id: staff.Id, email: "", phoneNumber: staff.PhoneNumber, username: staff.Username);
+            var token = _jwtHelper.GenerateJwtToken(
+                role: "Staff",
+                id: staff.Id,
+                email: "",
+                phoneNumber: staff.PhoneNumber,
+                username: staff.Username,
+                fullName: staff.FullName
+            );
             return (token, _mapper.Map<GetStaffModel>(staff));
         }
 

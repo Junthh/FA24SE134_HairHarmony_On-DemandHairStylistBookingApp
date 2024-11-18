@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
-import { Box, Typography, Stack, Pagination } from '@mui/material';
+import { Box, Typography, Stack, Pagination, Divider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import * as colors from 'constants/colors';
 import { useSelector } from 'react-redux';
 import { selectCredentialInfo } from 'redux/Reducer';
 import { useCallback } from 'react';
 import { bookingServices } from 'services/booking.service';
+import { formatDate } from 'utils/datetime';
+import { currencyFormat } from 'utils/helper';
 
 const AppointmentStyled = styled(Box)({
   display: 'flex',
@@ -65,49 +67,15 @@ export default function Appointment() {
           Sắp tới
         </Typography>
         <Box height={20}></Box>
-        <AppointmentCard>
-          <Typography variant="h5" fontWeight={600}>
-            Dịch vụ: Gói Nhộm & Duỗi
-          </Typography>
-          <Typography variant="h5" fontWeight={600}>
-            Stylist: John Alex
-          </Typography>
-          <Typography variant="h5" fontWeight={600}>
-            Thời gian:{'  '}
-            <span
-              style={{
-                color: colors.grey2,
-                fontWeight: 400,
-                fontSize: 14,
-              }}
-            >
-              Chủ nhật, 15 tháng 9
-            </span>
-            <br />
-          </Typography>
-          <Typography variant="h5" color={colors.grey2} fontSize={14}>
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
-            &nbsp;
-            <span>13:00 -16:45 (3 giờ, 45 phút)</span>
-          </Typography>
-          <Typography variant="h5" fontWeight={600}>
-            Tổng tiền: <span style={{ fontWeight: 700 }}>1.004.400 VND</span>
-          </Typography>
-        </AppointmentCard>
-      </Box>
-      <Box className="history-appointment">
-        <Typography variant="h2" fontWeight={600}>
-          Lịch sử cuộc hẹn
-        </Typography>
-        <Box height={20}></Box>
         {rows.map((item) => {
-          return (
+          return item.status === 'Initialize' ? (
             <AppointmentCard>
               <Typography variant="h5" fontWeight={600}>
-                Dịch vụ: Gói Nhộm & Duỗi
+                Dịch vụ:{' '}
+                {item?.bookingDetails[0]?.combo?.name || item?.bookingDetails[0]?.service?.name}
               </Typography>
               <Typography variant="h5" fontWeight={600}>
-                Stylist: John Alex
+                Stylist: {item?.bookingDetails[0]?.bookingSlotStylists[0].stylist?.fullName}
               </Typography>
               <Typography variant="h5" fontWeight={600}>
                 Thời gian:{'  '}
@@ -118,19 +86,76 @@ export default function Appointment() {
                     fontSize: 14,
                   }}
                 >
-                  Chủ nhật, 15 tháng 9
+                  {item?.bookingDetails[0]?.bookingSlotStylists[0]?.timeSlot?.startTime
+                    .split(':')
+                    .slice(0, 2)
+                    .join(':')}
+                  ,{' '}
+                  {formatDate(
+                    item?.bookingDetails[0]?.bookingSlotStylists[0]?.bookingDate,
+                    'dd/MM/yyyy',
+                  )}
                 </span>
                 <br />
               </Typography>
-              <Typography variant="h5" color={colors.grey2} fontSize={14}>
+              <Typography variant="h5" fontWeight={600}>
+                Tổng tiền:{' '}
+                <span style={{ fontWeight: 700 }}>{currencyFormat(item?.totalPrice)}</span>
+              </Typography>
+            </AppointmentCard>
+          ) : (
+            <></>
+          );
+        })}
+      </Box>
+      <Box className="history-appointment">
+        <Typography variant="h2" fontWeight={600}>
+          Lịch sử cuộc hẹn
+        </Typography>
+        <Box height={20}></Box>
+        {rows.map((item) => {
+          return item.status !== 'Initialize' ? (
+            <AppointmentCard>
+              <Typography variant="h5" fontWeight={600}>
+                Dịch vụ:{' '}
+                {item?.bookingDetails[0]?.combo?.name || item?.bookingDetails[0]?.service?.name}
+              </Typography>
+              <Typography variant="h5" fontWeight={600}>
+                Stylist: {item?.bookingDetails[0]?.bookingSlotStylists[0].stylist?.fullName}
+              </Typography>
+              <Typography variant="h5" fontWeight={600}>
+                Thời gian:{'  '}
+                <span
+                  style={{
+                    color: colors.grey2,
+                    fontWeight: 400,
+                    fontSize: 14,
+                  }}
+                >
+                  {item?.bookingDetails[0]?.bookingSlotStylists[0]?.timeSlot?.startTime
+                    .split(':')
+                    .slice(0, 2)
+                    .join(':')}
+                  ,{' '}
+                  {formatDate(
+                    item?.bookingDetails[0]?.bookingSlotStylists[0]?.bookingDate,
+                    'dd/MM/yyyy',
+                  )}
+                </span>
+                <br />
+              </Typography>
+              {/* <Typography variant="h5" color={colors.grey2} fontSize={14}>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
                 &nbsp;&nbsp; &nbsp;
                 <span>13:00 -16:45 (3 giờ, 45 phút)</span>
-              </Typography>
+              </Typography> */}
               <Typography variant="h5" fontWeight={600}>
-                Tổng tiền: <span style={{ fontWeight: 700 }}>1.004.400 VND</span>
+                Tổng tiền:{' '}
+                <span style={{ fontWeight: 700 }}>{currencyFormat(item?.totalPrice)}</span>
               </Typography>
             </AppointmentCard>
+          ) : (
+            <></>
           );
         })}
       </Box>

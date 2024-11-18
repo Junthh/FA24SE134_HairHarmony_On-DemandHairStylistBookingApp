@@ -173,7 +173,13 @@ namespace hair_hamony.Business.Services.CustomerServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Customer", id: customer.Id, email: "", phoneNumber: customer.PhoneNumber, username: customer.Username);
+            var token = _jwtHelper.GenerateJwtToken(role: "Customer",
+                id: customer.Id,
+                email: "",
+                phoneNumber: customer.PhoneNumber,
+                username: customer.Username,
+                fullName: customer.FullName
+            );
             return (token, _mapper.Map<GetCustomerModel>(customer));
         }
 
