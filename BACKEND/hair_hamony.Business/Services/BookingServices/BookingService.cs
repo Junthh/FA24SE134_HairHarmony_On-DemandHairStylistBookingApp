@@ -230,7 +230,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
-                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -292,7 +292,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
-                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -339,7 +339,7 @@ namespace hair_hamony.Business.Services.BookingServices
             }
         }
 
-        private async Task CheckStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
+        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
         {
             var stylists = await _bookingSlotStylistService
                     .GetListStylistFreetime(bookingDate, timeSlotId);
