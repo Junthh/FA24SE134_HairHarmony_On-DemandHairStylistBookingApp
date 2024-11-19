@@ -7,8 +7,13 @@ import { SidebarStyled } from './styles';
 import { ICONS } from 'configurations/icons';
 import { ADMIN_PATH, STAFF_PATH } from 'configurations/paths/paths';
 import { LOGO } from 'configurations/logo';
-
+import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 const routes = [
+  {
+    path: STAFF_PATH.BOOKING,
+    name: 'Đặt lịch',
+    icon: <ICONS.IconList />,
+  },
   {
     path: STAFF_PATH.SCHEDULE_LIST,
     name: 'Danh sách đặt lịch',
