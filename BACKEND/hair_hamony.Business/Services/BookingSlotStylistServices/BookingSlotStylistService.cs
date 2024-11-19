@@ -81,7 +81,10 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
 
             // danh sach stylist da co booking
             var bookingSlotStylist = _context.BookingSlotStylists
-                .Where(bookingSlotStylist => bookingSlotStylist.BookingDate.Equals(bookingDate) && bookingSlotStylist.TimeSlotId == timeSlotId)
+                .Where(bookingSlotStylist => 
+                    bookingSlotStylist.BookingDate.Equals(bookingDate) 
+                    && bookingSlotStylist.TimeSlotId == timeSlotId
+                    && bookingSlotStylist.Status == "Booked")
                 .Select(bookingSlotStylist => bookingSlotStylist.StylistId)
                 .ToList();
 
