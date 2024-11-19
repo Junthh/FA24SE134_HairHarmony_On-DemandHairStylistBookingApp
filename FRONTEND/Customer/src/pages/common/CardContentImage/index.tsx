@@ -19,6 +19,9 @@ const CardContentImagesSyled = styled(Box)({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  '& .content': {
+    cursor: 'pointer',
+  },
 });
 const CardContentAboutImagesSyled = styled(Box)({
   borderRadius: '16px',
@@ -52,7 +55,12 @@ function CardContentImage(props: CardContentImageProps) {
     </CardContentAboutImagesSyled>
   ) : (
     <CardContentImagesSyled>
-      <Box className="content">
+      <Box
+        className="content"
+        onClick={() => {
+          onViewDetail(item.id);
+        }}
+      >
         <img src={item?.avatar} alt="" />
         <Typography fontWeight={600} variant="h3" textAlign={'center'}>
           {item?.fullName}

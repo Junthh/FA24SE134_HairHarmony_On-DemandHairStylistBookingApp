@@ -12,6 +12,7 @@ namespace hair_hamony.Business.ViewModels.Bookings
         public double? TotalPrice { get; set; }
         public double? AmoutToPaid { get; set; }
         public int? LoyaltyPoints { get; set; }
+        public bool? IsRandomStylist { get; set; }
         public string? Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }

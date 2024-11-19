@@ -106,7 +106,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
                 setAnchorEl(event.currentTarget);
               }}
             >
-              {'Wellcome ' + credentialInfo.Username}
+              {'Wellcome ' + credentialInfo.FullName}
             </ButtonPrimary>
             <Popover
               id={id}

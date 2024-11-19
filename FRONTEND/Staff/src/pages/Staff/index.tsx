@@ -86,14 +86,10 @@ function Staff() {
       setTabName('Lịch sử đặt lịch');
     } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
       setTabName('Tình Trạng Stylist');
+    } else if (name === STAFF_PATH.BOOKING.split('/')[1]) {
+      setTabName('Đặt lịch');
     }
   }, [location]);
-
-  useEffect(() => {
-    if (credentialInfo?.email) {
-      // setEmail(credentialInfo.email);
-    }
-  }, [credentialInfo]);
 
   return (
     <SideBar>
@@ -101,7 +97,7 @@ function Staff() {
         <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
           <Avatar src="" />
-          {/* <EmailWrapper>
+          <EmailWrapper>
             <Typography
               variant="body2"
               fontWeight={700}
@@ -112,9 +108,9 @@ function Staff() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {email}
+              {credentialInfo.FullName}
             </Typography>
-          </EmailWrapper> */}
+          </EmailWrapper>
           <ArrowDropDownIcon sx={{ color: '#F2FFE3' }} />
           {toggle && (
             <Box
