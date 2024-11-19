@@ -54,11 +54,11 @@ namespace home_travel.API.Controllers
         [HttpGet("StylistFreetime")]
         [ProducesResponseType(typeof(ModelsResponse<GetStylistModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public IActionResult GetListStylistFreetime(
+        public async Task<IActionResult> GetListStylistFreetime(
             [FromQuery] DateOnly bookingDate,
             [FromQuery] Guid timeSlotId)
         {
-            var stylists = _bookingSlotStylistService.GetListStylistFreetime(bookingDate, timeSlotId);
+            var stylists = await _bookingSlotStylistService.GetListStylistFreetime(bookingDate, timeSlotId);
 
             return Ok(new ModelsResponse<GetStylistModel>(
                     paging: new PagingResponse()
