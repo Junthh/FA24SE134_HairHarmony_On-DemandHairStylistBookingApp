@@ -43,9 +43,5 @@ export const ButtonPrimary = styled(Button)<{
       color: colors.white,
       background: colors.dark,
     },
-    '&.active': {
-      background: colors.dark,
-      color: `${colors.white} !important`,
-    },
   }),
 );
