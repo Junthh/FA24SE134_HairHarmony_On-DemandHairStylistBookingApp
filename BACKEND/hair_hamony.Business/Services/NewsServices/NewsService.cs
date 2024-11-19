@@ -83,12 +83,17 @@ namespace hair_hamony.Business.Services.NewsServices
                 };
             }
             var news = _mapper.Map<News>(await GetById(id));
+            var oldThumbnail = news.Thumbnail;
             _mapper.Map(requestBody, news);
             news.UpdatedDate = DateTime.Now;
             if (requestBody.Thumbnail != null)
             {
                 var file = await _fileService.UploadFile(requestBody.Thumbnail);
                 news.Thumbnail = file.Url;
+            }
+            else
+            {
+                news.Thumbnail = oldThumbnail;
             }
 
             _context.News.Update(news);
