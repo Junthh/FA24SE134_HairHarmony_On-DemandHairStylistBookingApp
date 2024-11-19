@@ -412,7 +412,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         var commissionRate = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "COMMISSION_RATE")!.Value!.Value;
 
                         var totalBooking = stylistSalary.TotalBooking + 1;
-                        var totalCommission = stylistSalary.TotalCommission 
+                        var totalCommission = stylistSalary.TotalCommission
                             + stylist.Kpi > stylistSalary.TotalBooking + 1 ? booking.TotalPrice * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
@@ -425,6 +425,34 @@ namespace hair_hamony.Business.Services.BookingServices
                             TotalSalary = stylist.Salary + totalCommission
                         });
                     }
+                }
+                else if (booking.Status == "Cancel")
+                {
+                    await _context.Transactions.Where(transaction => transaction.BookingId == booking.Id)
+                        .ExecuteUpdateAsync(setters =>
+                            setters.SetProperty(transaction => transaction.Status, "Cancel")
+                        );
+
+                    await _context.Payments
+                        .Where(payment => payment.BookingId == booking.Id)
+                        .ExecuteUpdateAsync(setters =>
+                            setters.SetProperty(payment => payment.Status, "Cancel")
+                        );
+
+                    var bookingDetailIds = _context.BookingDetails
+                        .Where(bookingDetail => bookingDetail.BookingId == booking.Id).Select(bookingDetail => bookingDetail.Id).ToList();
+
+                    await _context.TransactionDetails
+                        .Where(transactionDetail => bookingDetailIds.Contains((Guid)transactionDetail.BookingDetailId!))
+                        .ExecuteUpdateAsync(setters
+                            => setters.SetProperty(transactionDetail => transactionDetail.Status, "Cancel")
+                        );
+
+                    await _context.BookingSlotStylists
+                        .Where(bookingSlotStylist => bookingDetailIds.Contains((Guid)bookingSlotStylist.BookingDetailId!))
+                        .ExecuteUpdateAsync(setters
+                            => setters.SetProperty(bookingSlotStylist => bookingSlotStylist.Status, "Available")
+                        );
                 }
 
                 await _context.SaveChangesAsync();
