@@ -8,6 +8,7 @@
         public string? CustomerFullName { get; set; }
         public string? CustomerPhoneNummber { get; set; }
         public bool? IsRandomStylist { get; set; }
+        public double? ExpertFee { get; set; }
         public Guid? StaffId { get; set; }
         public required Guid TimeSlotId { get; set; }
         public required Guid StylistId { get; set; }

@@ -89,8 +89,18 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             var stylistsFreetime = stylistWorkships.Except(bookingSlotStylist).ToList();
 
             var stylists = _context.Stylists.AsNoTracking().Where(stylist => stylistsFreetime.Contains(stylist.Id));
+            var results = _mapper.Map<IList<GetStylistModel>>(stylists);
 
-            return _mapper.Map<IList<GetStylistModel>>(stylists);
+            foreach (var item in results)
+            {
+                var systemConfig = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE");
+                if (item.Level == "Expert")
+                {
+                    item.ExpertFee = systemConfig.Value;
+                }
+            }
+
+            return results;
         }
 
         public async Task<GetBookingSlotStylistModel> Update(Guid id, UpdateBookingSlotStylistModel requestBody)
