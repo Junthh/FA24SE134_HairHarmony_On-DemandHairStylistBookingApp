@@ -63,7 +63,9 @@ export default function News() {
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
   const schemaUser = Yup.object().shape<any>({});
-  const defaultValues = {};
+  const defaultValues = {
+    author: credentialInfo.FullName,
+  };
   const formUser = useForm<any>({
     defaultValues,
     mode: 'onChange',
@@ -250,6 +252,7 @@ export default function News() {
                 control={control}
                 placeholder="Nhập Author"
                 label={'Author'}
+                disabled
                 //   onKeyUp={handleKeyup}
               />
               <Box display={'flex'} justifyContent={'flex-end'}>
