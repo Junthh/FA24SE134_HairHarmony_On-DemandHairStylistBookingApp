@@ -31,14 +31,21 @@ const CardContentAboutImagesSyled = styled(Box)({
   flexDirection: 'column',
   width: 420,
   backgroundColor: 'rgba(27, 77, 74, 0.06)',
+  '& img': {
+    width: '100%',
+    height: 280,
+    objectFit: 'cover',
+    borderTopLeftRadius: '16px',
+    borderTopRightRadius: '16px',
+  },
 });
 function CardContentImage(props: CardContentImageProps) {
   const { item, onViewDetail, type = '' } = props;
 
   return type === 'NEWS' ? (
     <CardContentAboutImagesSyled>
-      <img src={item.image} alt="" />
-      <Typography padding={2}>{item.description}</Typography>
+      <img src={item.thumbnail} alt="" />
+      <Typography padding={2}>{item.title}</Typography>
       <Divider variant="fullWidth" style={{ width: '100%' }} />
       <Typography
         display={'flex'}
@@ -48,6 +55,9 @@ function CardContentImage(props: CardContentImageProps) {
         padding={2}
         style={{
           cursor: 'pointer',
+        }}
+        onClick={() => {
+          onViewDetail(item.id);
         }}
       >
         Xem chi tiết &nbsp;&nbsp; <ArrowForwardIcon />

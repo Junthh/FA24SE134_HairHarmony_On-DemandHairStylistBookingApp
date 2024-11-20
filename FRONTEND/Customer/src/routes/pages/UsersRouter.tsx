@@ -14,6 +14,7 @@ const Booking = lazy(() => import('pages/Users/Booking'));
 const Appointment = lazy(() => import('pages/Users/Appointment'));
 const AboutUs = lazy(() => import('pages/Users/AboutUs'));
 const OurTeammates = lazy(() => import('pages/Users/OurTeammates'));
+const News = lazy(() => import('pages/Users/News'));
 
 export const UsersRouter = {
   path: '',
@@ -39,6 +40,10 @@ export const UsersRouter = {
     {
       path: `${USER_PATH.STYLIST_DETAIL}/:id`,
       element: <StylistDetails />,
+    },
+    {
+      path: `${USER_PATH.NEWS}/:id`,
+      element: <News />,
     },
     {
       path: USER_PATH.BOOKING,
