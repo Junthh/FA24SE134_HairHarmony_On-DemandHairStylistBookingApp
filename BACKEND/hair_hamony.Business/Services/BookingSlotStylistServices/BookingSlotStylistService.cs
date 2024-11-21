@@ -44,7 +44,10 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailBookingSlotStylistModel>, int)> GetAll(PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel, SearchBookingSlotStylistModel searchBookingSlotStylistModel)
+        public async Task<(IList<GetDetailBookingSlotStylistModel>, int)> GetAll(
+            PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel,
+            SearchBookingSlotStylistModel searchBookingSlotStylistModel,
+            DateOnly? startDate, DateOnly? endDate)
         {
             var query = _context.BookingSlotStylists
                 .Include(bookingSlotStylist => bookingSlotStylist.Stylist)
@@ -59,6 +62,14 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                 .ThenInclude(bookingDetail => bookingDetail.Booking)
                 .ThenInclude(booking => booking.Customer)
                 .AsQueryable();
+
+            if (startDate != null && endDate != null)
+            {
+                query = query.Where(bookingSlotStylist =>
+                    bookingSlotStylist.BookingDate >= startDate && bookingSlotStylist.BookingDate <= endDate
+                );
+            }
+
             query = query.GetWithSearch(searchBookingSlotStylistModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
