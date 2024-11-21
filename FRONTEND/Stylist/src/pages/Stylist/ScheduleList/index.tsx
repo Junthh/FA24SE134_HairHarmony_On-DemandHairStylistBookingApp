@@ -1,206 +1,77 @@
+import React, { useCallback, useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { Box } from '@mui/material';
 import styled from '@emotion/styled';
-import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Box,
-  IconButton,
-  Pagination,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  tableCellClasses,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
-import { FormContainer } from 'components/Form/FormContainer';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
-import { BoxHeaderSearch } from '../Styles/common';
-import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
-import { ICONS } from 'configurations/icons';
-import { ButtonPrimary } from 'pages/common/style/Button';
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
+import { useDispatch } from 'react-redux';
+import { setLoading } from 'redux/Reducer';
+import moment from 'moment';
+import { scheduleStylistServices } from 'services/schedule-stylist.services';
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  //   '&:nth-of-type(odd)': {
-  //     backgroundColor: theme.palette.action.hover,
-  //   },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
+const EmployeeWorkScheduleStyled = styled(Box)({
+  padding: 20,
+  '& .fc-direction-ltr': {
+    maxHeight: 'calc(100vh - 205px)',
   },
-}));
-const rows = [
-  createData(
-    'Ánh Nguyên Nghị',
-    '19/06/2024',
-    '0392748419',
-    'Jhon Alex',
-    '14:00',
-    '-',
-    'Cắt Nhộm',
-    '600,000 VND',
-  ),
-  createData(
-    'Ánh Nguyên Nghị',
-    '19/06/2024',
-    '0392748419',
-    'Jhon Alex',
-    '14:00',
-    '-',
-    'Cắt Nhộm',
-    '600,000 VND',
-  ),
-  createData(
-    'Ánh Nguyên Nghị',
-    '19/06/2024',
-    '0392748419',
-    'Jhon Alex',
-    '14:00',
-    '-',
-    'Cắt Nhộm',
-    '600,000 VND',
-  ),
-  createData(
-    'Ánh Nguyên Nghị',
-    '19/06/2024',
-    '0392748419',
-    'Jhon Alex',
-    '14:00',
-    '-',
-    'Cắt Nhộm',
-    '600,000 VND',
-  ),
-];
-function createData(
-  name: string,
-  date: string,
-  phone: string,
-  nameStylist: string,
-  time: string,
-  service: string,
-  combo: string,
-  price: string,
-) {
-  return { name, date, phone, nameStylist, time, service, combo, price };
-}
+});
 
-export default function ScheduleList() {
-  const schema = Yup.object().shape<any>({});
-  const formSearch = useForm<any>({
-    defaultValues: {},
-    mode: 'onChange',
-    resolver: yupResolver(schema),
-  });
-  const {
-    control,
-    watch,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = formSearch;
+export default function EmployeeWorkSchedule() {
+  const [events, setEvents] = useState([]);
+  const dispatch = useDispatch();
+
+  const handleGetStylistWorkships = useCallback(
+    async (dateInfo) => {
+      dispatch(setLoading(true));
+      try {
+        const params = {
+          startDate: moment(dateInfo.start).format('YYYY/MM/DD'),
+          endDate: moment(dateInfo.end).format('YYYY/MM/DD'),
+        };
+
+        const res = (await scheduleStylistServices.list(params)) as any;
+        const newEvents = res.data.map((item) => ({
+          title: `${item.stylist.username} - ${item.stylist.fullName}`,
+          start: moment(
+            `${item.registerDate} ${item.workship.startTime}`,
+            'YYYY-MM-DD HH:mm:ss',
+          ).toISOString(),
+          end: moment(
+            `${item.registerDate} ${item.workship.endTime}`,
+            'YYYY-MM-DD HH:mm:ss',
+          ).toISOString(),
+        }));
+        setEvents(newEvents);
+      } catch (error) {
+        console.error('Failed to fetch stylist workships:', error);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    },
+    [dispatch],
+  );
+
+  const renderEventContent = (eventInfo) => (
+    <div title={eventInfo.event.title}>
+      <b>{eventInfo.timeText}</b>
+      <br />
+      <p>{eventInfo.event.title}</p>
+    </div>
+  );
+
   return (
-    <Box marginRight={'20px'} marginTop={'40px'}>
-      <FormContainer formContext={formSearch}>
-        <BoxHeaderSearch>
-          <Box className="search-left">
-            <TextFieldElement
-              name="keySearch"
-              control={control}
-              placeholder="Search"
-              InputProps={{
-                startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
-              }}
-              //   onKeyUp={handleKeyup}
-            />
-            <ButtonPrimary
-              severity="primary"
-              padding={'7px 14px'}
-              //   onClick={() => navigate(`${STATE.CREATE}`)}
-            >
-              <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
-            </ButtonPrimary>
-            <Box width={'50%'}></Box>
-          </Box>
-          <Box className="search-right">
-            <ButtonPrimary
-              severity="primary"
-              padding={'9px 14px'}
-              //   onClick={() => navigate(`${STATE.CREATE}`)}
-            >
-              <ControlPointIcon />
-              &nbsp; Thêm mới
-            </ButtonPrimary>
-          </Box>
-        </BoxHeaderSearch>
-      </FormContainer>
-      <Box height={40}></Box>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead style={{ background: '#2D3748' }}>
-            <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="left">
-                Họ và tên
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày làm
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Số điện thoại
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Stylist
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Thời gian
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Dịch vụ
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Combo
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Tổng tiền
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={row.name}>
-                <StyledTableCell component="th" scope="row">
-                  {row.name}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.date}</StyledTableCell>
-                <StyledTableCell align="right">{row.phone}</StyledTableCell>
-                <StyledTableCell align="right">{row.nameStylist}</StyledTableCell>
-                <StyledTableCell align="right">{row.time}</StyledTableCell>
-                <StyledTableCell align="right">{row.service}</StyledTableCell>
-                <StyledTableCell align="right">{row.combo}</StyledTableCell>
-                <StyledTableCell align="right">{row.price}</StyledTableCell>
-                <StyledTableCell align="right">
-                  <IconButton>
-                    <ICONS.IconThreeDot />
-                  </IconButton>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Box height={20}></Box>
-      <Stack spacing={2} alignItems={'center'}>
-        <Pagination count={10} showFirstButton showLastButton />
-      </Stack>
-    </Box>
+    <EmployeeWorkScheduleStyled>
+      <FullCalendar
+        plugins={[timeGridPlugin]}
+        initialView="timeGridWeek"
+        headerToolbar={{
+          left: 'prev,next',
+          center: 'title',
+          right: 'timeGridWeek,timeGridDay',
+        }}
+        events={events}
+        datesSet={handleGetStylistWorkships} // Only relying on datesSet for data fetching
+        eventContent={renderEventContent}
+      />
+    </EmployeeWorkScheduleStyled>
   );
 }
