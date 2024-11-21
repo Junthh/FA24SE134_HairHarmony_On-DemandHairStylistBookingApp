@@ -6,6 +6,7 @@ export enum USER_PATH {
   APPOINTMENT = '/appointment',
   OUR_TEAMMATES = '/our-teammates',
   SERVICES = '/services',
+  NEWS = '/news',
 }
 
 export enum ADMIN_PATH {

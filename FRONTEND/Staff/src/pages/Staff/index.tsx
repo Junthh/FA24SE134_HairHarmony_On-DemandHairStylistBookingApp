@@ -88,6 +88,8 @@ function Staff() {
       setTabName('Tình Trạng Stylist');
     } else if (name === STAFF_PATH.BOOKING.split('/')[1]) {
       setTabName('Đặt lịch');
+    }else if (name === STAFF_PATH.NEWS.split('/')[1]) {
+      setTabName('Tin tức');
     }
   }, [location]);
 
