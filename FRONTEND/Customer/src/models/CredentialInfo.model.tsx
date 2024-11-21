@@ -2,6 +2,7 @@ export interface CredentialInfo {
   acessToken?: string;
   refreshToken?: string;
   Username?: string;
+  FullName?: string;
   Email?: string;
   PhoneNumber?: string;
   Id?: string;

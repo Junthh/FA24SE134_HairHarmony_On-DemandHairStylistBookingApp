@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { ECOCUPID_ENDPOINTS } from 'configurations/constants/globalConstants';
+import { ENDPOINTS } from 'configurations/constants/globalConstants';
 
 class ScheduleListServices {
   async list(params = {}) {
     try {
-      const resData = await axios.get(`${ECOCUPID_ENDPOINTS.ApiPrefix}/bookings`, {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/bookings`, {
         params,
       });
       return resData;

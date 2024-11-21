@@ -11,7 +11,7 @@ interface AppState {
 const initialState: AppState = {
   loading: false,
   activeStep: 1,
-  credentialInfo: CredentialInfoDefault,
+  credentialInfo: {},
 };
 
 // reducer callback

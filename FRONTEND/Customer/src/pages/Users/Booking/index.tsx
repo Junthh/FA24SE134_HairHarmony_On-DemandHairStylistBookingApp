@@ -132,7 +132,12 @@ export default function Booking() {
   const [optionsStep, setOptionsStep] = useState(
     isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps],
   );
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape({
+    customerFullName: Yup.string().required('Họ và tên không được trống'),
+    customerPhoneNummber: Yup.string()
+      .matches(/^0\d{9}$/, 'Số điện thoại phải bắt đầu bằng 0 và có 10 số')
+      .required('Số điện thoại không được trống'),
+  });
   const defaultValues = {
     customerFullName: '',
     customerPhoneNummber: '',
@@ -166,7 +171,16 @@ export default function Booking() {
           bookingDate,
         })
         .then((res) => {
-          const resultStylist = res.data;
+          const defaultStylist = [
+            {
+              id: 1,
+              fullName: 'Chọn stylist bất kỳ',
+              level: 'None',
+              isActive: false,
+            },
+          ];
+          const resultStylist = defaultStylist.concat(res.data);
+
           setStylists(resultStylist);
         })
         .catch((err) => {})
@@ -186,12 +200,14 @@ export default function Booking() {
       bookingServices
         .listTimeSlots()
         .then((res) => {
-          let timeSlots = res.data.map((item) => ({
-            ...item,
-            startTime: item.startTime.split(':').slice(0, 2).join(':'),
-            endTime: item.endTime.split(':').slice(0, 2).join(':'),
-            isActive: false,
-          }));
+          let timeSlots = res.data
+            .map((item) => ({
+              ...item,
+              startTime: item.startTime.split(':').slice(0, 2).join(':'),
+              endTime: item.endTime.split(':').slice(0, 2).join(':'),
+              isActive: false,
+            }))
+            .sort((a, b) => a.startTime.localeCompare(b.startTime));
           setTimes(timeSlots);
         })
         .catch((err) => {})
@@ -244,7 +260,7 @@ export default function Booking() {
     getCategoryList();
   }, [getCategoryList]);
 
-  const handleChangeStep = (step?: number) => {
+  const handleChangeStep = async (step?: number) => {
     if (isEmpty(step?.toString())) {
       const isAnyServiceChecked = Object.values(services).some((service: any) => service.checked);
       if (currentStep === 0 && !isAnyServiceChecked) {
@@ -269,9 +285,24 @@ export default function Booking() {
       setCurrentStep(step);
     } else {
       let payload = normalizePayload();
-      if (!isEmpty(credentialInfo)) {
+      if (!isEmpty(credentialInfo) && (step === 3 || currentStep === 3)) {
+        const isValid = await formUser.trigger();
+
+        // If validation fails, return errors
+        if (!isValid) {
+          const errors = formUser.formState.errors;
+          console.error('Validation failed:', errors);
+          return;
+        }
         handleBookingWithUser(step, payload);
-      } else {
+      } else if (isEmpty(credentialInfo) && (step === 4 || currentStep === 4)) {
+        const isValid = await formUser.trigger();
+        // If validation fails, return errors
+        if (!isValid) {
+          const errors = formUser.formState.errors;
+          console.error('Validation failed:', errors);
+          return;
+        }
         handleBookingUserNotLogin(step, payload);
       }
     }
@@ -297,7 +328,7 @@ export default function Booking() {
         id: item.id,
         price: item.price,
       }));
-    let payload = {
+    let payload: any = {
       bookingDate,
       customerId: credentialInfo.Id,
       timeSlotId,
@@ -305,6 +336,14 @@ export default function Booking() {
       combos,
       services: servicesResult,
     };
+    if (stylistId === 1) {
+      payload = {
+        ...payload,
+        isRandomStylist: true,
+      };
+      delete payload.stylistId;
+    }
+
     return !isEmpty(credentialInfo)
       ? payload
       : {
@@ -497,31 +536,35 @@ export default function Booking() {
               </LocalizationProvider>
               {!isLoading ? (
                 <Grid container spacing={2}>
-                  {times.map((item) => {
-                    return (
-                      <Grid item xs={2}>
-                        <ButtonPrimary
-                          fullWidth
-                          severity="cancel"
-                          padding={'16px 18px'}
-                          sx={{ color: 'black !important' }}
-                          border={'1px solid black'}
-                          className={item.isActive ? 'active' : ''}
-                          onClick={() => {
-                            setTimes((prevTimes) =>
-                              prevTimes.map((time) =>
-                                time.id === item.id
-                                  ? { ...time, isActive: true }
-                                  : { ...time, isActive: false },
-                              ),
-                            );
-                          }}
-                        >
-                          {item.startTime}
-                        </ButtonPrimary>
-                      </Grid>
-                    );
-                  })}
+                  <Grid item xs={2}></Grid>
+                  <Grid container spacing={2} item xs={8}>
+                    {times.map((item) => {
+                      return (
+                        <Grid item xs={4}>
+                          <ButtonPrimary
+                            fullWidth
+                            severity="cancel"
+                            padding={'16px 18px'}
+                            sx={{ color: 'black !important' }}
+                            border={'1px solid black'}
+                            className={item.isActive ? 'active' : ''}
+                            onClick={() => {
+                              setTimes((prevTimes) =>
+                                prevTimes.map((time) =>
+                                  time.id === item.id
+                                    ? { ...time, isActive: true }
+                                    : { ...time, isActive: false },
+                                ),
+                              );
+                            }}
+                          >
+                            {item.startTime}
+                          </ButtonPrimary>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                  <Grid item xs={2}></Grid>
                 </Grid>
               ) : (
                 <SkeletonTime />
@@ -534,25 +577,28 @@ export default function Booking() {
               </Typography>
               <Box height={25}></Box>
               <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <BoxStylistCard
-                    onClick={() => {
-                      const randomIndex = Math.floor(Math.random() * stylists.length);
-                      const newData = stylists.map((item, index) => ({
-                        ...item,
-                        isActive: index === randomIndex ? true : item.isActive || false,
-                      }));
-                      setStylists(newData);
-                    }}
-                  >
-                    <IconStylist />
-                    <Typography variant="h4" fontWeight={700}>
-                      Chọn stylist bất kỳ
-                    </Typography>
-                  </BoxStylistCard>
-                </Grid>
-                {stylists.map((item) => {
-                  return (
+                {stylists.map((item, index) => {
+                  return index === 0 ? (
+                    <Grid item xs={4}>
+                      <BoxStylistCard
+                        className={item.isActive ? 'active' : ''}
+                        onClick={() => {
+                          setStylists((prevStylist) =>
+                            prevStylist.map((sty) =>
+                              sty.id === item.id
+                                ? { ...sty, isActive: true }
+                                : { ...sty, isActive: false },
+                            ),
+                          );
+                        }}
+                      >
+                        <IconStylist className={item.isActive ? 'active' : ''} />
+                        <Typography variant="h4" fontWeight={700}>
+                          Chọn stylist bất kỳ
+                        </Typography>
+                      </BoxStylistCard>
+                    </Grid>
+                  ) : (
                     <Grid item xs={4}>
                       <BoxStylistCard
                         className={item.isActive ? 'active' : ''}

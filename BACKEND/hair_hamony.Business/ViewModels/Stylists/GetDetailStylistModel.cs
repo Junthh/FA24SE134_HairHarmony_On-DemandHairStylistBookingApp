@@ -1,6 +1,4 @@
-﻿using hair_hamony.Business.ViewModels.Users;
-
-namespace hair_hamony.Business.ViewModels.Stylists
+﻿namespace hair_hamony.Business.ViewModels.Stylists
 {
     public class GetDetailStylistModel
     {
@@ -16,6 +14,7 @@ namespace hair_hamony.Business.ViewModels.Stylists
         public string? PhoneNumber { get; set; }
         public string? Status { get; set; }
         public string? Avatar { get; set; }
+        public string? Password { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }

@@ -7,12 +7,20 @@ import { SidebarStyled } from './styles';
 import { ICONS } from 'configurations/icons';
 import { ADMIN_PATH, STAFF_PATH } from 'configurations/paths/paths';
 import { LOGO } from 'configurations/logo';
-
+import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 const routes = [
+  {
+    path: STAFF_PATH.BOOKING,
+    name: 'Đặt lịch',
+    icon: <CalendarTodayIcon />,
+  },
   {
     path: STAFF_PATH.SCHEDULE_LIST,
     name: 'Danh sách đặt lịch',
-    icon: <ICONS.IconList />,
+    icon: <CalendarMonthIcon />,
   },
   {
     path: STAFF_PATH.HISTORY,
@@ -23,6 +31,11 @@ const routes = [
     path: STAFF_PATH.STYLIST_STATUS,
     name: 'Tình trạng stylist',
     icon: <ICONS.IconStylistUser />,
+  },
+  {
+    path: STAFF_PATH.NEWS,
+    name: 'Tin tức',
+    icon: <NewspaperIcon />,
   },
 ];
 

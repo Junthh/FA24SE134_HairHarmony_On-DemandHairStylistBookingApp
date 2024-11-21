@@ -25,6 +25,9 @@ const MainContainerStyled = styled(Box)({
   zIndex: 1,
   background: colors.white,
   height: '100%',
+  overflow: 'scroll',
+  maxHeight: 'calc(100% - 80px)',
+  paddingLeft: '20px',
 });
 
 const InfoAccountStyled = styled(Box)({
@@ -83,14 +86,12 @@ function Staff() {
       setTabName('Lịch sử đặt lịch');
     } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
       setTabName('Tình Trạng Stylist');
+    } else if (name === STAFF_PATH.BOOKING.split('/')[1]) {
+      setTabName('Đặt lịch');
+    }else if (name === STAFF_PATH.NEWS.split('/')[1]) {
+      setTabName('Tin tức');
     }
   }, [location]);
-
-  useEffect(() => {
-    if (credentialInfo?.email) {
-      // setEmail(credentialInfo.email);
-    }
-  }, [credentialInfo]);
 
   return (
     <SideBar>
@@ -98,7 +99,7 @@ function Staff() {
         <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
           <Avatar src="" />
-          {/* <EmailWrapper>
+          <EmailWrapper>
             <Typography
               variant="body2"
               fontWeight={700}
@@ -109,9 +110,9 @@ function Staff() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {email}
+              {credentialInfo.FullName}
             </Typography>
-          </EmailWrapper> */}
+          </EmailWrapper>
           <ArrowDropDownIcon sx={{ color: '#F2FFE3' }} />
           {toggle && (
             <Box

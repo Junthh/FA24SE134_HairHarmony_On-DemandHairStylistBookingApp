@@ -37,7 +37,7 @@ export const UsersRouter = {
       element: <Services />,
     },
     {
-      path: USER_PATH.STYLIST_DETAIL,
+      path: `${USER_PATH.STYLIST_DETAIL}/:id`,
       element: <StylistDetails />,
     },
     {

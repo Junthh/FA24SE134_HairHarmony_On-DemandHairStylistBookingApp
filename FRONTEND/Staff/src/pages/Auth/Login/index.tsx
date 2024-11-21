@@ -59,7 +59,7 @@ function Login() {
         authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
-      navigate(STAFF_PATH.SCHEDULE_LIST);
+      navigate(STAFF_PATH.BOOKING);
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', error.msg || error.message);

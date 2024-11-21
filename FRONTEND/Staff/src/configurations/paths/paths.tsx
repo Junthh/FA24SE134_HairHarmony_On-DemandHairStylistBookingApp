@@ -13,6 +13,8 @@ export enum USER_PATH {
 }
 
 export enum STAFF_PATH {
+  NEWS = '/news',
+  BOOKING = '/booking',
   SCHEDULE_LIST = '/schedule-list',
   HISTORY = '/history',
   STYLIST_STATUS = '/stylist-status',

@@ -33,7 +33,9 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                     {
                         var stylistWorkship = _context.StylistWorkships
                             .FirstOrDefault(stylistWorkship =>
-                                stylistWorkship.RegisterDate == requestBody.RegisterDate && stylistWorkship.WorkshipId == workshipId
+                                stylistWorkship.RegisterDate == requestBody.RegisterDate
+                                && stylistWorkship.WorkshipId == workshipId
+                                && stylistWorkship.StylistId == requestBody.StylistId
                             );
 
                         if (stylistWorkship != null)
@@ -42,7 +44,9 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                             throw new CException
                             {
                                 StatusCode = StatusCodes.Status400BadRequest,
-                                ErrorMessage = $"Ca làm việc {workship.StartTime} - {workship.EndTime} ngày {requestBody.RegisterDate} đã được đăng ký, vui lòng chọn ca làm việc khác"
+                                ErrorMessage = $"Ca làm việc {workship.StartTime.Value.ToString("HH:mm")} - {workship.EndTime.Value.ToString("HH:mm")} ngày " +
+                                    $"{requestBody.RegisterDate.Value.ToString("dd/MM/yyyy")} " +
+                                    $"đã được đăng ký, vui lòng chọn ca làm việc khác"
                             };
                         }
                         var newStylistWorkship = new StylistWorkship
@@ -78,12 +82,21 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
 
         public async Task<(IList<GetDetailStylistWorkshipModel>, int)> GetAll(
             PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
-            SearchStylistWorkshipModel searchStylistWorkshipModel)
+            SearchStylistWorkshipModel searchStylistWorkshipModel,
+            DateOnly? startDate, DateOnly? endDate)
         {
             var query = _context.StylistWorkships
                 .Include(stylistWorkship => stylistWorkship.Workship)
                 .Include(stylistWorkship => stylistWorkship.Stylist)
                 .AsQueryable();
+
+            if (startDate != null && endDate != null)
+            {
+                query = query.Where(stylistWorkship =>
+                    stylistWorkship.RegisterDate >= startDate && stylistWorkship.RegisterDate <= endDate
+                );
+            }
+
             query = query.GetWithSearch(searchStylistWorkshipModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
@@ -120,6 +133,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                             .FirstOrDefault(stylistWorkship =>
                                 stylistWorkship.RegisterDate == requestBody.RegisterDate
                                 && stylistWorkship.WorkshipId == requestBody.WorkshipId
+                                && stylistWorkship.StylistId == requestBody.StylistId
                             );
 
             if (stylistWorkship != null)
@@ -128,7 +142,9 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Ca làm việc {workship.StartTime} - {workship.EndTime} ngày {requestBody.RegisterDate} đã được đăng ký, vui lòng chọn ca làm việc khác"
+                    ErrorMessage = $"Ca làm việc {workship.StartTime.Value.ToString("HH:mm")} - {workship.EndTime.Value.ToString("HH:mm")} ngày " +
+                            $"{requestBody.RegisterDate.Value.ToString("dd/MM/yyyy")}" +
+                            $"đã được đăng ký, vui lòng chọn ca làm việc khác"
                 };
             }
 
