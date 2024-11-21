@@ -358,7 +358,7 @@ namespace hair_hamony.Business.Services.BookingServices
 
         public async Task<GetBookingModel> Update(Guid id, UpdateBookingModel requestBody)
         {
-            var transaction = _context.Database.BeginTransaction();
+            var dbTransaction = _context.Database.BeginTransaction();
             try
             {
                 if (id != requestBody.Id)
@@ -370,13 +370,20 @@ namespace hair_hamony.Business.Services.BookingServices
                     };
                 }
                 var booking = _mapper.Map<Booking>(await GetById(id));
-                _mapper.Map(requestBody, booking);
-                booking.UpdatedDate = DateTime.Now;
 
-                _context.Bookings.Update(booking);
+                if (requestBody.Status != booking.Status)
+                {
+                    var transaction = _context.Transactions.FirstOrDefault(transaction => transaction.BookingId == requestBody.Id);
+                    _context.TransactionDetails.Add(new TransactionDetail
+                    {
+                        Status = requestBody.Status,
+                        CreatedDate = DateTime.Now,
+                        TransactionId = transaction!.Id
+                    });
+                }
 
                 // tăng số lượng booking cho stylist khi hoàn thành booking
-                if (booking.Status == "Completed")
+                if (requestBody.Status == "Completed")
                 {
                     var stylistIds = from bookingDetail in _context.BookingDetails
                                      join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
@@ -386,7 +393,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     var yearCurrent = DateTime.Now.Year;
                     var stylistSalary = await _context.StylistSalarys
                         .FirstOrDefaultAsync(stylistSalary =>
-                            stylistSalary.StylistId == booking.StaffId
+                            stylistSalary.StylistId == requestBody.StaffId
                             && stylistSalary.Month == monthCurrent
                             && stylistSalary.Year == yearCurrent
                         );
@@ -413,7 +420,7 @@ namespace hair_hamony.Business.Services.BookingServices
 
                         var totalBooking = stylistSalary.TotalBooking + 1;
                         var totalCommission = stylistSalary.TotalCommission
-                            + stylist.Kpi > stylistSalary.TotalBooking + 1 ? booking.TotalPrice * commissionRate / 100 : 0;
+                            + stylist.Kpi > stylistSalary.TotalBooking + 1 ? requestBody.TotalPrice * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -425,22 +432,36 @@ namespace hair_hamony.Business.Services.BookingServices
                             TotalSalary = stylist.Salary + totalCommission
                         });
                     }
+
+                    if (requestBody.LoyaltyPoints != null)
+                    {
+                        var customer = _context.Customers.FirstOrDefault(customer => customer.Id == requestBody.CustomerId);
+                        customer!.LoyaltyPoints = customer.LoyaltyPoints - requestBody.LoyaltyPoints;
+                        _context.Customers.Update(customer);
+                    }
+
+                    var payment = _context.Payments.FirstOrDefault(payment => payment.BookingId == requestBody.Id);
+                    payment.Status = "Completed";
+                    payment.Price = requestBody.AmoutToPaid;
+                    payment.PaymentMethod = requestBody.PaymentMethod;
+                    payment.CreatedDate = DateTime.Now;
+                    _context.Payments.Update(payment);
                 }
-                else if (booking.Status == "Cancel")
+                else if (requestBody.Status == "Cancel")
                 {
-                    await _context.Transactions.Where(transaction => transaction.BookingId == booking.Id)
+                    await _context.Transactions.Where(transaction => transaction.BookingId == requestBody.Id)
                         .ExecuteUpdateAsync(setters =>
                             setters.SetProperty(transaction => transaction.Status, "Cancel")
                         );
 
                     await _context.Payments
-                        .Where(payment => payment.BookingId == booking.Id)
+                        .Where(payment => payment.BookingId == requestBody.Id)
                         .ExecuteUpdateAsync(setters =>
                             setters.SetProperty(payment => payment.Status, "Cancel")
                         );
 
                     var bookingDetailIds = _context.BookingDetails
-                        .Where(bookingDetail => bookingDetail.BookingId == booking.Id).Select(bookingDetail => bookingDetail.Id).ToList();
+                        .Where(bookingDetail => bookingDetail.BookingId == requestBody.Id).Select(bookingDetail => bookingDetail.Id).ToList();
 
                     await _context.TransactionDetails
                         .Where(transactionDetail => bookingDetailIds.Contains((Guid)transactionDetail.BookingDetailId!))
@@ -455,14 +476,19 @@ namespace hair_hamony.Business.Services.BookingServices
                         );
                 }
 
+                _mapper.Map(requestBody, booking);
+                booking.UpdatedDate = DateTime.Now;
+
+                _context.Bookings.Update(booking);
+
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await dbTransaction.CommitAsync();
 
                 return _mapper.Map<GetBookingModel>(booking);
             }
             catch
             {
-                transaction.Rollback();
+                dbTransaction.Rollback();
                 throw;
             }
         }
