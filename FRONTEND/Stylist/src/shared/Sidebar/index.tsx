@@ -14,7 +14,7 @@ const routes = [
   },
   {
     path: STYLIST_PATH.SCHEDULE_LIST,
-    name: 'Lịch trình',
+    name: 'Danh sách đặt lịch',
     icon: <ICONS.IconSchedule />,
   },
   {
