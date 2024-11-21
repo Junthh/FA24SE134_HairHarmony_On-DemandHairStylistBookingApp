@@ -119,11 +119,6 @@ function Owner() {
     });
   }, [location]);
 
-  useEffect(() => {
-    if (credentialInfo?.email) {
-      // setEmail(credentialInfo.email);
-    }
-  }, [credentialInfo]);
 
   return (
     <SideBar>
@@ -131,7 +126,7 @@ function Owner() {
         <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
           <Avatar src="" />
-          {/* <EmailWrapper>
+          <EmailWrapper>
             <Typography
               variant="body2"
               fontWeight={700}
@@ -142,9 +137,9 @@ function Owner() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {email}
+              {credentialInfo?.FullName}
             </Typography>
-          </EmailWrapper> */}
+          </EmailWrapper>
           <ArrowDropDownIcon sx={{ color: '#F2FFE3' }} />
           {toggle && (
             <Box
