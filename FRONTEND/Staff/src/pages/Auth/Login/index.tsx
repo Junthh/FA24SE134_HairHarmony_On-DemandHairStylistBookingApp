@@ -62,7 +62,7 @@ function Login() {
       navigate(STAFF_PATH.SCHEDULE_LIST);
     } catch (error) {
       dispatch(setLoading(false));
-      showToast('error', handleError(error.message || error));
+      showToast('error', error.msg || error.message);
     }
   });
 
