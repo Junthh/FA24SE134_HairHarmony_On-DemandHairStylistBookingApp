@@ -1,7 +1,6 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { STYLIST_PATH } from 'configurations/paths/paths';
 import AuthProvider from 'pages/Auth/AuthProvider';
-import ScheduleList from 'pages/Stylist/ScheduleList';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -10,6 +9,7 @@ const StylistPage = lazy(() => import('pages/Stylist'));
 //
 const TimeKeeping = lazy(() => import('pages/Stylist/Timekeeping'));
 const RegisterWorkSchedule = lazy(() => import('pages/Stylist/RegisterWorkSchedule'));
+const ScheduleList = lazy(() => import('pages/Stylist/ScheduleList'));
 
 const Feedback = lazy(() => import('pages/Stylist/Feedback'));
 //

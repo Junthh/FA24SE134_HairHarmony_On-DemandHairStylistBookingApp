@@ -13,9 +13,13 @@ const EmployeeWorkScheduleStyled = styled(Box)({
   '& .fc-direction-ltr': {
     maxHeight: 'calc(100vh - 205px)',
   },
+  '& .fc-event-title': {
+    whiteSpace: 'pre-wrap', // Hỗ trợ xuống dòng
+    wordBreak: 'break-word', // Đảm bảo từ dài không gây lỗi giao diện
+  },
 });
 
-export default function EmployeeWorkSchedule() {
+export default function ScheduleList() {
   const [events, setEvents] = useState([]);
   const dispatch = useDispatch();
 
@@ -30,13 +34,15 @@ export default function EmployeeWorkSchedule() {
 
         const res = (await scheduleStylistServices.list(params)) as any;
         const newEvents = res.data.map((item) => ({
-          title: `${item.stylist.username} - ${item.stylist.fullName}`,
+          title: `${item.bookingDetail?.service?.name || ''} \n${
+            item.bookingDetail.booking.customer.fullName
+          }`,
           start: moment(
-            `${item.registerDate} ${item.workship.startTime}`,
+            `${item.bookingDate} ${item.timeSlot.startTime}`,
             'YYYY-MM-DD HH:mm:ss',
           ).toISOString(),
           end: moment(
-            `${item.registerDate} ${item.workship.endTime}`,
+            `${item.bookingDate} ${item.timeSlot.endTime}`,
             'YYYY-MM-DD HH:mm:ss',
           ).toISOString(),
         }));
@@ -54,7 +60,7 @@ export default function EmployeeWorkSchedule() {
     <div title={eventInfo.event.title}>
       <b>{eventInfo.timeText}</b>
       <br />
-      <p>{eventInfo.event.title}</p>
+      <p style={{ whiteSpace: 'pre-wrap' }}>{eventInfo.event.title}</p>
     </div>
   );
 
