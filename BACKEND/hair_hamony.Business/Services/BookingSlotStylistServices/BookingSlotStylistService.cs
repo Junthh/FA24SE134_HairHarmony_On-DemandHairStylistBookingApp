@@ -44,14 +44,26 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetBookingSlotStylistModel>, int)> GetAll(PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel, SearchBookingSlotStylistModel searchBookingSlotStylistModel)
+        public async Task<(IList<GetDetailBookingSlotStylistModel>, int)> GetAll(PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel, SearchBookingSlotStylistModel searchBookingSlotStylistModel)
         {
-            var query = _context.BookingSlotStylists.AsQueryable();
+            var query = _context.BookingSlotStylists
+                .Include(bookingSlotStylist => bookingSlotStylist.Stylist)
+                .Include(bookingSlotStylist => bookingSlotStylist.TimeSlot)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Booking)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Combo)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Service)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Booking)
+                .ThenInclude(booking => booking.Customer)
+                .AsQueryable();
             query = query.GetWithSearch(searchBookingSlotStylistModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetBookingSlotStylistModel>>(query);
+            var results = _mapper.Map<IList<GetDetailBookingSlotStylistModel>>(query);
 
             return (results, total);
         }
