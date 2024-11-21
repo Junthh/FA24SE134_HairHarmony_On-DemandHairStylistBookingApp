@@ -11,21 +11,8 @@ const BookingHistory = lazy(() => import('pages/Staff/BookingHistory'));
 const ScheduleList = lazy(() => import('pages/Staff/ScheduleList'));
 const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
 const Booking = lazy(() => import('pages/Staff/Booking'));
+const News = lazy(() => import('pages/Staff/News'));
 
-// const StaffArticleDetails = lazy(() => import('pages/Staff/Article/ArticleDetails'));
-// const StaffOurReaderStories = lazy(() => import('pages/Staff/OurReaderStories'));
-// const StaffOurReaderStoriesDetails = lazy(
-//   () => import('pages/Staff/OurReaderStories/OurReaderStoriesDetails'),
-// );
-// const StaffCategory = lazy(() => import('pages/Staff/Category'));
-// const StaffCategoryDetails = lazy(() => import('pages/Staff/Category/CategoryDetails'));
-// const StaffVideo = lazy(() => import('pages/Staff/Video'));
-// const StaffVideoDetails = lazy(() => import('pages/Staff/Video/VideoDetails'));
-// const StaffProject = lazy(() => import('pages/Staff/Project'));
-// const StaffProjectDetails = lazy(() => import('pages/Staff/Project/ProjectDetails'));
-// const StaffWriter = lazy(() => import('pages/Staff/Writer'));
-// const StaffWriterDetails = lazy(() => import('pages/Staff/Writer/WriterDetails'));
-// const StaffEmail = lazy(() => import('pages/Staff/Email'));
 export const StaffRouter = {
   path: '/',
   element: (
@@ -56,6 +43,10 @@ export const StaffRouter = {
     {
       path: `${STAFF_PATH.STYLIST_STATUS}`,
       element: <StylistStatus />,
+    },
+    {
+      path: `${STAFF_PATH.NEWS}`,
+      element: <News />,
     },
   ],
 };

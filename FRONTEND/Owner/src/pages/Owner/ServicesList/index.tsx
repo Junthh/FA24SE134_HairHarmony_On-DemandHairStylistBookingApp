@@ -37,6 +37,7 @@ import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import { objectToFormData } from 'utils/helper';
+import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 export default function ServicesList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -232,6 +233,14 @@ export default function ServicesList() {
                 label={'Tên dịch vụ'}
                 //   onKeyUp={handleKeyup}
               />
+              <TextAreaElement
+                name="description"
+                control={control}
+                placeholder="Nhập mô tả"
+                label={'Mô tả'}
+
+                //   onKeyUp={handleKeyup}
+              />
               <SelectElement
                 control={control}
                 name="categoryId"
@@ -318,6 +327,9 @@ export default function ServicesList() {
                 Tên dịch vụ
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
+                Mô tả
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Loại dịch vụ
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right">
@@ -348,6 +360,7 @@ export default function ServicesList() {
                 <StyledTableCell component="th" scope="row">
                   {row.name}
                 </StyledTableCell>
+                <StyledTableCell align="right">{row.description || ''}</StyledTableCell>
                 <StyledTableCell align="right">{categorys[row.categoryId]?.name}</StyledTableCell>
                 <StyledTableCell align="right">{row.price}</StyledTableCell>
                 <StyledTableCell align="right">{row.duration}</StyledTableCell>

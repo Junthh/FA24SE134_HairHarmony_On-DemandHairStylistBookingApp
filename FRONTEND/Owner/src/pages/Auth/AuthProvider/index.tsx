@@ -74,9 +74,7 @@ function AuthProvider({ children }) {
         const info: CredentialInfo = {
           acessToken: token.token,
           refreshToken: token.refreshToken,
-          email: email,
-          role: role,
-          id: id,
+          ...jwtDecode(token.token),
         };
         dispatch(setCredentialInfo<CredentialInfo>(info));
       }
