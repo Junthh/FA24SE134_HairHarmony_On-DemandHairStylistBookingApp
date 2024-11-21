@@ -62,7 +62,7 @@ function Login() {
       navigate(STAFF_PATH.BOOKING);
     } catch (error) {
       dispatch(setLoading(false));
-      showToast('error', handleError(error.message || error));
+      showToast('error', error.msg || error.message);
     }
   });
 
