@@ -15,7 +15,7 @@ class ScheduleListServices {
   async update(payload: any = {}) {
     try {
       const resData = await axios.put(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/bookings/${payload.id}`,
+        `${ENDPOINTS.ApiPrefix}/bookings/${payload.id}`,
         payload,
       );
       return resData;
