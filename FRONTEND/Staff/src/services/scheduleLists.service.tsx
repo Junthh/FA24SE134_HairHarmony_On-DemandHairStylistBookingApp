@@ -12,6 +12,17 @@ class ScheduleListServices {
       throw error;
     }
   }
+  async update(payload: any = {}) {
+    try {
+      const resData = await axios.put(
+        `${ENDPOINTS.ApiPrefix}/bookings/${payload.id}`,
+        payload,
+      );
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const scheduleListServices = new ScheduleListServices();
