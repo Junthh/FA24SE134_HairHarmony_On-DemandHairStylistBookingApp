@@ -36,6 +36,9 @@ import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { salaryServices } from 'services/salary.service';
+import { currencyFormat } from 'utils/helper';
+import DatePickerElement from 'components/Form/DatepickerElement';
+import moment from 'moment';
 export default function EmployeeSalary() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -55,6 +58,7 @@ export default function EmployeeSalary() {
   const formSearch = useForm<any>({
     defaultValues: {
       totalSalary: '',
+      monthYear: new Date(),
     },
     mode: 'onChange',
     resolver: yupResolver(schema),
@@ -87,13 +91,15 @@ export default function EmployeeSalary() {
     getSalaryList({
       size: paging.size,
       page: paging.page,
+      month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+      year: moment(formSearch.getValues('monthYear')).year().toString(),
       totalSalary: formSearch.getValues('totalSalary'),
     });
   }, [paging.size, paging.page]);
-  const getSalaryList = useCallback(({ size, page, totalSalary = '' }) => {
+  const getSalaryList = useCallback(({ size, page, totalSalary = '', month = '', year = '' }) => {
     dispatch(setLoading(true));
     salaryServices
-      .list({ pageSize: size, pageIndex: page + 1, totalSalary })
+      .list({ pageSize: size, pageIndex: page + 1, totalSalary, month, year })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
           ...prev,
@@ -141,13 +147,20 @@ export default function EmployeeSalary() {
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
           dispatch(setLoading(false));
+          getSalaryList({
+            size: paging.size,
+            page: paging.page,
+            month: moment(formSearch.getValues('monthYear')).month().toString(),
+            year: moment(formSearch.getValues('monthYear')).year().toString(),
+            totalSalary: formSearch.getValues('totalSalary'),
+          });
         })
         .catch((err) => {
           showToast('error', err.message);
           dispatch(setLoading(false));
         });
     },
-    [selectedRow],
+    [selectedRow, paging.size, paging.page],
   );
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
@@ -287,10 +300,18 @@ export default function EmployeeSalary() {
             <TextFieldElement
               name="totalSalary"
               control={controlSearch}
-              placeholder="Search"
+              placeholder="Tìm theo lương"
               InputProps={{
                 startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
               }}
+              //   onKeyUp={handleKeyup}
+            />
+            <DatePickerElement
+              name="monthYear"
+              control={controlSearch}
+              views={['month', 'year']}
+              inputFormat="MM/yyyy"
+              label={''}
               //   onKeyUp={handleKeyup}
             />
             <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={handleSearch}>
@@ -299,7 +320,7 @@ export default function EmployeeSalary() {
             <Box width={'50%'}></Box>
           </Box>
           <Box className="search-right">
-            <ButtonPrimary
+            {/* <ButtonPrimary
               severity="primary"
               padding={'9px 14px'}
               onClick={() => {
@@ -310,7 +331,7 @@ export default function EmployeeSalary() {
             >
               <ControlPointIcon />
               &nbsp; Thêm mới
-            </ButtonPrimary>
+            </ButtonPrimary> */}
           </Box>
         </BoxHeaderSearch>
       </FormContainer>
@@ -347,13 +368,13 @@ export default function EmployeeSalary() {
             {rows.map((row, index) => (
               <StyledTableRow key={row.index}>
                 <StyledTableCell component="th" scope="row">
-                  {row.stylistId}
+                  {row.stylist.fullName}
                 </StyledTableCell>
                 <StyledTableCell align="right">{row.month}</StyledTableCell>
                 <StyledTableCell align="right">{row.year}</StyledTableCell>
                 <StyledTableCell align="right">{row.totalBooking}</StyledTableCell>
                 <StyledTableCell align="right">{row.totalCommission}</StyledTableCell>
-                <StyledTableCell align="right">{row.totalSalary}</StyledTableCell>
+                <StyledTableCell align="right">{currencyFormat(row.totalSalary)}</StyledTableCell>
                 <StyledTableCell align="right">{row.createdDate}</StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
