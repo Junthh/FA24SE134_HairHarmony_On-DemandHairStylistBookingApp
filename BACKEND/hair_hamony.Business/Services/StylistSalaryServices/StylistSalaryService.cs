@@ -39,11 +39,20 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailStylistSalaryModel>, int)> GetAll(PagingParam<StylistSalaryEnum.StylistSalarySort> paginationModel, SearchStylistSalaryModel searchStylistSalaryModel)
+        public async Task<(IList<GetDetailStylistSalaryModel>, int)> GetAll(
+            PagingParam<StylistSalaryEnum.StylistSalarySort> paginationModel, 
+            SearchStylistSalaryModel searchStylistSalaryModel,
+            string? stylistName)
         {
             var query = _context.StylistSalarys
                 .Include(stylistSalary => stylistSalary.Stylist)
                 .AsQueryable();
+
+            if(stylistName != null)
+            {
+                query = query.Where(stylistSalary => stylistSalary.Stylist.FullName.Contains(stylistName));
+            }
+
             query = query.GetWithSearch(searchStylistSalaryModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
