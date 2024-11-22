@@ -93,13 +93,13 @@ export default function EmployeeSalary() {
       page: paging.page,
       month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
       year: moment(formSearch.getValues('monthYear')).year().toString(),
-      totalSalary: formSearch.getValues('totalSalary'),
+      stylistName: formSearch.getValues('stylistName'),
     });
   }, [paging.size, paging.page]);
-  const getSalaryList = useCallback(({ size, page, totalSalary = '', month = '', year = '' }) => {
+  const getSalaryList = useCallback(({ size, page, stylistName = '', month = '', year = '' }) => {
     dispatch(setLoading(true));
     salaryServices
-      .list({ pageSize: size, pageIndex: page + 1, totalSalary, month, year })
+      .list({ pageSize: size, pageIndex: page + 1, stylistName, month, year })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
           ...prev,
@@ -115,7 +115,9 @@ export default function EmployeeSalary() {
       if (data) {
         getSalaryList({
           ...paging,
-          totalSalary: data.totalSalary,
+          stylistName: data.stylistName,
+          month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+          year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
       }
     }),
@@ -150,9 +152,9 @@ export default function EmployeeSalary() {
           getSalaryList({
             size: paging.size,
             page: paging.page,
-            month: moment(formSearch.getValues('monthYear')).month().toString(),
+            month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
             year: moment(formSearch.getValues('monthYear')).year().toString(),
-            totalSalary: formSearch.getValues('totalSalary'),
+            stylistName: formSearch.getValues('stylistName'),
           });
         })
         .catch((err) => {
@@ -184,7 +186,13 @@ export default function EmployeeSalary() {
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getSalaryList({ size, page, totalSalary: formSearch.getValues('totalSalary') });
+            getSalaryList({
+              size,
+              page,
+              stylistName: formSearch.getValues('stylistName'),
+              month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+              year: moment(formSearch.getValues('monthYear')).year().toString(),
+            });
             handleClose();
             closeModal();
           })
@@ -199,7 +207,13 @@ export default function EmployeeSalary() {
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getSalaryList({ size, page, totalSalary: formSearch.getValues('totalSalary') });
+            getSalaryList({
+              size,
+              page,
+              stylistName: formSearch.getValues('stylistName'),
+              month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+              year: moment(formSearch.getValues('monthYear')).year().toString(),
+            });
             handleClose();
             closeModal();
           })
@@ -298,7 +312,7 @@ export default function EmployeeSalary() {
         <BoxHeaderSearch>
           <Box className="search-left">
             <TextFieldElement
-              name="totalSalary"
+              name="stylistName"
               control={controlSearch}
               placeholder="Tìm theo lương"
               InputProps={{
