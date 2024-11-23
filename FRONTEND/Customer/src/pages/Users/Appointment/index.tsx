@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Box, Typography, Stack, Pagination, Divider } from '@mui/material';
+import { Box, Typography, Stack, Pagination, Divider, Rating } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import * as colors from 'constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -74,6 +74,7 @@ export default function Appointment() {
   } = formFeedback;
   const getListBookingHistory = useCallback(() => {
     if (credentialInfo?.Id) {
+      dispatch(setLoading(true));
       bookingServices
         .listBookingHistory({ customerId: credentialInfo?.Id })
         .then((res: any) => {
@@ -86,7 +87,9 @@ export default function Appointment() {
           }));
         })
         .catch((err) => {})
-        .finally(() => {});
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
     }
   }, [credentialInfo]);
   const handlePageChange = (event, page) => {
@@ -280,7 +283,12 @@ export default function Appointment() {
                     <span style={{ fontWeight: 700 }}>{currencyFormat(item?.totalPrice)}</span>
                   </Typography>
                 </Box>
-                <Box>
+                <Box textAlign={'center'}>
+                  {item?.status === STATUS_LABEL.Completed && item.isFeedback ? (
+                    <Rating precision={0.5} value={item.feedbacks[0].rating} readOnly></Rating>
+                  ) : (
+                    <></>
+                  )}
                   <Typography
                     variant="h5"
                     fontWeight={600}
