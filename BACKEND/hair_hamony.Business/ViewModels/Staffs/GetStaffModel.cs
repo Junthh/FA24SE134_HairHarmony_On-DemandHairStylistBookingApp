@@ -11,5 +11,6 @@
         public string? Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? Avatar { get; set; }
+        public double? Salary { get; set; }
     }
 }

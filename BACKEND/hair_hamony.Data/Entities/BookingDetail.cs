@@ -26,6 +26,4 @@ public partial class BookingDetail
     public virtual Combo? Combo { get; set; }
 
     public virtual Service? Service { get; set; }
-
-    public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
 }

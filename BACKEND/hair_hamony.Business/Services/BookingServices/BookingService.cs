@@ -260,8 +260,6 @@ namespace hair_hamony.Business.Services.BookingServices
                             Status = "Scheduled",
                             CreatedDate = DateTime.Now,
                             TransactionId = transactionId,
-                            BookingDetailId = bookingDetailId,
-                            PaymentDetailId = paymentDetailId
                         });
                     }
                 }
@@ -322,8 +320,6 @@ namespace hair_hamony.Business.Services.BookingServices
                             Status = "Scheduled",
                             CreatedDate = DateTime.Now,
                             TransactionId = transactionId,
-                            BookingDetailId = bookingDetailId,
-                            PaymentDetailId = paymentDetailId
                         });
                     }
                 }
