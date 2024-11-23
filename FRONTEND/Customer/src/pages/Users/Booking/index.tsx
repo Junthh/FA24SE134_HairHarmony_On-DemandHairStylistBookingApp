@@ -624,19 +624,21 @@ export default function Booking() {
                           {item.level}
                         </Typography>
                         <Rating precision={0.5} value={item.rating} />
-                        <Box
-                          display={'flex'}
-                          flexDirection={'column'}
-                          justifyContent={'center'}
-                          alignItems={'center'}
-                        >
-                          <Typography variant="small1" color={colors.grey2}>
-                            Phí chuyên gia
-                          </Typography>
-                          <Typography variant="small1" color={colors.grey2}>
-                            {currencyFormat(item.expertFee || 0)}
-                          </Typography>
-                        </Box>
+                        {item.expertFee && (
+                          <Box
+                            display={'flex'}
+                            flexDirection={'column'}
+                            justifyContent={'center'}
+                            alignItems={'center'}
+                          >
+                            <Typography variant="small1" color={colors.grey2}>
+                              Phí chuyên gia
+                            </Typography>
+                            <Typography variant="small1" color={colors.grey2}>
+                              {item.expertFee}%
+                            </Typography>
+                          </Box>
+                        )}
                       </BoxStylistCard>
                     </Grid>
                   );
@@ -806,14 +808,23 @@ export default function Booking() {
                     </Box>
                     {<Rating value={stylistActive?.rating} precision={0.5} />}
                   </Box>
-                  <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-                    <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
-                      Phí chuyên gia
-                    </Typography>
-                    <Typography variant="body1" fontWeight={600}>
-                      {currencyFormat(stylistActive?.expertFee || 0)}
-                    </Typography>
-                  </Box>
+                  {stylistActive.expertFee && (
+                    <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                      <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                        Phí chuyên gia
+                      </Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {currencyFormat(
+                          Number(
+                            Object.values(services)
+                              .filter((option: any) => option.checked === true)
+                              .reduce((total, option: any): any => total + option.price, 0),
+                          ) *
+                            (stylistActive?.expertFee / 100),
+                        )}
+                      </Typography>
+                    </Box>
+                  )}
                   <Divider variant="fullWidth"></Divider>
                 </>
               ) : (
@@ -827,10 +838,21 @@ export default function Booking() {
                 <Typography variant="body1" fontWeight={600}>
                   {services &&
                     currencyFormat(
-                      Object.values(services)
-                        .filter((option: any) => option.checked === true)
-                        .reduce((total, option: any) => total + option.price, 0) +
-                        (stylistActive?.expertFee || 0),
+                      stylistActive?.expertFee
+                        ? Number(
+                            Object.values(services)
+                              .filter((option: any) => option.checked === true)
+                              .reduce((total, option: any): any => total + option.price, 0),
+                          ) *
+                            (stylistActive?.expertFee / 100) +
+                            Number(
+                              Object.values(services)
+                                .filter((option: any) => option.checked === true)
+                                .reduce((total, option: any): any => total + option.price, 0),
+                            )
+                        : Object.values(services)
+                            .filter((option: any) => option.checked === true)
+                            .reduce((total, option: any) => total + option.price, 0),
                     )}{' '}
                 </Typography>
               </Box>
