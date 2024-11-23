@@ -9,7 +9,7 @@ const StylistPage = lazy(() => import('pages/Stylist'));
 //
 const TimeKeeping = lazy(() => import('pages/Stylist/Timekeeping'));
 const RegisterWorkSchedule = lazy(() => import('pages/Stylist/RegisterWorkSchedule'));
-const ScheduleList = lazy(() => import('pages/Stylist/Profile'));
+const ScheduleList = lazy(() => import('pages/Stylist/ScheduleList'));
 const Profile = lazy(() => import('pages/Stylist/Profile'));
 const ChangePassword = lazy(() => import('pages/Stylist/ChangePassword'));
 
