@@ -393,15 +393,16 @@ namespace hair_hamony.Business.Services.BookingServices
 
                     var monthCurrent = DateTime.Now.Month;
                     var yearCurrent = DateTime.Now.Year;
-                    var stylistSalary = await _context.StylistSalarys
-                        .FirstOrDefaultAsync(stylistSalary =>
-                            stylistSalary.StylistId == requestBody.StaffId
-                            && stylistSalary.Month == monthCurrent
-                            && stylistSalary.Year == yearCurrent
-                        );
 
                     var stylist = await _context.Stylists
                             .FirstOrDefaultAsync(stylist => stylist.Id == stylistIds.FirstOrDefault());
+
+                    var stylistSalary = await _context.StylistSalarys
+                        .FirstOrDefaultAsync(stylistSalary =>
+                            stylistSalary.StylistId == stylist.Id
+                            && stylistSalary.Month == monthCurrent
+                            && stylistSalary.Year == yearCurrent
+                        );
 
                     // nếu trong tháng này chưa có booking thì tạo để có dữ liệu so sánh tổng booking trong tháng
                     if (stylistSalary == null)
