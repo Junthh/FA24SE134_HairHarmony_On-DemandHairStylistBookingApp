@@ -56,6 +56,7 @@ namespace hair_hamony.Business.Services.BookingServices
             var query = _context.Bookings
                 .Include(booking => booking.Customer)
                 .Include(booking => booking.Staff)
+                .Include(booking => booking.Feedbacks)
                 .Include(booking => booking.BookingDetails)
                 .ThenInclude(bookingDetail => bookingDetail.Combo)
                 .Include(booking => booking.BookingDetails)
@@ -79,6 +80,11 @@ namespace hair_hamony.Business.Services.BookingServices
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
 
             var results = _mapper.Map<IList<GetDetailBookingModel>>(query);
+
+            foreach (var item in results)
+            {
+                item.IsFeedback = item.Feedbacks != null && item.Feedbacks.Any() && item.Status == "Completed";
+            }
 
             return (results, total);
         }
