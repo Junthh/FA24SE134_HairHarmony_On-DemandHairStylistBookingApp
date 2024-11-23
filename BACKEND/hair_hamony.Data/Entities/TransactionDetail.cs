@@ -15,13 +15,5 @@ public partial class TransactionDetail
 
     public Guid? TransactionId { get; set; }
 
-    public Guid? BookingDetailId { get; set; }
-
-    public Guid? PaymentDetailId { get; set; }
-
-    public virtual BookingDetail? BookingDetail { get; set; }
-
-    public virtual PaymentDetail? PaymentDetail { get; set; }
-
     public virtual Transaction? Transaction { get; set; }
 }

@@ -8,5 +8,6 @@ namespace hair_hamony.Business.ViewModels.Staffs
         public string? FullName { get; set; }
         public string? PhoneNumber { get; set; }
         public IFormFile? Avatar { get; set; }
+        public double? Salary { get; set; }
     }
 }

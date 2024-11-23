@@ -14,6 +14,4 @@ public partial class PaymentDetail
     public Guid? PaymentId { get; set; }
 
     public virtual Payment? Payment { get; set; }
-
-    public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
 }
