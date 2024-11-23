@@ -9,6 +9,5 @@
         public double? Salary { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? Avatar { get; set; }
-        public double? Salary { get; set; }
     }
 }

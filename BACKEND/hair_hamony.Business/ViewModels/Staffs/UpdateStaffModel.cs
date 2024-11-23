@@ -11,6 +11,5 @@ namespace hair_hamony.Business.ViewModels.Staffs
         public double? Salary { get; set; }
         public string? Status { get; set; }
         public IFormFile? Avatar { get; set; }
-        public double? Salary { get; set; }
     }
 }

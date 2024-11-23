@@ -456,14 +456,18 @@ namespace hair_hamony.Business.Services.BookingServices
                             setters.SetProperty(payment => payment.Status, "Cancel")
                         );
 
-                    var bookingDetailIds = _context.BookingDetails
-                        .Where(bookingDetail => bookingDetail.BookingId == requestBody.Id).Select(bookingDetail => bookingDetail.Id).ToList();
+                    var transactionIds = _context.Transactions
+                        .Where(transaction => transaction.BookingId == requestBody.Id)
+                        .Select(transaction => transaction.Id).ToList();
 
                     await _context.TransactionDetails
-                        .Where(transactionDetail => bookingDetailIds.Contains((Guid)transactionDetail.BookingDetailId!))
+                        .Where(transactionDetail => transactionIds.Contains(transactionDetail.Id))
                         .ExecuteUpdateAsync(setters
                             => setters.SetProperty(transactionDetail => transactionDetail.Status, "Cancel")
                         );
+
+                    var bookingDetailIds = _context.BookingDetails
+                        .Where(bookingDetail => bookingDetail.BookingId == requestBody.Id).Select(bookingDetail => bookingDetail.Id).ToList();
 
                     await _context.BookingSlotStylists
                         .Where(bookingSlotStylist => bookingDetailIds.Contains((Guid)bookingSlotStylist.BookingDetailId!))
