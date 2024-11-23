@@ -22,6 +22,8 @@ export enum STYLIST_PATH {
   SCHEDULE_LIST = '/schedule-list',
   TIMEKEEPING = '/timekeeping',
   FEEDBACK = '/feedback',
+  PROFILE = '/profile',
+  CHANGE_PASSWORD = '/change-password',
 }
 
 export enum ADMIN_PATH {

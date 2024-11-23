@@ -12,6 +12,8 @@ const ScheduleList = lazy(() => import('pages/Staff/ScheduleList'));
 const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
 const Booking = lazy(() => import('pages/Staff/Booking'));
 const News = lazy(() => import('pages/Staff/News'));
+const ChangePassword = lazy(() => import('pages/Staff/ChangePassword'));
+const Profile = lazy(() => import('pages/Staff/Profile'));
 
 export const StaffRouter = {
   path: '/',
@@ -30,6 +32,22 @@ export const StaffRouter = {
     {
       path: `${STAFF_PATH.BOOKING}`,
       element: <Booking />,
+    },
+    {
+      path: `${STAFF_PATH.PROFILE}/:id`,
+      element: (
+        <AuthProvider>
+          <Profile />
+        </AuthProvider>
+      ),
+    },
+    {
+      path: `${STAFF_PATH.CHANGE_PASSWORD}/:id`,
+      element: (
+        <AuthProvider>
+          <ChangePassword />
+        </AuthProvider>
+      ),
     },
     //
     {

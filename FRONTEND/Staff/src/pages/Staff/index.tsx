@@ -88,8 +88,12 @@ function Staff() {
       setTabName('Tình Trạng Stylist');
     } else if (name === STAFF_PATH.BOOKING.split('/')[1]) {
       setTabName('Đặt lịch');
-    }else if (name === STAFF_PATH.NEWS.split('/')[1]) {
+    } else if (name === STAFF_PATH.NEWS.split('/')[1]) {
       setTabName('Tin tức');
+    } else if (name === STAFF_PATH.PROFILE.split('/')[1]) {
+      setTabName('Cập nhật thông tin');
+    } else if (name === STAFF_PATH.CHANGE_PASSWORD.split('/')[1]) {
+      setTabName('Thay đổi mật khẩu');
     }
   }, [location]);
 

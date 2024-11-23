@@ -24,6 +24,26 @@ class AuthService {
       data: payload,
     });
   };
+  findById = async (id: string) => {
+    return await axios({
+      url: `${ENDPOINTS.ApiPrefix}/Staffs/${id}`,
+      method: 'GET',
+    });
+  };
+  update = async (id: string, body: FormData) => {
+    return await axios({
+      url: `${ENDPOINTS.ApiPrefix}/Staffs/${id}`,
+      method: 'PUT',
+      data: body,
+    });
+  };
+  changePassword = async (id: string, body: FormData) => {
+    return await axios({
+      url: `${ENDPOINTS.ApiPrefix}/Staffs/${id}/changePassword`,
+      method: 'PUT',
+      data: body,
+    });
+  };
 }
 
 export const authService = new AuthService();

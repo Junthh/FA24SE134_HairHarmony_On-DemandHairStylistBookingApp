@@ -128,6 +128,18 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
                   className="content"
                   onClick={() => {
                     handleClose();
+                    navigate(`${USER_PATH.PROFILE}/${credentialInfo.Id}`);
+                  }}
+                >
+                  <Typography variant="body2" fontWeight={500}>
+                    Hồ sơ người dùng
+                  </Typography>
+                </Box>
+                <Box
+                  padding={'10px 20px'}
+                  className="content"
+                  onClick={() => {
+                    handleClose();
                     navigate(USER_PATH.APPOINTMENT);
                   }}
                 >
