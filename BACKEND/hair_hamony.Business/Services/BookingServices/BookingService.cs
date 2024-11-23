@@ -436,12 +436,19 @@ namespace hair_hamony.Business.Services.BookingServices
                         });
                     }
 
+                    var customer = _context.Customers.FirstOrDefault(customer => customer.Id == requestBody.CustomerId);
+                    var customerLoyaltyPoints = customer!.LoyaltyPoints;
+
+                    var vndToPoints = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "VND_TO_POINTS")!.Value;
+
+                    customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
+
                     if (requestBody.LoyaltyPoints != null)
                     {
-                        var customer = _context.Customers.FirstOrDefault(customer => customer.Id == requestBody.CustomerId);
-                        customer!.LoyaltyPoints = customer.LoyaltyPoints - requestBody.LoyaltyPoints;
-                        _context.Customers.Update(customer);
+                        customerLoyaltyPoints -= requestBody.LoyaltyPoints;
                     }
+
+                    _context.Customers.Update(customer);
 
                     var payment = _context.Payments.FirstOrDefault(payment => payment.BookingId == requestBody.Id);
                     payment.Status = "Completed";
