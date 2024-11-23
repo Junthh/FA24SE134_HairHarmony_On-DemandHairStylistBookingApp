@@ -288,7 +288,7 @@ export default function Appointment() {
                   >
                     {MAP_STATUS_LABEL[item?.status]?.label}
                   </Typography>
-                  {item?.status === STATUS_LABEL.Completed ? (
+                  {item?.status === STATUS_LABEL.Completed && !item.isFeedback ? (
                     <ButtonPrimary
                       padding={'5px 10px'}
                       severity="cancel"
