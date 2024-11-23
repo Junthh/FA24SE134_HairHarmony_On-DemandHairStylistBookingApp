@@ -1,5 +1,13 @@
 import styled from '@emotion/styled';
-import { Box, Typography, Stack, Pagination, Divider, Rating } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Stack,
+  Pagination,
+  Divider,
+  Rating,
+  TablePagination,
+} from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import * as colors from 'constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -72,31 +80,45 @@ export default function Appointment() {
     formState: { errors },
     handleSubmit,
   } = formFeedback;
-  const getListBookingHistory = useCallback(() => {
-    if (credentialInfo?.Id) {
-      dispatch(setLoading(true));
-      bookingServices
-        .listBookingHistory({ customerId: credentialInfo?.Id })
-        .then((res: any) => {
-          console.log(res);
-          setRows(res.data);
-          setPaging((prev) => ({
-            page: res.paging.page,
-            size: res.paging.size,
-            total: res.paging.total,
-          }));
-        })
-        .catch((err) => {})
-        .finally(() => {
-          dispatch(setLoading(false));
-        });
-    }
-  }, [credentialInfo]);
-  const handlePageChange = (event, page) => {
-    console.log(page);
+  const getListBookingHistory = useCallback(
+    ({ size, page }) => {
+      if (credentialInfo?.Id) {
+        dispatch(setLoading(true));
+        bookingServices
+          .listBookingHistory({
+            pageSize: size,
+            pageIndex: page + 1,
+            customerId: credentialInfo?.Id,
+          })
+          .then((res: any) => {
+            setRows(res.data);
+            setPaging((prev) => ({
+              ...prev,
+              total: res.paging.total,
+            }));
+          })
+          .catch((err) => {})
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+      }
+    },
+    [paging.size, paging.page, credentialInfo],
+  );
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPaging((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
   useEffect(() => {
-    getListBookingHistory();
+    getListBookingHistory({ size: paging.size, page: paging.page });
   }, [getListBookingHistory]);
   const handleOpenFeedback = (row) => {
     setSelectedRow(row);
@@ -117,7 +139,7 @@ export default function Appointment() {
           showToast('success', 'Đánh giá stylist thành công!');
           closeModal();
           formFeedback.reset();
-          getListBookingHistory();
+          getListBookingHistory({ size: paging.size, page: paging.page });
         })
         .catch((err) => {
           showToast('error', err.msg);
@@ -316,10 +338,13 @@ export default function Appointment() {
           })}
         </Box>
         <Stack spacing={2} alignItems={'center'}>
-          <Pagination
-            count={paging?.total / paging?.size}
-            page={paging?.page}
-            onChange={handlePageChange}
+          <TablePagination
+            component="div"
+            count={paging.total}
+            page={paging.page}
+            rowsPerPage={paging.size}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
             showFirstButton
             showLastButton
           />
