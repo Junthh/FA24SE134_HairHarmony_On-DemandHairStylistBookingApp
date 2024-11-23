@@ -52,7 +52,7 @@ export const OWNER_PATH_SIDEBAR = [
     icon: <CalendarMonthIcon />,
   },
   {
-    title: 'Lương nhân viên',
+    title: 'Lương stylist',
     path: OWNER_PATH.EMPLOYEE_SALARY,
     icon: <PaidIcon />,
   },

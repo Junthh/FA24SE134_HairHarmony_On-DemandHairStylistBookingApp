@@ -132,7 +132,12 @@ export default function Booking() {
   const [optionsStep, setOptionsStep] = useState(
     isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps],
   );
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape({
+    customerFullName: Yup.string().required('Họ và tên không được trống'),
+    customerPhoneNummber: Yup.string()
+      .matches(/^0\d{9}$/, 'Số điện thoại phải bắt đầu bằng 0 và có 10 số')
+      .required('Số điện thoại không được trống'),
+  });
   const defaultValues = {
     customerFullName: '',
     customerPhoneNummber: '',
@@ -255,7 +260,7 @@ export default function Booking() {
     getCategoryList();
   }, [getCategoryList]);
 
-  const handleChangeStep = (step?: number) => {
+  const handleChangeStep = async (step?: number) => {
     if (isEmpty(step?.toString())) {
       const isAnyServiceChecked = Object.values(services).some((service: any) => service.checked);
       if (currentStep === 0 && !isAnyServiceChecked) {
@@ -280,10 +285,27 @@ export default function Booking() {
       setCurrentStep(step);
     } else {
       let payload = normalizePayload();
-      if (!isEmpty(credentialInfo)) {
+      if (!isEmpty(credentialInfo) && (step === 3 || currentStep === 3)) {
+        // const isValid = await formUser.trigger();
+
+        // // If validation fails, return errors
+        // if (!isValid) {
+        //   const errors = formUser.formState.errors;
+        //   console.error('Validation failed:', errors);
+        //   return;
+        // }
         handleBookingWithUser(step, payload);
-      } else {
+      } else if (isEmpty(credentialInfo) && (step === 4 || currentStep === 4)) {
+        const isValid = await formUser.trigger();
+        // If validation fails, return errors
+        if (!isValid) {
+          const errors = formUser.formState.errors;
+          console.error('Validation failed:', errors);
+          return;
+        }
         handleBookingUserNotLogin(step, payload);
+      } else {
+        setCurrentStep((prev) => prev + 1);
       }
     }
   };
@@ -292,7 +314,7 @@ export default function Booking() {
       .filter(([, option]: any) => option.checked)
       .map(([id, option]: any) => ({ id, ...option }));
     const timeChecked = times.find((time) => time.isActive);
-    const stylistId = stylists.find((item) => item.isActive)?.id;
+    const stylist = stylists.find((item) => item.isActive);
     const timeSlotId = times.find((time) => time.isActive)?.id;
     const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
     const combos = serviceChecked
@@ -312,11 +334,12 @@ export default function Booking() {
       bookingDate,
       customerId: credentialInfo.Id,
       timeSlotId,
-      stylistId,
+      stylistId: stylist?.id,
       combos,
       services: servicesResult,
+      expertFee: stylist?.expertFee || 0,
     };
-    if (stylistId === 1) {
+    if (stylist?.id === 1) {
       payload = {
         ...payload,
         isRandomStylist: true,
@@ -601,6 +624,19 @@ export default function Booking() {
                           {item.level}
                         </Typography>
                         <Rating precision={0.5} value={item.rating} />
+                        <Box
+                          display={'flex'}
+                          flexDirection={'column'}
+                          justifyContent={'center'}
+                          alignItems={'center'}
+                        >
+                          <Typography variant="small1" color={colors.grey2}>
+                            Phí chuyên gia
+                          </Typography>
+                          <Typography variant="small1" color={colors.grey2}>
+                            {currencyFormat(item.expertFee || 0)}
+                          </Typography>
+                        </Box>
                       </BoxStylistCard>
                     </Grid>
                   );
@@ -770,6 +806,14 @@ export default function Booking() {
                     </Box>
                     {<Rating value={stylistActive?.rating} precision={0.5} />}
                   </Box>
+                  <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                    <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                      Phí chuyên gia
+                    </Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {currencyFormat(stylistActive?.expertFee || 0)}
+                    </Typography>
+                  </Box>
                   <Divider variant="fullWidth"></Divider>
                 </>
               ) : (
@@ -785,7 +829,8 @@ export default function Booking() {
                     currencyFormat(
                       Object.values(services)
                         .filter((option: any) => option.checked === true)
-                        .reduce((total, option: any) => total + option.price, 0),
+                        .reduce((total, option: any) => total + option.price, 0) +
+                        (stylistActive?.expertFee || 0),
                     )}{' '}
                 </Typography>
               </Box>

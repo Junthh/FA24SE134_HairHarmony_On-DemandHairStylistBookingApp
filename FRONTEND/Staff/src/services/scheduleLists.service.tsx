@@ -1,12 +1,23 @@
 import axios from 'axios';
-import { ECOCUPID_ENDPOINTS } from 'configurations/constants/globalConstants';
+import { ENDPOINTS } from 'configurations/constants/globalConstants';
 
 class ScheduleListServices {
   async list(params = {}) {
     try {
-      const resData = await axios.get(`${ECOCUPID_ENDPOINTS.ApiPrefix}/bookings`, {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/bookings`, {
         params,
       });
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async update(payload: any = {}) {
+    try {
+      const resData = await axios.put(
+        `${ENDPOINTS.ApiPrefix}/bookings/${payload.id}`,
+        payload,
+      );
       return resData;
     } catch (error) {
       throw error;

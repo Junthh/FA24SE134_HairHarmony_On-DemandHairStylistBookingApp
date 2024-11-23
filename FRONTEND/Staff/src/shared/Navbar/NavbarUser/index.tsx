@@ -1,45 +1,14 @@
-import {
-  Box,
-  Drawer,
-  IconButton,
-  Link,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Popover,
-  SwipeableDrawer,
-  Typography,
-  useMediaQuery,
-} from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  CustomDrawer,
-  NavListPopoverEcoStyled,
-  NavListPopoverSocialStyled,
-  NavListStyled,
-  NavSearchStyled,
-  NavbarMobileStyled,
-  NavbarStyled,
-} from './styles';
-import IMAGE_ECOCUPID_MEDIUM from 'assets/pics/logo/ecocupid-medium.png';
+import { Box, Link, Typography, useMediaQuery } from '@mui/material';
 import { ICONS } from 'configurations/icons';
-import { BaseTextField } from 'components/Base/BaseTextField';
-import { ButtonPrimary } from 'pages/common/style/Button';
-import * as colors from 'constants/colors';
-import { useNavigate } from 'react-router-dom';
 import { USER_PATH } from 'configurations/paths/paths';
-import { theme } from 'theme';
-import { motion } from 'framer-motion';
-import { Navigation } from './components/Navigation';
-import { MenuToggle } from './components/MenuToggle';
+import * as colors from 'constants/colors';
 import { useDimensions } from 'hooks/useDimensions';
-import { PopoverContainer } from 'components/Common/Popover/PopoverStyle';
+import { ButtonPrimary } from 'pages/common/style/Button';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setLoading } from 'redux/Reducer';
-import { postsService } from 'services/posts.service';
-import { ResponseSuccessApi } from 'models/Response.model';
-import { CategoryModel } from 'models/Category.model';
+import { useNavigate } from 'react-router-dom';
+import { theme } from 'theme';
+import { NavbarStyled } from './styles';
 
 interface NavBarUserProps {
   onSidebarChange?: any;
@@ -168,30 +137,9 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
     window.open(url, '_blank');
   };
 
-  // get categories options
-  const getCategoriesOpts = async () => {
-    dispatch(setLoading(true));
-    const response = (await postsService.getCategoriesOptions()) as unknown as ResponseSuccessApi;
-    if (response.success) {
-      const data = response.data as CategoryModel[];
-      const cates = data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-        };
-      });
-      setCatesOpts(cates);
-    }
-    dispatch(setLoading(false));
-  };
-
   const handleClickCateOpts = (categoryId: string) => {
     navigate(`/${USER_PATH.SEARCH}?category=${categoryId}`);
   };
-
-  useEffect(() => {
-    getCategoriesOpts();
-  }, []);
 
   useEffect(() => {
     onSidebarChange(openSidebar);

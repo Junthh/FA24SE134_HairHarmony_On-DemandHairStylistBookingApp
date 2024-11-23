@@ -38,10 +38,19 @@ export const ButtonPrimary = styled(Button)<{
     padding: padding ? padding : '16px 32px',
     margin: margin,
     borderRadius: borderradius ? borderradius : '8px',
-    border: border,
+    border: border
+      ? border
+      : severity === 'cancel'
+      ? `1px solid ${colors.grey2}`
+      : '1px solid black',
     '&:hover': {
-      color: colors.white,
+      color: colors.dark,
+      background: colors.white,
+      border: '1px solid black',
+    },
+    '&.active': {
       background: colors.dark,
+      color: `${colors.white} !important`,
     },
   }),
 );

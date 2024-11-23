@@ -87,6 +87,10 @@ function Staff() {
       setTabName('Feedback');
     } else if (name === STYLIST_PATH.TIMEKEEPING.split('/')[1]) {
       setTabName('Đăng kí lịch làm');
+    } else if (name === STYLIST_PATH.PROFILE.split('/')[1]) {
+      setTabName('Cập nhật thông tin');
+    } else if (name === STYLIST_PATH.CHANGE_PASSWORD.split('/')[1]) {
+      setTabName('Thay đổi mật khẩu');
     }
   }, [location]);
 
@@ -131,7 +135,7 @@ function Staff() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {credentialInfo?.Username}
+              {credentialInfo?.FullName}
             </Typography>
           </EmailWrapper>
           <ArrowDropDownIcon sx={{ color: '#F2FFE3' }} />

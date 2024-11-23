@@ -4,6 +4,7 @@ using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.BookingSlotStylistServices;
+using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Bookings;
 using hair_hamony.Data.Entities;
@@ -17,12 +18,16 @@ namespace hair_hamony.Business.Services.BookingServices
         private readonly HairHamonyContext _context;
         private readonly IMapper _mapper;
         private readonly IBookingSlotStylistService _bookingSlotStylistService;
+        private readonly IStylistSalaryService _stylistSalaryService;
 
-        public BookingService(IMapper mapper, IBookingSlotStylistService bookingSlotStylistService)
+        public BookingService(IMapper mapper,
+            IBookingSlotStylistService bookingSlotStylistService,
+            IStylistSalaryService stylistSalaryService)
         {
             _context = new HairHamonyContext();
             _mapper = mapper;
             _bookingSlotStylistService = bookingSlotStylistService;
+            _stylistSalaryService = stylistSalaryService;
         }
 
         public async Task<GetBookingModel> Create(CreateBookingModel requestBody)
@@ -104,7 +109,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 Stylist? stylist;
                 if (requestBody.IsRandomStylist == true)
                 {
-                    var stylistFreeTimes = _bookingSlotStylistService
+                    var stylistFreeTimes = await _bookingSlotStylistService
                        .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
 
                     stylist = _mapper.Map<Stylist>(stylistFreeTimes.FirstOrDefault());
@@ -114,7 +119,6 @@ namespace hair_hamony.Business.Services.BookingServices
                     stylist = _context.Stylists.FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
                 }
 
-                double expertFee = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE")!.Value!.Value;
                 double totalPrice = 0;
                 double totalDiscount = 0;
 
@@ -132,6 +136,10 @@ namespace hair_hamony.Business.Services.BookingServices
                         totalPrice += item.TotalPrice!.Value;
                         totalDiscount += item.Discount!.Value;
                     }
+                }
+                if (requestBody.ExpertFee != null)
+                {
+                    totalPrice = totalPrice * requestBody.ExpertFee.Value;
                 }
 
                 double amoutToPaid = totalPrice - totalDiscount;
@@ -165,7 +173,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 {
                     Id = bookingId,
                     BookingDate = requestBody.BookingDate,
-                    ExpertFee = expertFee,
+                    ExpertFee = requestBody.ExpertFee,
                     TotalPrice = totalPrice,
                     AmoutToPaid = amoutToPaid,
                     LoyaltyPoints = requestBody.LoyaltyPoints,
@@ -228,7 +236,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
-                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -288,7 +296,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
-                            CheckStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -333,9 +341,9 @@ namespace hair_hamony.Business.Services.BookingServices
             }
         }
 
-        private void CheckStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
+        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
         {
-            var stylists = _bookingSlotStylistService
+            var stylists = await _bookingSlotStylistService
                     .GetListStylistFreetime(bookingDate, timeSlotId);
 
             var isStylistFreeTime = stylists.Any(stylist => stylist.Id == stylistId);
@@ -352,22 +360,143 @@ namespace hair_hamony.Business.Services.BookingServices
 
         public async Task<GetBookingModel> Update(Guid id, UpdateBookingModel requestBody)
         {
-            if (id != requestBody.Id)
+            var dbTransaction = _context.Database.BeginTransaction();
+            try
             {
-                throw new CException
+                if (id != requestBody.Id)
                 {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = "Id không trùng"
-                };
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Id không trùng"
+                    };
+                }
+                var booking = _mapper.Map<Booking>(await GetById(id));
+
+                if (requestBody.Status != booking.Status)
+                {
+                    var transaction = _context.Transactions.FirstOrDefault(transaction => transaction.BookingId == requestBody.Id);
+                    _context.TransactionDetails.Add(new TransactionDetail
+                    {
+                        Status = requestBody.Status,
+                        CreatedDate = DateTime.Now,
+                        TransactionId = transaction!.Id
+                    });
+                }
+
+                // tăng số lượng booking cho stylist khi hoàn thành booking
+                if (requestBody.Status == "Completed")
+                {
+                    var stylistIds = from bookingDetail in _context.BookingDetails
+                                     join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
+                                     select bookingSlotStylist.StylistId;
+
+                    var monthCurrent = DateTime.Now.Month;
+                    var yearCurrent = DateTime.Now.Year;
+                    var stylistSalary = await _context.StylistSalarys
+                        .FirstOrDefaultAsync(stylistSalary =>
+                            stylistSalary.StylistId == requestBody.StaffId
+                            && stylistSalary.Month == monthCurrent
+                            && stylistSalary.Year == yearCurrent
+                        );
+
+                    var stylist = await _context.Stylists
+                            .FirstOrDefaultAsync(stylist => stylist.Id == stylistIds.FirstOrDefault());
+
+                    // nếu trong tháng này chưa có booking thì tạo để có dữ liệu so sánh tổng booking trong tháng
+                    if (stylistSalary == null)
+                    {
+                        await _stylistSalaryService.Create(new ViewModels.StylistSalarys.CreateStylistSalaryModel
+                        {
+                            Month = monthCurrent,
+                            Year = yearCurrent,
+                            StylistId = stylist.Id,
+                            TotalBooking = 1,
+                            TotalCommission = 0,
+                            TotalSalary = stylist.Salary
+                        });
+                    }
+                    else
+                    {
+                        var commissionRate = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "COMMISSION_RATE")!.Value!.Value;
+
+                        var totalBooking = stylistSalary.TotalBooking + 1;
+                        var totalCommission = stylistSalary.TotalCommission
+                            + stylist.Kpi > stylistSalary.TotalBooking + 1 ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
+                        {
+                            Id = stylistSalary.Id,
+                            Month = stylistSalary.Month,
+                            Year = stylistSalary.Year,
+                            StylistId = stylistSalary.StylistId,
+                            TotalBooking = totalBooking,
+                            TotalCommission = totalCommission,
+                            TotalSalary = stylist.Salary + totalCommission
+                        });
+                    }
+
+                    if (requestBody.LoyaltyPoints != null)
+                    {
+                        var customer = _context.Customers.FirstOrDefault(customer => customer.Id == requestBody.CustomerId);
+                        customer!.LoyaltyPoints = customer.LoyaltyPoints - requestBody.LoyaltyPoints;
+                        _context.Customers.Update(customer);
+                    }
+
+                    var payment = _context.Payments.FirstOrDefault(payment => payment.BookingId == requestBody.Id);
+                    payment.Status = "Completed";
+                    payment.Price = requestBody.AmoutToPaid;
+                    payment.PaymentMethod = requestBody.PaymentMethod;
+                    payment.CreatedDate = DateTime.Now;
+                    _context.Payments.Update(payment);
+                }
+                else if (requestBody.Status == "Cancel")
+                {
+                    await _context.Transactions.Where(transaction => transaction.BookingId == requestBody.Id)
+                        .ExecuteUpdateAsync(setters =>
+                            setters.SetProperty(transaction => transaction.Status, "Cancel")
+                        );
+
+                    await _context.Payments
+                        .Where(payment => payment.BookingId == requestBody.Id)
+                        .ExecuteUpdateAsync(setters =>
+                            setters.SetProperty(payment => payment.Status, "Cancel")
+                        );
+
+                    var transactionIds = _context.Transactions
+                        .Where(transaction => transaction.BookingId == requestBody.Id)
+                        .Select(transaction => transaction.Id).ToList();
+
+                    await _context.TransactionDetails
+                        .Where(transactionDetail => transactionIds.Contains(transactionDetail.Id))
+                        .ExecuteUpdateAsync(setters
+                            => setters.SetProperty(transactionDetail => transactionDetail.Status, "Cancel")
+                        );
+
+                    var bookingDetailIds = _context.BookingDetails
+                        .Where(bookingDetail => bookingDetail.BookingId == requestBody.Id).Select(bookingDetail => bookingDetail.Id).ToList();
+
+                    await _context.BookingSlotStylists
+                        .Where(bookingSlotStylist => bookingDetailIds.Contains((Guid)bookingSlotStylist.BookingDetailId!))
+                        .ExecuteUpdateAsync(setters
+                            => setters.SetProperty(bookingSlotStylist => bookingSlotStylist.Status, "Available")
+                        );
+                }
+
+                _mapper.Map(requestBody, booking);
+                booking.UpdatedDate = DateTime.Now;
+
+                _context.Bookings.Update(booking);
+
+                await _context.SaveChangesAsync();
+                await dbTransaction.CommitAsync();
+
+                return _mapper.Map<GetBookingModel>(booking);
             }
-            var booking = _mapper.Map<Booking>(await GetById(id));
-            _mapper.Map(requestBody, booking);
-            booking.UpdatedDate = DateTime.Now;
-
-            _context.Bookings.Update(booking);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<GetBookingModel>(booking);
+            catch
+            {
+                dbTransaction.Rollback();
+                throw;
+            }
         }
     }
 }
