@@ -139,7 +139,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
                 if (requestBody.ExpertFee != null)
                 {
-                    totalPrice = totalPrice * requestBody.ExpertFee.Value;
+                    totalPrice = totalPrice + (totalPrice * requestBody.ExpertFee.Value / 100);
                 }
 
                 double amoutToPaid = totalPrice - totalDiscount;
