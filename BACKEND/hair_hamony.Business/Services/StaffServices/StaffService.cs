@@ -59,7 +59,7 @@ namespace hair_hamony.Business.Services.StaffServices
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
             staff.Password = passwordHashed;
             staff.Status = "Active";
-            staff.CreatedDate = DateTime.Now;
+            staff.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Staffs.AddAsync(staff);
             await _context.SaveChangesAsync();

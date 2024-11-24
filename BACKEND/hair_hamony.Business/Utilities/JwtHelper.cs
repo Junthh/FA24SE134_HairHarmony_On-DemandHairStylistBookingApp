@@ -42,8 +42,8 @@ namespace hair_hamony.Business.Utilities
             var token = new JwtSecurityToken(
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddHours(1),
+                notBefore: UtilitiesHelper.DatetimeNowUTC7(),
+                expires: UtilitiesHelper.DatetimeNowUTC7().AddHours(1),
                 signingCredentials: signingCredentials,
                 claims: claim
             );

@@ -4,6 +4,7 @@ using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.StylistSalaryServices;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.BookingSlotStylists;
 using hair_hamony.Business.ViewModels.Stylists;
@@ -28,8 +29,8 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
         public async Task<GetBookingSlotStylistModel> Create(CreateBookingSlotStylistModel requestBody)
         {
             var bookingSlotStylist = _mapper.Map<BookingSlotStylist>(requestBody);
-            bookingSlotStylist.CreatedDate = DateTime.Now;
-            bookingSlotStylist.UpdatedDate = DateTime.Now;
+            bookingSlotStylist.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            bookingSlotStylist.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.BookingSlotStylists.AddAsync(bookingSlotStylist);
             await _context.SaveChangesAsync();
@@ -129,8 +130,8 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                     item.ExpertFee = systemConfig.Value;
                 }
 
-                var monthCurrent = DateTime.Now.Month;
-                var yearCurrent = DateTime.Now.Year;
+                var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+                var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
                 var stylistSalary = _context.StylistSalarys
                     .FirstOrDefault(stylistSalary =>
                         stylistSalary.StylistId == item.Id
@@ -176,7 +177,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             }
             var bookingSlotStylist = _mapper.Map<BookingSlotStylist>(await GetById(id));
             _mapper.Map(requestBody, bookingSlotStylist);
-            bookingSlotStylist.UpdatedDate = DateTime.Now;
+            bookingSlotStylist.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.BookingSlotStylists.Update(bookingSlotStylist);
             await _context.SaveChangesAsync();

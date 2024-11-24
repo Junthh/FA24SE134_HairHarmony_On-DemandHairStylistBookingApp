@@ -25,7 +25,7 @@ namespace home_travel.API.Controllers
         [HttpPost("login")]
         [ProducesResponseType(typeof(ModelLoginResponse<GetCustomerModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public async Task<IActionResult> Login(UserLoginModel requestBody)
+        public async Task<IActionResult> Login(CustomerLoginModel requestBody)
         {
             var (token, customer) = await _customerService.Login(requestBody);
             return Ok(new ModelLoginResponse<GetCustomerModel>(
