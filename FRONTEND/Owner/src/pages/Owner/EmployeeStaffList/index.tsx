@@ -73,6 +73,7 @@ export default function EmployeeStaffList() {
     username: '',
     phoneNumber: '',
     fullName: '',
+    password: '',
   };
   const formUser = useForm<any>({
     defaultValues,
@@ -265,6 +266,16 @@ export default function EmployeeStaffList() {
                 label={'Lương'}
                 //   onKeyUp={handleKeyup}
               />
+              {!selectedRow && (
+                <TextFieldElement
+                  name="password"
+                  control={control}
+                  type="password"
+                  placeholder="Nhập số mật khẩu"
+                  label={'Mật khẩu'}
+                  //   onKeyUp={handleKeyup}
+                />
+              )}
               <SelectElement
                 control={control}
                 name="status"
