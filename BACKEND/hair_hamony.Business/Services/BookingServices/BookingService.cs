@@ -390,6 +390,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 {
                     var stylistIds = from bookingDetail in _context.BookingDetails
                                      join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
+                                     where bookingDetail.BookingId == requestBody.Id
                                      select bookingSlotStylist.StylistId;
 
                     var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
