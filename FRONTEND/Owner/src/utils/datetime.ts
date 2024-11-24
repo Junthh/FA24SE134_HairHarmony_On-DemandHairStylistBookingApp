@@ -17,7 +17,14 @@ function calculateAge(dob: string | Date) {
   return yearsDifference;
 }
 
-function formatDate(date: string | Date, pattern = 'dd MMM yyyy') {
+function formatDate(date: string | Date, pattern = 'dd/MM/yyyy') {
+  if (isDate(date)) {
+    return format(date as Date, pattern);
+  }
+  return format(new Date(date), pattern);
+}
+
+function formatDateTime(date: string | Date, pattern = 'dd/MM/yyyy HH:mm') {
   if (isDate(date)) {
     return format(date as Date, pattern);
   }
@@ -132,5 +139,6 @@ export {
   getLastDateInMonth,
   getTimelineSlot,
   getTimeDetail,
-  calculateTimeCreateAt
+  calculateTimeCreateAt,
+  formatDateTime
 };
