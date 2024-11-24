@@ -3,11 +3,12 @@ export interface RefreshAccessTokenPayload {
 }
 
 export interface RegisterPayload {
-  username: string;
+  phoneNumber: string;
+  fullName: string;
   password: string;
 }
 
 export interface LoginPayLoad {
-  username: string;
+  phoneNumber: string;
   password: string;
 }
