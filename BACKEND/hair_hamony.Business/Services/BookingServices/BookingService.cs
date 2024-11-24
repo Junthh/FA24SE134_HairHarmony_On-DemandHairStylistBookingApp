@@ -424,8 +424,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         var commissionRate = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "COMMISSION_RATE")!.Value!.Value;
 
                         var totalBooking = stylistSalary.TotalBooking + 1;
-                        var totalCommission = stylistSalary.TotalCommission
-                            + stylist.Kpi > stylistSalary.TotalBooking + 1 ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        var newCommission = totalBooking > stylist.Kpi ? requestBody.TotalPrice * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -433,8 +432,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             Year = stylistSalary.Year,
                             StylistId = stylistSalary.StylistId,
                             TotalBooking = totalBooking,
-                            TotalCommission = totalCommission,
-                            TotalSalary = stylist.Salary + totalCommission
+                            TotalCommission = stylistSalary.TotalCommission + newCommission,
+                            TotalSalary = stylistSalary.TotalSalary + newCommission
                         });
                     }
 
