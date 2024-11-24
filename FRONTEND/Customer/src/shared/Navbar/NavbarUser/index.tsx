@@ -94,7 +94,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       </Box>
       <Box className="nav-right">
         {renderNav}
-        {credentialInfo?.Username ? (
+        {credentialInfo?.PhoneNumber ? (
           <>
             <ButtonPrimary
               severity="primary"
