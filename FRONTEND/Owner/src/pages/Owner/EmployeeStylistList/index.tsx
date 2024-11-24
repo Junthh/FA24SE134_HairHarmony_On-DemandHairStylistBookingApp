@@ -76,6 +76,7 @@ export default function EmployeeStylistList() {
     username: '',
     phoneNumber: '',
     fullName: '',
+    password: '',
   };
   const formUser = useForm<any>({
     defaultValues,
@@ -292,9 +293,19 @@ export default function EmployeeStylistList() {
                 name="salary"
                 control={control}
                 placeholder="Nhập lương"
-                label={'Số lương'}
+                label={'Lương'}
                 //   onKeyUp={handleKeyup}
               />
+              {!selectedRow && (
+                <TextFieldElement
+                  name="password"
+                  control={control}
+                  type="password"
+                  placeholder="Nhập số mật khẩu"
+                  label={'Mật khẩu'}
+                  //   onKeyUp={handleKeyup}
+                />
+              )}
               <SelectElement
                 control={control}
                 name="status"
