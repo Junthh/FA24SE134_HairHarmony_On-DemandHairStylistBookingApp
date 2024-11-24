@@ -40,14 +40,17 @@ namespace hair_hamony.Business.Services.FeedbackServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetFeedbackModel>, int)> GetAll(PagingParam<FeedbackEnum.FeedbackSort> paginationModel, SearchFeedbackModel searchFeedbackModel)
+        public async Task<(IList<GetDetailFeedbackModel>, int)> GetAll(PagingParam<FeedbackEnum.FeedbackSort> paginationModel, SearchFeedbackModel searchFeedbackModel)
         {
-            var query = _context.Feedbacks.AsQueryable();
+            var query = _context.Feedbacks
+                .Include(feedback => feedback.Booking)
+                .ThenInclude(booking => booking.Customer)
+                .AsQueryable();
             query = query.GetWithSearch(searchFeedbackModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetFeedbackModel>>(query);
+            var results = _mapper.Map<IList<GetDetailFeedbackModel>>(query);
 
             return (results, total);
         }
