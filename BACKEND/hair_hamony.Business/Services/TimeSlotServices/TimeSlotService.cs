@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.TimeSlots;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.TimeSlotServices
         public async Task<GetTimeSlotModel> Create(CreateTimeSlotModel requestBody)
         {
             var timeSlot = _mapper.Map<TimeSlot>(requestBody);
-            timeSlot.CreatedDate = DateTime.Now;
+            timeSlot.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.TimeSlots.AddAsync(timeSlot);
             await _context.SaveChangesAsync();

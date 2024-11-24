@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Workships;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.WorkshipServices
         public async Task<GetWorkshipModel> Create(CreateWorkshipModel requestBody)
         {
             var workship = _mapper.Map<Workship>(requestBody);
-            workship.CreatedDate = DateTime.Now;
+            workship.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Workships.AddAsync(workship);
             await _context.SaveChangesAsync();

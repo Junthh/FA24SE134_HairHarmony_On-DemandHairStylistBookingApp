@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Feedbacks;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.FeedbackServices
         public async Task<GetFeedbackModel> Create(CreateFeedbackModel requestBody)
         {
             var feedback = _mapper.Map<Feedback>(requestBody);
-            feedback.CreatedDate = DateTime.Now;
+            feedback.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Feedbacks.AddAsync(feedback);
             await _context.SaveChangesAsync();

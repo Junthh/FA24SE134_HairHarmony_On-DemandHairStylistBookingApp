@@ -12,7 +12,7 @@ namespace hair_hamony.Business.Services.CustomerServices
         Task<GetCustomerModel> Create(CreateCustomerModel requestBody);
         Task<GetCustomerModel> Update(Guid id, UpdateCustomerModel requestBody);
         Task Delete(Guid id);
-        Task<(string token, GetCustomerModel customer)> Login(UserLoginModel requestBody);
+        Task<(string token, GetCustomerModel customer)> Login(CustomerLoginModel requestBody);
         Task<GetCustomerModel> ChangePassword(Guid id, string oldPassword, string newPassword);
     }
 }

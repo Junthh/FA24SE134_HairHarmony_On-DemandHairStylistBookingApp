@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.ComboServices;
 using hair_hamony.Data.Entities;
@@ -24,8 +25,8 @@ namespace hair_hamony.Business.Services.ComboServiceServices
         public async Task<GetComboServiceModel> Create(CreateComboServiceModel requestBody)
         {
             var comboService = _mapper.Map<ComboService>(requestBody);
-            comboService.CreatedDate = DateTime.Now;
-            comboService.UpdatedDate = DateTime.Now;
+            comboService.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            comboService.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.ComboServices.AddAsync(comboService);
             await _context.SaveChangesAsync();
@@ -83,7 +84,7 @@ namespace hair_hamony.Business.Services.ComboServiceServices
             }
             var comboService = _mapper.Map<ComboService>(await GetById(id));
             _mapper.Map(requestBody, comboService);
-            comboService.UpdatedDate = DateTime.Now;
+            comboService.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.ComboServices.Update(comboService);
             await _context.SaveChangesAsync();

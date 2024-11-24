@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.StylistSalarys;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
         public async Task<GetStylistSalaryModel> Create(CreateStylistSalaryModel requestBody)
         {
             var stylistSalary = _mapper.Map<StylistSalary>(requestBody);
-            stylistSalary.CreatedDate = DateTime.Now;
+            stylistSalary.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.StylistSalarys.AddAsync(stylistSalary);
             await _context.SaveChangesAsync();
