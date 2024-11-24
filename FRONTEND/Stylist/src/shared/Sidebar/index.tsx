@@ -19,7 +19,7 @@ const routes = [
   },
   {
     path: STYLIST_PATH.FEEDBACK,
-    name: 'Feedback',
+    name: 'Đánh giá',
     icon: <ICONS.IconFeedback />,
   },
 ];
