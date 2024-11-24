@@ -36,6 +36,12 @@ import { selectCredentialInfo, selectLoading, setLoading } from 'redux/Reducer';
 import SkeletonTime from './components/SkeletonTime';
 import { categoryService } from 'services/category.service';
 import CircleIcon from '@mui/icons-material/Circle';
+import { FormContainer } from 'components/Form/FormContainer';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import CheckSuccess from 'components/Common/CheckSuccess';
 const BoxBookingStyled = styled(Box)({
   padding: '40px 140px',
 });
@@ -74,18 +80,86 @@ const BoxStylistCard = styled(Box)({
   },
 });
 //
+
 export default function Booking() {
   const [date, setDate] = React.useState<Dayjs | null>(dayjs);
   const [currentStep, setCurrentStep] = useState(0);
   const [times, setTimes] = useState([]);
   const [stylists, setStylists] = useState([]);
   const dispatch = useDispatch();
+  const baseSteps = [
+    {
+      step: 0,
+      label: 'Dịch vụ',
+      onClick: () => handleChangeStep(0),
+    },
+    {
+      step: 1,
+      label: 'Thời gian',
+      onClick: () => handleChangeStep(1),
+    },
+    {
+      step: 2,
+      label: 'Stylist',
+      onClick: () => {
+        /* handleChangeStep(2); */
+      },
+    },
+    {
+      step: 3,
+      label: 'Xác nhận',
+      onClick: () => {
+        /* handleChangeStep(3); */
+      },
+    },
+  ];
+  const optionsWithAdditionalStep = [
+    ...baseSteps,
+    {
+      step: 4,
+      label: 'Nhập thông tin',
+      onClick: () => {
+        /* handleChangeStep(4); */
+      },
+    },
+  ];
   const credentialInfo = useSelector(selectCredentialInfo);
   const isLoading = useSelector(selectLoading);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   // this services will be call api to get data
   const [services, setServices] = useState<any>();
+  const [optionsStep, setOptionsStep] = useState(
+    isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps],
+  );
+  const schemaUser = Yup.object().shape({
+    customerFullName: Yup.string().required('Họ và tên không được trống'),
+    customerPhoneNummber: Yup.string()
+      .matches(/^0\d{9}$/, 'Số điện thoại phải bắt đầu bằng 0 và có 10 số')
+      .required('Số điện thoại không được trống'),
+  });
+  const defaultValues = {
+    customerFullName: '',
+    customerPhoneNummber: '',
+  };
+  const formUser = useForm<any>({
+    defaultValues,
+    mode: 'onChange',
+    resolver: yupResolver(schemaUser),
+  });
+  const {
+    control,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+    handleSubmit,
+  } = formUser;
+  // Optional: if `credentialInfo` changes and needs dynamic handling
+  useEffect(() => {
+    setOptionsStep(isEmpty(credentialInfo) ? [optionsWithAdditionalStep] : [baseSteps]);
+  }, [credentialInfo]);
+
   const getListStylistFreeTime = useCallback(() => {
     if (currentStep === 2) {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
@@ -97,7 +171,16 @@ export default function Booking() {
           bookingDate,
         })
         .then((res) => {
-          const resultStylist = res.data;
+          const defaultStylist = [
+            {
+              id: 1,
+              fullName: 'Chọn stylist bất kỳ',
+              level: 'None',
+              isActive: false,
+            },
+          ];
+          const resultStylist = defaultStylist.concat(res.data);
+
           setStylists(resultStylist);
         })
         .catch((err) => {})
@@ -117,12 +200,14 @@ export default function Booking() {
       bookingServices
         .listTimeSlots()
         .then((res) => {
-          let timeSlots = res.data.map((item) => ({
-            ...item,
-            startTime: item.startTime.split(':').slice(0, 2).join(':'),
-            endTime: item.endTime.split(':').slice(0, 2).join(':'),
-            isActive: false,
-          }));
+          let timeSlots = res.data
+            .map((item) => ({
+              ...item,
+              startTime: item.startTime.split(':').slice(0, 2).join(':'),
+              endTime: item.endTime.split(':').slice(0, 2).join(':'),
+              isActive: false,
+            }))
+            .sort((a, b) => a.startTime.localeCompare(b.startTime));
           setTimes(timeSlots);
         })
         .catch((err) => {})
@@ -175,79 +260,151 @@ export default function Booking() {
     getCategoryList();
   }, [getCategoryList]);
 
-  const handleChangeStep = (step?: number) => {
-    const isAnyServiceChecked = Object.values(services).some((service: any) => service.checked);
-    if (currentStep === 0 && !isAnyServiceChecked) {
-      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
-      return;
-    }
-    const isActiveTime = times.some((time) => time.isActive);
-    if (currentStep === 1 && (!isActiveTime || isEmpty(date))) {
-      showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
-      return;
-    }
-    const stylistActive = stylists.some((item) => item.isActive);
-    if (stylists.length > 0) {
-      if (currentStep === 2 && !stylistActive) {
+  const handleChangeStep = async (step?: number) => {
+    if (isEmpty(step?.toString())) {
+      const isAnyServiceChecked = Object.values(services).some((service: any) => service.checked);
+      if (currentStep === 0 && !isAnyServiceChecked) {
         showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
         return;
       }
+      const isActiveTime = times.some((time) => time.isActive);
+      if (currentStep === 1 && (!isActiveTime || isEmpty(date))) {
+        showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+        return;
+      }
+      const stylistActive = stylists.some((item) => item.isActive);
+      if (stylists.length > 0) {
+        if (currentStep === 2 && !stylistActive) {
+          showToast('warning', 'Vui lòng chọn đầy đủ thông tin');
+          return;
+        }
+      }
     }
+
     if (step?.toString()) {
       setCurrentStep(step);
     } else {
-      if (currentStep === 3 && !step) {
-        if (!stylistActive) {
-          showToast('warning', 'Vui lòng chọn stylist!');
+      let payload = normalizePayload();
+      if (!isEmpty(credentialInfo) && (step === 3 || currentStep === 3)) {
+        // const isValid = await formUser.trigger();
+
+        // // If validation fails, return errors
+        // if (!isValid) {
+        //   const errors = formUser.formState.errors;
+        //   console.error('Validation failed:', errors);
+        //   return;
+        // }
+        handleBookingWithUser(step, payload);
+      } else if (isEmpty(credentialInfo) && (step === 4 || currentStep === 4)) {
+        const isValid = await formUser.trigger();
+        // If validation fails, return errors
+        if (!isValid) {
+          const errors = formUser.formState.errors;
+          console.error('Validation failed:', errors);
           return;
         }
-        dispatch(setLoading(true));
-        const serviceChecked = Object.entries(services)
-          .filter(([, option]: any) => option.checked)
-          .map(([id, option]: any) => ({ id, ...option }));
-        const timeChecked = times.find((time) => time.isActive);
-        const stylistId = stylists.find((item) => item.isActive)?.id;
-        const timeSlotId = times.find((time) => time.isActive)?.id;
-        const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
-        const combos = serviceChecked
-          .filter((item) => item.categoryId === categories[0].id)
-          .map((item) => ({
-            id: item.id,
-            totalPrice: item.price,
-            discount: item.discount ?? 0,
-          }));
-        const servicesResult = serviceChecked
-          .filter((item) => item.categoryId !== categories[0].id)
-          .map((item) => ({
-            id: item.id,
-            price: item.price,
-          }));
-        const payload = {
-          bookingDate,
-          customerId: credentialInfo.Id,
-          timeSlotId,
-          stylistId,
-          combos,
-          services: servicesResult,
-        };
-        bookingServices
-          .bookingInit(payload)
-          .then((res) => {
-            showToast('success', 'Đặt lịch thành công');
-            navigate('/appointment');
-          })
-          .catch((err) => {
-            showToast('error', err.msg);
-          })
-          .finally(() => {
-            dispatch(setLoading(false));
-          });
-        return;
+        handleBookingUserNotLogin(step, payload);
+      } else {
+        setCurrentStep((prev) => prev + 1);
       }
-      setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
     }
   };
+  const normalizePayload = () => {
+    const serviceChecked = Object.entries(services)
+      .filter(([, option]: any) => option.checked)
+      .map(([id, option]: any) => ({ id, ...option }));
+    const timeChecked = times.find((time) => time.isActive);
+    const stylist = stylists.find((item) => item.isActive);
+    const timeSlotId = times.find((time) => time.isActive)?.id;
+    const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
+    const combos = serviceChecked
+      .filter((item) => item.categoryId === categories[0].id)
+      .map((item) => ({
+        id: item.id,
+        totalPrice: item.price,
+        discount: item.discount ?? 0,
+      }));
+    const servicesResult = serviceChecked
+      .filter((item) => item.categoryId !== categories[0].id)
+      .map((item) => ({
+        id: item.id,
+        price: item.price,
+      }));
+    let payload: any = {
+      bookingDate,
+      customerId: credentialInfo.Id,
+      timeSlotId,
+      stylistId: stylist?.id,
+      combos,
+      services: servicesResult,
+      expertFee: stylist?.expertFee || 0,
+    };
+    if (stylist?.id === 1) {
+      payload = {
+        ...payload,
+        isRandomStylist: true,
+      };
+      delete payload.stylistId;
+    }
 
+    return !isEmpty(credentialInfo)
+      ? payload
+      : {
+          ...payload,
+          customerFullName: formUser.getValues('customerFullName'),
+          customerPhoneNummber: formUser.getValues('customerPhoneNummber'),
+        };
+  };
+
+  const handleBookingWithUser = (step, payload) => {
+    if (currentStep === 3 && !step) {
+      if (!stylistActive) {
+        showToast('warning', 'Vui lòng chọn stylist!');
+        return;
+      }
+      dispatch(setLoading(true));
+      bookingServices
+        .bookingInit(payload)
+        .then((res) => {
+          showToast('success', 'Đặt lịch thành công');
+          navigate('/appointment');
+        })
+        .catch((err) => {
+          showToast('error', err.msg);
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+      return;
+    }
+    setCurrentStep((prev) => (prev === 3 ? 0 : prev + 1));
+  };
+  const handleBookingUserNotLogin = (step, payload) => {
+    if (currentStep === 3 && !step) {
+      if (!stylistActive) {
+        showToast('warning', 'Vui lòng chọn stylist!');
+        return;
+      }
+    }
+    if (currentStep === 4 && !step) {
+      dispatch(setLoading(true));
+      bookingServices
+        .bookingInit(payload)
+        .then((res) => {
+          showToast('success', 'Đặt lịch thành công');
+          // navigate('/appointment');
+          setCurrentStep(5);
+        })
+        .catch((err) => {
+          showToast('error', err.msg);
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+      return;
+    }
+    setCurrentStep((prev) => (prev === 5 ? 0 : prev + 1));
+  };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setServices((prev) => ({
       ...prev,
@@ -319,39 +476,7 @@ export default function Booking() {
   return (
     <BoxBookingStyled>
       {' '}
-      <Breadscrumb
-        currentStep={currentStep}
-        options={[
-          {
-            step: 0,
-            label: 'Dịch vụ',
-            onClick: () => {
-              handleChangeStep(0);
-            },
-          },
-          {
-            step: 1,
-            label: 'Thời gian',
-            onClick: () => {
-              handleChangeStep(1);
-            },
-          },
-          {
-            step: 2,
-            label: 'Stylist',
-            onClick: () => {
-              // handleChangeStep(2);
-            },
-          },
-          {
-            step: 3,
-            label: 'Xác nhận',
-            onClick: () => {
-              // handleChangeStep(3);
-            },
-          },
-        ]}
-      />
+      <Breadscrumb currentStep={currentStep} options={optionsStep[0]} />
       <Box height={20}></Box>
       <Grid container spacing={2}>
         <Grid item xs={7}>
@@ -406,7 +531,7 @@ export default function Booking() {
                     },
                   }}
                   disableHighlightToday
-                  disablePast
+                  // disablePast
                   showDaysOutsideCurrentMonth
                   value={date}
                   onChange={(newValue) => setDate(newValue)}
@@ -414,31 +539,35 @@ export default function Booking() {
               </LocalizationProvider>
               {!isLoading ? (
                 <Grid container spacing={2}>
-                  {times.map((item) => {
-                    return (
-                      <Grid item xs={2}>
-                        <ButtonPrimary
-                          fullWidth
-                          severity="cancel"
-                          padding={'16px 18px'}
-                          sx={{ color: 'black !important' }}
-                          border={'1px solid black'}
-                          className={item.isActive ? 'active' : ''}
-                          onClick={() => {
-                            setTimes((prevTimes) =>
-                              prevTimes.map((time) =>
-                                time.id === item.id
-                                  ? { ...time, isActive: true }
-                                  : { ...time, isActive: false },
-                              ),
-                            );
-                          }}
-                        >
-                          {item.startTime}
-                        </ButtonPrimary>
-                      </Grid>
-                    );
-                  })}
+                  <Grid item xs={2}></Grid>
+                  <Grid container spacing={2} item xs={8}>
+                    {times.map((item) => {
+                      return (
+                        <Grid item xs={4}>
+                          <ButtonPrimary
+                            fullWidth
+                            severity="cancel"
+                            padding={'16px 18px'}
+                            sx={{ color: 'black !important' }}
+                            border={'1px solid black'}
+                            className={item.isActive ? 'active' : ''}
+                            onClick={() => {
+                              setTimes((prevTimes) =>
+                                prevTimes.map((time) =>
+                                  time.id === item.id
+                                    ? { ...time, isActive: true }
+                                    : { ...time, isActive: false },
+                                ),
+                              );
+                            }}
+                          >
+                            {item.startTime}
+                          </ButtonPrimary>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                  <Grid item xs={2}></Grid>
                 </Grid>
               ) : (
                 <SkeletonTime />
@@ -451,25 +580,28 @@ export default function Booking() {
               </Typography>
               <Box height={25}></Box>
               <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <BoxStylistCard
-                    onClick={() => {
-                      const randomIndex = Math.floor(Math.random() * stylists.length);
-                      const newData = stylists.map((item, index) => ({
-                        ...item,
-                        isActive: index === randomIndex ? true : item.isActive || false,
-                      }));
-                      setStylists(newData);
-                    }}
-                  >
-                    <IconStylist />
-                    <Typography variant="h4" fontWeight={700}>
-                      Chọn stylist bất kỳ
-                    </Typography>
-                  </BoxStylistCard>
-                </Grid>
-                {stylists.map((item) => {
-                  return (
+                {stylists.map((item, index) => {
+                  return index === 0 ? (
+                    <Grid item xs={4}>
+                      <BoxStylistCard
+                        className={item.isActive ? 'active' : ''}
+                        onClick={() => {
+                          setStylists((prevStylist) =>
+                            prevStylist.map((sty) =>
+                              sty.id === item.id
+                                ? { ...sty, isActive: true }
+                                : { ...sty, isActive: false },
+                            ),
+                          );
+                        }}
+                      >
+                        <IconStylist className={item.isActive ? 'active' : ''} />
+                        <Typography variant="h4" fontWeight={700}>
+                          Chọn stylist bất kỳ
+                        </Typography>
+                      </BoxStylistCard>
+                    </Grid>
+                  ) : (
                     <Grid item xs={4}>
                       <BoxStylistCard
                         className={item.isActive ? 'active' : ''}
@@ -492,6 +624,21 @@ export default function Booking() {
                           {item.level}
                         </Typography>
                         <Rating precision={0.5} value={item.rating} />
+                        {item.expertFee && (
+                          <Box
+                            display={'flex'}
+                            flexDirection={'column'}
+                            justifyContent={'center'}
+                            alignItems={'center'}
+                          >
+                            <Typography variant="small1" color={colors.grey2}>
+                              Phí chuyên gia
+                            </Typography>
+                            <Typography variant="small1" color={colors.grey2}>
+                              {item.expertFee}%
+                            </Typography>
+                          </Box>
+                        )}
                       </BoxStylistCard>
                     </Grid>
                   );
@@ -529,13 +676,80 @@ export default function Booking() {
                 cảm của bạn và rất mong được gặp bạn.
               </Typography>
             </Box>
+          ) : currentStep === 4 ? (
+            <Box sx={{ width: 400, margin: '0 auto' }}>
+              <Typography textAlign={'center'} variant="h2" fontWeight={700}>
+                Vui lòng nhập thông tin
+              </Typography>
+              <Box height={20}></Box>
+              <FormContainer formContext={formUser}>
+                <TextFieldElement
+                  name="customerFullName"
+                  control={control}
+                  placeholder="Nhập Họ và tên"
+                  label={'Họ và tên'}
+                  //   onKeyUp={handleKeyup}
+                />
+                <Box height={10}></Box>
+                <TextFieldElement
+                  name="customerPhoneNummber"
+                  control={control}
+                  type="number"
+                  placeholder="Nhập số điện thoại"
+                  label={'Số điện thoại'}
+                  //   onKeyUp={handleKeyup}
+                />
+              </FormContainer>
+            </Box>
           ) : (
-            <></>
+            <>
+              <Box paddingRight={20}>
+                <h1
+                  className="mea-culpa-regular"
+                  style={{ cursor: 'pointer', textAlign: 'center' }}
+                >
+                  Chúc mừng bạn đã đặt lịch thành công!!
+                </h1>
+                <Box height={40}></Box>
+                <CheckSuccess></CheckSuccess>
+                <Box height={40}></Box>
+
+                <ButtonPrimary
+                  sx={{ width: '35%', margin: '0 auto' }}
+                  severity="primary"
+                  padding={'9px 40px'}
+                  borderradius={9}
+                  onClick={() => {
+                    handleChangeStep(0);
+                    setServices((prev) => {
+                      const updatedServices = Object.fromEntries(
+                        Object.entries(prev).map(([key, value]: any) => [
+                          key,
+                          {
+                            ...value,
+                            checked: false,
+                          },
+                        ]),
+                      );
+                      return updatedServices;
+                    });
+                    setDate(dayjs);
+                    setTimes((prevTimes) =>
+                      prevTimes.map((time) => ({ ...time, isActive: false })),
+                    );
+                    setStylists([]);
+                  }}
+                >
+                  Đặt lịch thêm
+                </ButtonPrimary>
+              </Box>
+            </>
           )}
         </Grid>
         <Grid item xs={4}>
           {services &&
-          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) ? (
+          !isEmpty(Object.values(services).filter((option: any) => option.checked === true)) &&
+          currentStep !== 5 ? (
             <BoxCardBill>
               {services &&
                 Object.keys(services).map((key) => {
@@ -594,6 +808,23 @@ export default function Booking() {
                     </Box>
                     {<Rating value={stylistActive?.rating} precision={0.5} />}
                   </Box>
+                  {stylistActive.expertFee && (
+                    <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                      <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                        Phí chuyên gia
+                      </Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {currencyFormat(
+                          Number(
+                            Object.values(services)
+                              .filter((option: any) => option.checked === true)
+                              .reduce((total, option: any): any => total + option.price, 0),
+                          ) *
+                            (stylistActive?.expertFee / 100),
+                        )}
+                      </Typography>
+                    </Box>
+                  )}
                   <Divider variant="fullWidth"></Divider>
                 </>
               ) : (
@@ -607,9 +838,21 @@ export default function Booking() {
                 <Typography variant="body1" fontWeight={600}>
                   {services &&
                     currencyFormat(
-                      Object.values(services)
-                        .filter((option: any) => option.checked === true)
-                        .reduce((total, option: any) => total + option.price, 0),
+                      stylistActive?.expertFee
+                        ? Number(
+                            Object.values(services)
+                              .filter((option: any) => option.checked === true)
+                              .reduce((total, option: any): any => total + option.price, 0),
+                          ) *
+                            (stylistActive?.expertFee / 100) +
+                            Number(
+                              Object.values(services)
+                                .filter((option: any) => option.checked === true)
+                                .reduce((total, option: any): any => total + option.price, 0),
+                            )
+                        : Object.values(services)
+                            .filter((option: any) => option.checked === true)
+                            .reduce((total, option: any) => total + option.price, 0),
                     )}{' '}
                 </Typography>
               </Box>
@@ -621,7 +864,7 @@ export default function Booking() {
                 borderradius={9}
                 onClick={() => handleChangeStep()}
               >
-                {currentStep === 3 ? 'Xác nhận' : 'Tiếp tục'}
+                {currentStep === 3 || currentStep === 4 ? 'Xác nhận' : 'Tiếp tục'}
               </ButtonPrimary>
             </BoxCardBill>
           ) : (

@@ -30,13 +30,22 @@ namespace hair_hamony.Business.Services.StylistServices
 
         public async Task<GetStylistModel> Create(CreateStylistModel requestBody)
         {
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
+            var isUsernameExisted = await IsUsernameExisted(requestBody.Username);
+            if (isUsernameExisted)
             {
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+            var isPhoneNumberExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+            if (isPhoneNumberExisted)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Số điện thoại đã tồn tại"
                 };
             }
 
@@ -47,11 +56,11 @@ namespace hair_hamony.Business.Services.StylistServices
                 var file = await _fileService.UploadFile(requestBody.Avatar);
                 stylist.Avatar = file.Url;
             }
-            var defaultPassword = "123";
-            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
             stylist.Password = passwordHashed;
             stylist.Status = "Active";
             stylist.CreatedDate = DateTime.Now;
+            stylist.Rating = 5;
 
             await _context.Stylists.AddAsync(stylist);
             await _context.SaveChangesAsync();
@@ -104,8 +113,8 @@ namespace hair_hamony.Business.Services.StylistServices
             var stylist = _mapper.Map<Stylist>(await GetById(id));
             if (stylist.Username != requestBody.Username)
             {
-                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-                if (isExistedUsername)
+                var isExisted = await IsUsernameExisted(requestBody.Username);
+                if (isExisted)
                 {
                     throw new CException
                     {
@@ -114,6 +123,19 @@ namespace hair_hamony.Business.Services.StylistServices
                     };
                 }
             }
+            if (stylist.PhoneNumber != requestBody.PhoneNumber)
+            {
+                var isExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+                if (isExisted)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Số điện thoại đã tồn tại"
+                    };
+                }
+            }
+
             var oldAvatar = stylist.Avatar;
             _mapper.Map(requestBody, stylist);
             if (requestBody.Avatar != null)
@@ -151,7 +173,14 @@ namespace hair_hamony.Business.Services.StylistServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Stylist", id: stylist.Id, email: "", phoneNumber: stylist.PhoneNumber, username: stylist.Username);
+            var token = _jwtHelper.GenerateJwtToken(
+                role: "Stylist",
+                id: stylist.Id,
+                email: "",
+                phoneNumber: stylist.PhoneNumber,
+                username: stylist.Username,
+                fullName: stylist.FullName
+            );
             return (token, _mapper.Map<GetStylistModel>(stylist));
         }
 
@@ -180,9 +209,16 @@ namespace hair_hamony.Business.Services.StylistServices
             return _mapper.Map<GetStylistModel>(stylist);
         }
 
-        private async Task<bool> UsernameIsExisted(string username)
+        private async Task<bool> IsUsernameExisted(string username)
         {
             var isExisted = await _context.Stylists.Where(stylist => stylist.Username == username).AnyAsync();
+
+            return isExisted;
+        }
+
+        private async Task<bool> IsPhoneNumberExisted(string phoneNumber)
+        {
+            var isExisted = await _context.Stylists.Where(stylist => stylist.PhoneNumber == phoneNumber).AnyAsync();
 
             return isExisted;
         }

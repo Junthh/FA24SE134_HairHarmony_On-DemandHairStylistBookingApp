@@ -21,6 +21,7 @@ namespace home_travel.API.Controllers
         /// </summary>
         /// <param name="searchBookingModel">An object contains value wanna search</param>
         /// <param name="paginationModel">An object contains paging criteria</param>
+        /// <param name="customerPhoneNumber">An phone number of customer</param>
         /// <returns>List of booking</returns>
         /// <response code="200">Returns the list of booking</response>
         [HttpGet]
@@ -28,9 +29,15 @@ namespace home_travel.API.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<BookingEnum.BookingSort> paginationModel,
-            [FromQuery] SearchBookingModel searchBookingModel)
+            [FromQuery] SearchBookingModel searchBookingModel,
+            [FromQuery] string? customerPhoneNumber
+        )
         {
-            var (bookings, total) = await _bookingService.GetAll(paginationModel, searchBookingModel);
+            var (bookings, total) = await _bookingService.GetAll(
+                paginationModel,
+                searchBookingModel,
+                customerPhoneNumber
+            );
 
             return Ok(new ModelsResponse<GetDetailBookingModel>(
                     paging: new PagingResponse()

@@ -21,18 +21,24 @@ namespace home_travel.API.Controllers
         /// </summary>
         /// <param name="searchStylistWorkshipModel">An object contains value wanna search</param>
         /// <param name="paginationModel">An object contains paging criteria</param>
+        /// <param name="startDate">A start date wanna search by register date</param>
+        /// <param name="endDate">A end date wanna search by register date</param>
         /// <returns>List of stylistWorkship</returns>
         /// <response code="200">Returns the list of stylistWorkship</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetStylistWorkshipModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailStylistWorkshipModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
-            [FromQuery] SearchStylistWorkshipModel searchStylistWorkshipModel)
+            [FromQuery] SearchStylistWorkshipModel searchStylistWorkshipModel,
+            [FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
         {
-            var (stylistWorkships, total) = await _stylistWorkshipService.GetAll(paginationModel, searchStylistWorkshipModel);
+            var (stylistWorkships, total) = await _stylistWorkshipService.GetAll(
+                paginationModel,
+                searchStylistWorkshipModel,
+                startDate, endDate);
 
-            return Ok(new ModelsResponse<GetStylistWorkshipModel>(
+            return Ok(new ModelsResponse<GetDetailStylistWorkshipModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,
@@ -68,10 +74,10 @@ namespace home_travel.API.Controllers
         /// <returns>A stylistWorkship within status 201 or error status</returns>
         /// <response code="201">Returns the stylistWorkship</response>
         [HttpPost]
-        [ProducesResponseType(typeof(BaseResponse<GetStylistWorkshipModel>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BaseResponse<IList<GetStylistWorkshipModel>>), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(CreateStylistWorkshipModel requestBody)
         {
-            return Ok(new BaseResponse<GetStylistWorkshipModel>(
+            return Ok(new BaseResponse<IList<GetStylistWorkshipModel>>(
                     statusCode: 201, data: await _stylistWorkshipService.Create(requestBody),
                     msg: SuccessMessageResponse.CREATED_REQUEST
                 ));

@@ -12,6 +12,14 @@ class StylistServices {
       throw error;
     }
   }
+  async findById(id: string) {
+    try {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/Stylists/${id}`);
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const stylistServices = new StylistServices();

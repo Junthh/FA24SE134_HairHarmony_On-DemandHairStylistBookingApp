@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { Box } from '@mui/material';
 import styled from '@emotion/styled';
+import { employeeStylistServices } from 'services/employee-stylist.services';
+import { useDispatch } from 'react-redux';
+import { setLoading } from 'redux/Reducer';
+import moment from 'moment';
 
 const EmployeeWorkScheduleStyled = styled(Box)({
   padding: 20,
@@ -10,8 +14,50 @@ const EmployeeWorkScheduleStyled = styled(Box)({
     maxHeight: 'calc(100vh - 205px)',
   },
 });
-//
+
 export default function EmployeeWorkSchedule() {
+  const [events, setEvents] = useState([]);
+  const dispatch = useDispatch();
+
+  const handleGetStylistWorkships = useCallback(
+    async (dateInfo) => {
+      dispatch(setLoading(true));
+      try {
+        const params = {
+          startDate: moment(dateInfo.start).format('YYYY/MM/DD'),
+          endDate: moment(dateInfo.end).format('YYYY/MM/DD'),
+        };
+
+        const res = (await employeeStylistServices.listStylistWorkships(params)) as any;
+        const newEvents = res.data.map((item) => ({
+          title: ` ${item.stylist.fullName}`,
+          start: moment(
+            `${item.registerDate} ${item.workship.startTime}`,
+            'YYYY-MM-DD HH:mm:ss',
+          ).toISOString(),
+          end: moment(
+            `${item.registerDate} ${item.workship.endTime}`,
+            'YYYY-MM-DD HH:mm:ss',
+          ).toISOString(),
+        }));
+        setEvents(newEvents);
+      } catch (error) {
+        console.error('Failed to fetch stylist workships:', error);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    },
+    [dispatch],
+  );
+
+  const renderEventContent = (eventInfo) => (
+    <div title={eventInfo.event.title}>
+      <b>{eventInfo.timeText}</b>
+      <br />
+      <p>{eventInfo.event.title}</p>
+    </div>
+  );
+
   return (
     <EmployeeWorkScheduleStyled>
       <FullCalendar
@@ -20,12 +66,11 @@ export default function EmployeeWorkSchedule() {
         headerToolbar={{
           left: 'prev,next',
           center: 'title',
-          right: 'timeGridWeek,timeGridDay', // user can switch between the two
+          right: 'timeGridWeek,timeGridDay',
         }}
-        events={[
-          { title: 'event 1', end: '2024-10-20', start: '2024-10-18' },
-          { title: 'event 2', date: '2019-04-02' },
-        ]}
+        events={events}
+        datesSet={handleGetStylistWorkships} // Only relying on datesSet for data fetching
+        eventContent={renderEventContent}
       />
     </EmployeeWorkScheduleStyled>
   );

@@ -6,7 +6,5 @@
         public string? Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public Guid? TransactionId { get; set; }
-        public Guid? BookingDetailId { get; set; }
-        public Guid? PaymentDetailId { get; set; }
     }
 }

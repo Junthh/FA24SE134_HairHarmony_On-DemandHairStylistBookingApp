@@ -12,6 +12,7 @@ using hair_hamony.Business.Services.OwnerServices;
 using hair_hamony.Business.Services.PaymentDetailServices;
 using hair_hamony.Business.Services.PaymentServices;
 using hair_hamony.Business.Services.ServiceServices;
+using hair_hamony.Business.Services.StaffSalaryServices;
 using hair_hamony.Business.Services.StaffServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Services.StylistServices;
@@ -55,6 +56,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IPaymentDetailService, PaymentDetailService>();
             services.AddScoped<IOwnerService, OwnerService>();
             services.AddScoped<IStaffService, StaffService>();
+            services.AddScoped<IStaffSalaryService, StaffSalaryService>();
         }
     }
 }

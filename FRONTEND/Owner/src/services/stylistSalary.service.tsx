@@ -8,7 +8,7 @@ import {
   ListEmployeeSuccess,
 } from 'models/EmployeeResponse.model';
 
-class SalaryServices {
+class StylistSalaryServices {
   async list(params = {}) {
     try {
       const resData: ListEmployeeSuccess = await axios.get(
@@ -63,4 +63,4 @@ class SalaryServices {
   }
 }
 
-export const salaryServices = new SalaryServices();
+export const stylistSalaryServices = new StylistSalaryServices();

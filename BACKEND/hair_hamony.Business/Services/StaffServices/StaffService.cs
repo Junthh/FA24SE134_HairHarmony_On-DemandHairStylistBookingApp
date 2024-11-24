@@ -30,13 +30,22 @@ namespace hair_hamony.Business.Services.StaffServices
 
         public async Task<GetStaffModel> Create(CreateStaffModel requestBody)
         {
-            var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-            if (isExistedUsername)
+            var isUsernameExisted = await IsUsernameExisted(requestBody.Username);
+            if (isUsernameExisted)
             {
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tên đăng nhập đã tồn tại"
+                };
+            }
+            var isPhoneNumberExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+            if (isPhoneNumberExisted)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Số điện thoại đã tồn tại"
                 };
             }
 
@@ -47,8 +56,7 @@ namespace hair_hamony.Business.Services.StaffServices
                 var file = await _fileService.UploadFile(requestBody.Avatar);
                 staff.Avatar = file.Url;
             }
-            var defaultPassword = "123";
-            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
             staff.Password = passwordHashed;
             staff.Status = "Active";
             staff.CreatedDate = DateTime.Now;
@@ -104,13 +112,25 @@ namespace hair_hamony.Business.Services.StaffServices
             var staff = _mapper.Map<Staff>(await GetById(id));
             if (staff.Username != requestBody.Username)
             {
-                var isExistedUsername = await UsernameIsExisted(requestBody.Username);
-                if (isExistedUsername)
+                var isExisted = await IsUsernameExisted(requestBody.Username);
+                if (isExisted)
                 {
                     throw new CException
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
                         ErrorMessage = "Tên đăng nhập đã tồn tại"
+                    };
+                }
+            }
+            if (staff.PhoneNumber != requestBody.PhoneNumber)
+            {
+                var isExisted = await IsPhoneNumberExisted(requestBody.PhoneNumber);
+                if (isExisted)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Số điện thoại đã tồn tại"
                     };
                 }
             }
@@ -151,7 +171,14 @@ namespace hair_hamony.Business.Services.StaffServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Staff", id: staff.Id, email: "", phoneNumber: staff.PhoneNumber, username: staff.Username);
+            var token = _jwtHelper.GenerateJwtToken(
+                role: "Staff",
+                id: staff.Id,
+                email: "",
+                phoneNumber: staff.PhoneNumber,
+                username: staff.Username,
+                fullName: staff.FullName
+            );
             return (token, _mapper.Map<GetStaffModel>(staff));
         }
 
@@ -180,9 +207,16 @@ namespace hair_hamony.Business.Services.StaffServices
             return _mapper.Map<GetStaffModel>(staff);
         }
 
-        private async Task<bool> UsernameIsExisted(string username)
+        private async Task<bool> IsUsernameExisted(string username)
         {
             var isExisted = await _context.Staffs.Where(staff => staff.Username == username).AnyAsync();
+
+            return isExisted;
+        }
+
+        private async Task<bool> IsPhoneNumberExisted(string phoneNumber)
+        {
+            var isExisted = await _context.Staffs.Where(staff => staff.PhoneNumber == phoneNumber).AnyAsync();
 
             return isExisted;
         }

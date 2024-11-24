@@ -76,3 +76,31 @@ export const base64ToFile = (url, fileName) => {
         .then(res => res.blob())
         .then(blob => new File([blob], fileName, { type: mimeType }));
 }
+export const objectToFormData = (obj, form = new FormData(), namespace = '') => {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const formKey = namespace ? `${namespace}[${key}]` : key;
+
+      if (obj[key] instanceof File) {
+        form.append(formKey, obj[key]);
+      } else if (obj[key] instanceof Array) {
+        console.log(obj[key]);
+        obj[key].forEach((value, index) => {
+          const arrayKey = `${formKey}`;
+          console.log(arrayKey);
+          if (value instanceof Object) {
+            objectToFormData(value, form, arrayKey);
+          } else {
+            form.append(arrayKey, value);
+          }
+        });
+      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        objectToFormData(obj[key], form, formKey);
+      } else {
+        form.append(formKey, obj[key]);
+      }
+    }
+  }
+  return form;
+};
+      

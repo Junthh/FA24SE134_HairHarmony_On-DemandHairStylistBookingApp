@@ -35,7 +35,11 @@ import { selectRoles, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
-import { salaryServices } from 'services/salary.service';
+import { stylistSalaryServices } from 'services/stylistSalary.service';
+import { currencyFormat } from 'utils/helper';
+import DatePickerElement from 'components/Form/DatepickerElement';
+import moment from 'moment';
+import { current } from '@reduxjs/toolkit';
 export default function EmployeeSalary() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -55,6 +59,7 @@ export default function EmployeeSalary() {
   const formSearch = useForm<any>({
     defaultValues: {
       totalSalary: '',
+      monthYear: new Date(),
     },
     mode: 'onChange',
     resolver: yupResolver(schema),
@@ -87,13 +92,15 @@ export default function EmployeeSalary() {
     getSalaryList({
       size: paging.size,
       page: paging.page,
-      totalSalary: formSearch.getValues('totalSalary'),
+      month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+      year: moment(formSearch.getValues('monthYear')).year().toString(),
+      stylistName: formSearch.getValues('stylistName'),
     });
   }, [paging.size, paging.page]);
-  const getSalaryList = useCallback(({ size, page, totalSalary = '' }) => {
+  const getSalaryList = useCallback(({ size, page, stylistName = '', month = '', year = '' }) => {
     dispatch(setLoading(true));
-    salaryServices
-      .list({ pageSize: size, pageIndex: page + 1, totalSalary })
+    stylistSalaryServices
+      .list({ pageSize: size, pageIndex: page + 1, stylistName, month, year })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
           ...prev,
@@ -109,7 +116,9 @@ export default function EmployeeSalary() {
       if (data) {
         getSalaryList({
           ...paging,
-          totalSalary: data.totalSalary,
+          stylistName: data.stylistName,
+          month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+          year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
       }
     }),
@@ -136,18 +145,25 @@ export default function EmployeeSalary() {
     (row) => {
       dispatch(setLoading(true));
       setAnchorEl(null);
-      salaryServices
+      stylistSalaryServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
           showToast('success', res.msg);
           dispatch(setLoading(false));
+          getSalaryList({
+            size: paging.size,
+            page: paging.page,
+            month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+            year: moment(formSearch.getValues('monthYear')).year().toString(),
+            stylistName: formSearch.getValues('stylistName'),
+          });
         })
         .catch((err) => {
           showToast('error', err.message);
           dispatch(setLoading(false));
         });
     },
-    [selectedRow],
+    [selectedRow, paging.size, paging.page],
   );
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
@@ -166,12 +182,18 @@ export default function EmployeeSalary() {
     handleSubmit((data: any) => {
       if (selectedRow) {
         dispatch(setLoading(true));
-        salaryServices
+        stylistSalaryServices
           .update(data.id, data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getSalaryList({ size, page, totalSalary: formSearch.getValues('totalSalary') });
+            getSalaryList({
+              size,
+              page,
+              stylistName: formSearch.getValues('stylistName'),
+              month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+              year: moment(formSearch.getValues('monthYear')).year().toString(),
+            });
             handleClose();
             closeModal();
           })
@@ -181,12 +203,18 @@ export default function EmployeeSalary() {
           });
       } else {
         dispatch(setLoading(true));
-        salaryServices
+        stylistSalaryServices
           .create(data)
           .then((res) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getSalaryList({ size, page, totalSalary: formSearch.getValues('totalSalary') });
+            getSalaryList({
+              size,
+              page,
+              stylistName: formSearch.getValues('stylistName'),
+              month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+              year: moment(formSearch.getValues('monthYear')).year().toString(),
+            });
             handleClose();
             closeModal();
           })
@@ -285,12 +313,20 @@ export default function EmployeeSalary() {
         <BoxHeaderSearch>
           <Box className="search-left">
             <TextFieldElement
-              name="totalSalary"
+              name="stylistName"
               control={controlSearch}
-              placeholder="Search"
+              placeholder="Tìm theo tên stylist"
               InputProps={{
                 startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
               }}
+              //   onKeyUp={handleKeyup}
+            />
+            <DatePickerElement
+              name="monthYear"
+              control={controlSearch}
+              views={['month', 'year']}
+              inputFormat="MM/yyyy"
+              label={''}
               //   onKeyUp={handleKeyup}
             />
             <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={handleSearch}>
@@ -299,7 +335,7 @@ export default function EmployeeSalary() {
             <Box width={'50%'}></Box>
           </Box>
           <Box className="search-right">
-            <ButtonPrimary
+            {/* <ButtonPrimary
               severity="primary"
               padding={'9px 14px'}
               onClick={() => {
@@ -310,7 +346,7 @@ export default function EmployeeSalary() {
             >
               <ControlPointIcon />
               &nbsp; Thêm mới
-            </ButtonPrimary>
+            </ButtonPrimary> */}
           </Box>
         </BoxHeaderSearch>
       </FormContainer>
@@ -319,51 +355,48 @@ export default function EmployeeSalary() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="left">
-                Stylist name
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Username stylist
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Tên stylist
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tháng
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Năm
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng lượt booking
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng hoa hồng
-              </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Lương cơ bản
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng lương
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày tạo
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
-              <StyledTableRow key={row.index}>
-                <StyledTableCell component="th" scope="row">
-                  {row.stylistId}
+              <StyledTableRow key={index}>
+                <StyledTableCell align="center">{row.stylist.username}</StyledTableCell>
+                <StyledTableCell align="center">{row.stylist.fullName}</StyledTableCell>
+                <StyledTableCell align="center">{row.month}</StyledTableCell>
+                <StyledTableCell align="center">{row.year}</StyledTableCell>
+                <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {currencyFormat(row.totalCommission)}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.month}</StyledTableCell>
-                <StyledTableCell align="right">{row.year}</StyledTableCell>
-                <StyledTableCell align="right">{row.totalBooking}</StyledTableCell>
-                <StyledTableCell align="right">{row.totalCommission}</StyledTableCell>
-                <StyledTableCell align="right">{row.totalSalary}</StyledTableCell>
-                <StyledTableCell align="right">{row.createdDate}</StyledTableCell>
-                <StyledTableCell align="right">
-                  <IconButton
-                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                      handleClick(event, row)
-                    }
-                  >
-                    <ICONS.IconThreeDot />
-                  </IconButton>
+                <StyledTableCell align="center">
+                  {currencyFormat(row.stylist.salary)}
                 </StyledTableCell>
+                <StyledTableCell align="center">{currencyFormat(row.totalSalary)}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
