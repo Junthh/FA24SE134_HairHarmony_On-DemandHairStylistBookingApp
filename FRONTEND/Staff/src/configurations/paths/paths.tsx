@@ -17,7 +17,7 @@ export enum STAFF_PATH {
   BOOKING = '/booking',
   SCHEDULE_LIST = '/schedule-list',
   HISTORY = '/history',
-  STYLIST_STATUS = '/stylist-status',
+  STYLISTS = '/stylists',
   PROFILE = '/profile',
   CHANGE_PASSWORD = '/change-password',
 }

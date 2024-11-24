@@ -22,14 +22,14 @@ const routes = [
     name: 'Danh sách đặt lịch',
     icon: <CalendarMonthIcon />,
   },
+  // {
+  //   path: STAFF_PATH.HISTORY,
+  //   name: 'Lịch sử đặt lịch',
+  //   icon: <ICONS.IconHistory />,
+  // },
   {
-    path: STAFF_PATH.HISTORY,
-    name: 'Lịch sử đặt lịch',
-    icon: <ICONS.IconHistory />,
-  },
-  {
-    path: STAFF_PATH.STYLIST_STATUS,
-    name: 'Tình trạng stylist',
+    path: STAFF_PATH.STYLISTS,
+    name: 'Danh sách stylist',
     icon: <ICONS.IconStylistUser />,
   },
   {
