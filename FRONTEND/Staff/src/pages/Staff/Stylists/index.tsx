@@ -392,7 +392,7 @@ export default function Stylists() {
             {rows.map((row) => (
               <StyledTableRow key={row.username}>
                 <StyledTableCell component="th" scope="row">
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img
                       style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
                       src={row.avatar}
@@ -419,6 +419,7 @@ export default function Stylists() {
                   <IconButton
                     className="content"
                     onClick={() => {
+                      setSelectedRow(row);
                       handleEdit(row);
                     }}
                   >
