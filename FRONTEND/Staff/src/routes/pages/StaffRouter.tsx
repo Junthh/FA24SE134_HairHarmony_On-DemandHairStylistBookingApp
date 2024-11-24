@@ -9,7 +9,7 @@ const StaffPage = lazy(() => import('pages/Staff'));
 //
 const BookingHistory = lazy(() => import('pages/Staff/BookingHistory'));
 const ScheduleList = lazy(() => import('pages/Staff/ScheduleList'));
-const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
+const StylistStatus = lazy(() => import('pages/Staff/Stylists'));
 const Booking = lazy(() => import('pages/Staff/Booking'));
 const News = lazy(() => import('pages/Staff/News'));
 const ChangePassword = lazy(() => import('pages/Staff/ChangePassword'));
@@ -59,7 +59,7 @@ export const StaffRouter = {
       element: <BookingHistory />,
     },
     {
-      path: `${STAFF_PATH.STYLIST_STATUS}`,
+      path: `${STAFF_PATH.STYLISTS}`,
       element: <StylistStatus />,
     },
     {

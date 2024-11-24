@@ -49,6 +49,7 @@ import _ from 'lodash';
 import { systemConfigService } from 'services/systemConfigs.service';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import { DetailsOutlined, InfoOutlined } from '@mui/icons-material';
+import { formatDate, formatDateTime } from 'utils/datetime';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -150,6 +151,8 @@ export default function ScheduleList() {
         bookingDate: bookingDate,
         customerPhoneNumber: customerPhoneNumber,
         status,
+        sortKey: 'CreatedDate',
+        sortOrder: 'DESC',
       })
       .then((resultList: any) => {
         setPaging((prev) => ({
@@ -269,6 +272,9 @@ export default function ScheduleList() {
                 Trạng thái
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                Ngày tạo
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Hành động
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
@@ -281,7 +287,7 @@ export default function ScheduleList() {
                   {id + 1}
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.customer?.fullName}</StyledTableCell>
-                <StyledTableCell align="center">{row.bookingDate}</StyledTableCell>
+                <StyledTableCell align="center">{formatDate(row.bookingDate)}</StyledTableCell>
                 <StyledTableCell align="center">{row.customer?.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="center">
                   {row.bookingDetails[0]?.bookingSlotStylists[0]?.stylist?.fullName}
@@ -290,6 +296,7 @@ export default function ScheduleList() {
                 <StyledTableCell align="center">
                   <Chip label={STATUS_LABEL[row.status]} color={STATUS_COLOR[row.status]} />
                 </StyledTableCell>
+                <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Box
                     sx={{
