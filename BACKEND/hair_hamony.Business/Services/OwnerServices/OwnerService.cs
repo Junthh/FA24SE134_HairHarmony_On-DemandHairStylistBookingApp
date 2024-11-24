@@ -60,7 +60,7 @@ namespace hair_hamony.Business.Services.OwnerServices
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             owner.Password = passwordHashed;
             owner.Status = "Active";
-            owner.CreatedDate = DateTime.Now;
+            owner.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Owners.AddAsync(owner);
             await _context.SaveChangesAsync();

@@ -192,9 +192,6 @@ public partial class HairHamonyContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(100)
                 .IsUnicode(false);
-            entity.Property(e => e.Username)
-                .HasMaxLength(100)
-                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Feedback>(entity =>

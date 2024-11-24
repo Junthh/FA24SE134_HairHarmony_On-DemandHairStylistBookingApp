@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Payments;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.PaymentServices
         public async Task<GetPaymentModel> Create(CreatePaymentModel requestBody)
         {
             var payment = _mapper.Map<Payment>(requestBody);
-            payment.CreatedDate = DateTime.Now;
+            payment.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Payments.AddAsync(payment);
             await _context.SaveChangesAsync();

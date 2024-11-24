@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Transactions;
 using hair_hamony.Data.Entities;
@@ -24,8 +25,8 @@ namespace hair_hamony.Business.Services.TransactionServices
         public async Task<GetTransactionModel> Create(CreateTransactionModel requestBody)
         {
             var transaction = _mapper.Map<Transaction>(requestBody);
-            transaction.CreatedDate = DateTime.Now;
-            transaction.UpdatedDate = DateTime.Now;
+            transaction.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            transaction.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
             await _context.Transactions.AddAsync(transaction);
             await _context.SaveChangesAsync();
 
@@ -75,7 +76,7 @@ namespace hair_hamony.Business.Services.TransactionServices
             }
             var transaction = _mapper.Map<Transaction>(await GetById(id));
             _mapper.Map(requestBody, transaction);
-            transaction.UpdatedDate = DateTime.Now;
+            transaction.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.Transactions.Update(transaction);
             await _context.SaveChangesAsync();
