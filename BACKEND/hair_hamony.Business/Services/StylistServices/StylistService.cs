@@ -56,8 +56,7 @@ namespace hair_hamony.Business.Services.StylistServices
                 var file = await _fileService.UploadFile(requestBody.Avatar);
                 stylist.Avatar = file.Url;
             }
-            var defaultPassword = "123";
-            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
             stylist.Password = passwordHashed;
             stylist.Status = "Active";
             stylist.CreatedDate = DateTime.Now;

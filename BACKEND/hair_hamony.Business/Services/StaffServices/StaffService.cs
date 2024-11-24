@@ -56,8 +56,7 @@ namespace hair_hamony.Business.Services.StaffServices
                 var file = await _fileService.UploadFile(requestBody.Avatar);
                 staff.Avatar = file.Url;
             }
-            var defaultPassword = "123";
-            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
             staff.Password = passwordHashed;
             staff.Status = "Active";
             staff.CreatedDate = DateTime.Now;
