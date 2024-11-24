@@ -39,11 +39,19 @@ namespace hair_hamony.Business.Services.StaffSalaryServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailStaffSalaryModel>, int)> GetAll(PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel, SearchStaffSalaryModel searchStaffSalaryModel)
+        public async Task<(IList<GetDetailStaffSalaryModel>, int)> GetAll(
+            PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel,
+            SearchStaffSalaryModel searchStaffSalaryModel,
+            string? staffName)
         {
             var query = _context.StaffSalarys
                 .Include(staffSalary => staffSalary.Staff)
                 .AsQueryable();
+
+            if (staffName != null)
+            {
+                query = query.Where(staffSalary => staffSalary.Staff.FullName.Contains(staffName));
+            }
 
             query = query.GetWithSearch(searchStaffSalaryModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
