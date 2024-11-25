@@ -41,8 +41,9 @@ import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled'
 import { employeeStaffServices } from 'services/employee-staff.services';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import { currencyFormat, objectToFormData } from 'utils/helper';
+import { customerServices } from 'services/customer.services';
 
-export default function EmployeeStaffList() {
+export default function CustomerList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const roles = useSelector(selectRoles);
@@ -61,7 +62,7 @@ export default function EmployeeStaffList() {
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
     defaultValues: {
-      username: '',
+      fullName: '',
     },
     mode: 'onChange',
     resolver: yupResolver(schema),
@@ -73,7 +74,6 @@ export default function EmployeeStaffList() {
     username: '',
     phoneNumber: '',
     fullName: '',
-    password: '',
   };
   const formUser = useForm<any>({
     defaultValues,
@@ -93,13 +93,19 @@ export default function EmployeeStaffList() {
     getEmployeeList({
       size: paging.size,
       page: paging.page,
-      username: formSearch.getValues('username'),
+      fullName: formSearch.getValues('fullName'),
     });
   }, [paging.size, paging.page]);
-  const getEmployeeList = useCallback(({ size, page, username = '' }) => {
+  const getEmployeeList = useCallback(({ size, page, fullName = '' }) => {
     dispatch(setLoading(true));
-    employeeStaffServices
-      .list({ pageSize: size, pageIndex: page + 1, username })
+    customerServices
+      .list({
+        pageSize: size,
+        pageIndex: page + 1,
+        fullName,
+        sortKey: 'CreatedDate',
+        sortOrder: 'DESC',
+      })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
           ...prev,
@@ -117,7 +123,7 @@ export default function EmployeeStaffList() {
       if (data) {
         getEmployeeList({
           ...paging,
-          username: data.username,
+          fullName: data.fullName,
         });
       }
     }),
@@ -172,137 +178,15 @@ export default function EmployeeStaffList() {
   ) => {
     setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
-
-  const handleSave = useCallback(
-    handleSubmit((data: any) => {
-      const id = data.id;
-      data = objectToFormData(data);
-      if (selectedRow) {
-        dispatch(setLoading(true));
-        employeeStaffServices
-          .update(id, data)
-          .then((res) => {
-            showToast('success', res.msg);
-            const { size, page } = paging;
-            getEmployeeList({ size, page, username: formSearch.getValues('username') });
-            handleClose();
-            closeModal();
-          })
-          .catch((err) => {
-            showToast('error', err.msg || err.message);
-          })
-          .finally(() => {
-            dispatch(setLoading(false));
-          });
-      } else {
-        dispatch(setLoading(true));
-        employeeStaffServices
-          .create(data)
-          .then((res) => {
-            showToast('success', res.msg);
-            const { size, page } = paging;
-            getEmployeeList({ size, page, username: formSearch.getValues('username') });
-            handleClose();
-            closeModal();
-          })
-          .catch((err) => {
-            showToast('error', err.msg || err.message);
-          })
-          .finally(() => {
-            dispatch(setLoading(false));
-          });
-      }
-    }),
-    [selectedRow, paging],
-  );
-  const renderDialog = useMemo(() => {
-    return (
-      <Dialog
-        open={isOpen}
-        onClose={() => {
-          closeModal();
-        }}
-        width="100%"
-        title={selectedRow ? 'Edit' : 'Create'}
-        content={
-          <FormContainer formContext={formUser}>
-            <Box
-              display={'flex'}
-              justifyContent={'center'}
-              flexDirection={'column'}
-              gap={2}
-              padding={'0 20px 20px 20px'}
-              width={'550px'}
-            >
-              <AvatarUpload src={image} name="avatar" control={control} />
-              <TextFieldElement
-                name="username"
-                control={control}
-                placeholder="Nhập username"
-                label={'Username'}
-                disabled={!!selectedRow?.username}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="fullName"
-                control={control}
-                placeholder="Nhập Họ và tên"
-                label={'Họ và tên'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="phoneNumber"
-                control={control}
-                type="number"
-                placeholder="Nhập số điện thoại"
-                label={'Số điện thoại'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="salary"
-                control={control}
-                type="number"
-                placeholder="Nhập lương"
-                label={'Lương'}
-                //   onKeyUp={handleKeyup}
-              />
-              {!selectedRow && (
-                <TextFieldElement
-                  name="password"
-                  control={control}
-                  type="password"
-                  placeholder="Nhập số mật khẩu"
-                  label={'Mật khẩu'}
-                  //   onKeyUp={handleKeyup}
-                />
-              )}
-              <SelectElement
-                control={control}
-                name="status"
-                options={STATUS_USER}
-                placeholder="Chọn trạng thái"
-                label={'Trạng thái'}
-              ></SelectElement>
-              <Box display={'flex'} justifyContent={'flex-end'}>
-                <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
-                  Lưu
-                </ButtonPrimary>
-              </Box>
-            </Box>
-          </FormContainer>
-        }
-      ></Dialog>
-    );
-  }, [isOpen]);
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
       <FormContainer formContext={formSearch}>
         <BoxHeaderSearch>
-          <Box className="search-left">
+          <Box className="search-left" sx={{ minWidth: 200, maxWidth: 400 }}>
             <TextFieldElement
-              name="username"
+              name="fullName"
               control={controlSearch}
-              placeholder="Tìm theo username"
+              placeholder="Tìm theo họ và tên"
               InputProps={{
                 startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
               }}
@@ -310,22 +194,6 @@ export default function EmployeeStaffList() {
             />
             <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={handleSearch}>
               <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
-            </ButtonPrimary>
-            <Box width={'50%'}></Box>
-          </Box>
-          <Box className="search-right">
-            <ButtonPrimary
-              severity="primary"
-              padding={'9px 14px'}
-              onClick={() => {
-                setSelectedRow(null);
-                formUser.reset(defaultValues);
-                setImage('');
-                openModal();
-              }}
-            >
-              <ControlPointIcon />
-              &nbsp; Thêm mới
             </ButtonPrimary>
           </Box>
         </BoxHeaderSearch>
@@ -345,7 +213,7 @@ export default function EmployeeStaffList() {
                 Số điện thoại
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Lương
+                Điểm thưởng
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Trạng thái
@@ -366,8 +234,8 @@ export default function EmployeeStaffList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={row.username}>
+            {rows.map((row, index) => (
+              <StyledTableRow key={index}>
                 <StyledTableCell align="center">
                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     {row.avatar && (
@@ -384,19 +252,9 @@ export default function EmployeeStaffList() {
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.fullName}</StyledTableCell>
                 <StyledTableCell align="center">{row.phoneNumber}</StyledTableCell>
-                <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell>
+                <StyledTableCell align="center">{row.loyaltyPoints}</StyledTableCell>
                 <StyledTableCell align="center">{row.status}</StyledTableCell>
                 <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <IconButton
-                    onClick={() => {
-                      setSelectedRow(row);
-                      handleEdit(row);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
@@ -415,7 +273,6 @@ export default function EmployeeStaffList() {
           showLastButton
         />
       </Stack>
-      {renderDialog}
     </Box>
   );
 }

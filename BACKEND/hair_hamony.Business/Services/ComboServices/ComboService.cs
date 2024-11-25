@@ -4,6 +4,7 @@ using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.File;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Combos;
 using hair_hamony.Data.Entities;
@@ -30,8 +31,8 @@ namespace hair_hamony.Business.Services.ComboServices
             try
             {
                 var combo = _mapper.Map<Combo>(requestBody);
-                combo.CreatedDate = DateTime.Now;
-                combo.UpdatedDate = DateTime.Now;
+                combo.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+                combo.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
                 if (requestBody.Image != null)
                 {
                     var file = await _fileService.UploadFile(requestBody.Image);
@@ -49,8 +50,8 @@ namespace hair_hamony.Business.Services.ComboServices
                         {
                             ComboId = combo.Id,
                             ServiceId = id,
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                            UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                         });
                     }
                 }
@@ -120,7 +121,7 @@ namespace hair_hamony.Business.Services.ComboServices
                 var combo = _mapper.Map<Combo>(await GetById(id));
                 var oldImage = combo.Image;
                 _mapper.Map(requestBody, combo);
-                combo.UpdatedDate = DateTime.Now;
+                combo.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
                 if (requestBody.Image != null)
                 {
                     var file = await _fileService.UploadFile(requestBody.Image);
@@ -143,8 +144,8 @@ namespace hair_hamony.Business.Services.ComboServices
                         {
                             ComboId = combo.Id,
                             ServiceId = _id,
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                            UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                         });
                     }
                 }

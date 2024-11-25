@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.TransactionDetails;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.TransactionDetailServices
         public async Task<GetTransactionDetailModel> Create(CreateTransactionDetailModel requestBody)
         {
             var transactionDetail = _mapper.Map<TransactionDetail>(requestBody);
-            transactionDetail.CreatedDate = DateTime.Now;
+            transactionDetail.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.TransactionDetails.AddAsync(transactionDetail);
             await _context.SaveChangesAsync();

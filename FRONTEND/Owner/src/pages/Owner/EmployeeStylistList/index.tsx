@@ -35,12 +35,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectRoles, setLoading } from 'redux/Reducer';
-import { formatDate } from 'utils/datetime';
+import { formatDate, formatDateTime } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
 import { employeeStylistServices } from 'services/employee-stylist.services';
-import { objectToFormData } from 'utils/helper';
+import { currencyFormat, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import CurrencyFieldElement from 'components/Form/CurrencyFieldElement/CurrencyFieldElement';
@@ -76,6 +76,7 @@ export default function EmployeeStylistList() {
     username: '',
     phoneNumber: '',
     fullName: '',
+    password: '',
   };
   const formUser = useForm<any>({
     defaultValues,
@@ -101,7 +102,13 @@ export default function EmployeeStylistList() {
   const getEmployeeList = useCallback(({ size, page, username = '' }) => {
     dispatch(setLoading(true));
     employeeStylistServices
-      .list({ pageSize: size, pageIndex: page + 1, username })
+      .list({
+        pageSize: size,
+        pageIndex: page + 1,
+        username,
+        sortKey: 'CreatedDate',
+        sortOrder: 'DESC',
+      })
       .then((resultList: ListEmployeeSuccess) => {
         setPaging((prev) => ({
           ...prev,
@@ -252,14 +259,6 @@ export default function EmployeeStylistList() {
                 label={'Họ và tên'}
                 //   onKeyUp={handleKeyup}
               />
-              <TextAreaElement
-                name="description"
-                control={control}
-                type="text"
-                placeholder="Nhập description"
-                label={'Description'}
-                //   onKeyUp={handleKeyup}
-              />
               <TextFieldElement
                 name="phoneNumber"
                 control={control}
@@ -294,9 +293,19 @@ export default function EmployeeStylistList() {
                 name="salary"
                 control={control}
                 placeholder="Nhập lương"
-                label={'Số lương'}
+                label={'Lương'}
                 //   onKeyUp={handleKeyup}
               />
+              {!selectedRow && (
+                <TextFieldElement
+                  name="password"
+                  control={control}
+                  type="password"
+                  placeholder="Nhập số mật khẩu"
+                  label={'Mật khẩu'}
+                  //   onKeyUp={handleKeyup}
+                />
+              )}
               <SelectElement
                 control={control}
                 name="status"
@@ -323,7 +332,7 @@ export default function EmployeeStylistList() {
             <TextFieldElement
               name="username"
               control={controlSearch}
-              placeholder="Search"
+              placeholder="Tìm theo username"
               InputProps={{
                 startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
               }}
@@ -356,38 +365,34 @@ export default function EmployeeStylistList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Username
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="left">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Họ và tên
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Số điện thoại
-              </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white', minWidth: 200 }} align="left">
-                Mô tả
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Level
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Experience
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 KPI
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Lương
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Rating
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Trạng thái
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Ngày tạo
               </StyledTableCell>
               <StyledTableCell
@@ -403,52 +408,42 @@ export default function EmployeeStylistList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={row.username}>
-                <StyledTableCell component="th" scope="row">
-                  <img
-                    style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
-                    src={row.avatar}
-                    alt=""
-                  />
+            {rows.map((row, index) => (
+              <StyledTableRow key={index}>
+                <StyledTableCell align="center">
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {row.avatar && (
+                      <img
+                        style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                        src={row.avatar}
+                        alt=""
+                      />
+                    )}
+                    <Typography sx={{ ml: 2 }} variant="body2">
+                      {row.username}
+                    </Typography>
+                  </Box>
                 </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
-                  {row.username}
-                </StyledTableCell>
-                <StyledTableCell align="right" style={{ color: 'white', minWidth: 120 }}>
-                  {row.fullName}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
-                <StyledTableCell align="right" style={{ color: 'white', minWidth: 200 }}>
-                  {row.description}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.level}</StyledTableCell>
-                <StyledTableCell align="right">{row.experience}</StyledTableCell>
-                <StyledTableCell align="right">{row.kpi}</StyledTableCell>
-                <StyledTableCell align="right">{row.salary}</StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">{row.fullName}</StyledTableCell>
+                <StyledTableCell align="center">{row.phoneNumber}</StyledTableCell>
+                <StyledTableCell align="center">{row.level}</StyledTableCell>
+                <StyledTableCell align="center">{row.experience}</StyledTableCell>
+                <StyledTableCell align="center">{row.kpi}</StyledTableCell>
+                <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell>
+                <StyledTableCell align="center">
                   <Rating readOnly precision={0.5} name="read-only" value={row.rating} />
                 </StyledTableCell>
 
-                <StyledTableCell align="right">{row.status}</StyledTableCell>
-                <StyledTableCell align="right" style={{ color: 'white', minWidth: 200 }}>
-                  {formatDate(row.createdDate)}
-                </StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  style={{
-                    position: 'sticky',
-                    right: 0,
-                    background: '#fff',
-                    zIndex: 1,
-                  }}
-                >
+                <StyledTableCell align="center">{row.status}</StyledTableCell>
+                <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
+                <StyledTableCell>
                   <IconButton
-                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                      handleClick(event, row)
-                    }
+                    onClick={() => {
+                      setSelectedRow(row);
+                      handleEdit(row);
+                    }}
                   >
-                    <ICONS.IconThreeDot />
+                    <EditIcon />
                   </IconButton>
                 </StyledTableCell>
               </StyledTableRow>

@@ -21,6 +21,7 @@ import * as colors from 'constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCredentialInfo, setLoading } from 'redux/Reducer';
 import { feedbackService } from 'services/feedback.service';
+import { formatDateTime } from 'utils/datetime';
 const FeedbackStyled = styled(Box)({
   padding: '20px 40px',
   '& .card-feedback': {
@@ -56,7 +57,6 @@ const FeedbackStyled = styled(Box)({
     },
   },
   '& .card-right_bottom': {
-    marginTop: 40,
     boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
     padding: 20,
     borderRadius: '15px',
@@ -80,6 +80,7 @@ export default function Feedback() {
   });
   const credentialInfo = useSelector(selectCredentialInfo);
   const [rows, setRows] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
     defaultValues: {},
@@ -93,6 +94,14 @@ export default function Feedback() {
     getValues,
     formState: { errors },
   } = formSearch;
+  const getAllFeedbackByStylist = useCallback(
+    ({ stylistId }: any) => {
+      feedbackService.list({ stylistId }).then((resultList: any) => {
+        setFeedbacks(resultList.data);
+      });
+    },
+    [credentialInfo.Id],
+  );
   const getFeedbackByStylist = useCallback(
     ({ size, page, stylistId }: any) => {
       dispatch(setLoading(true));
@@ -118,9 +127,28 @@ export default function Feedback() {
       });
     }
   }, [getFeedbackByStylist]);
+
+  useEffect(() => {
+    if (credentialInfo.Id) {
+      getAllFeedbackByStylist({ stylistId: credentialInfo.Id });
+    }
+  }, []);
+
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPaging((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
+  };
+
   return (
     <FeedbackStyled>
-      <FormContainer formContext={formSearch}>
+      {/* <FormContainer formContext={formSearch}>
         <BoxHeaderSearch>
           <Box className="search-left">
             <TextFieldElement
@@ -130,7 +158,6 @@ export default function Feedback() {
               InputProps={{
                 startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
               }}
-              //   onKeyUp={handleKeyup}
             />
             <ButtonPrimary
               severity="primary"
@@ -143,214 +170,164 @@ export default function Feedback() {
           </Box>
           <Box className="search-right"></Box>
         </BoxHeaderSearch>
-      </FormContainer>
-      <Box height={40}></Box>
+      </FormContainer> */}
+      {/* <Box height={40}></Box> */}
       <Grid container spacing={2}>
         <Grid item xs={8}>
-          <Box className="card-feedback">
-            <Avatar></Avatar>
-            <Box className="content">
-              <Typography variant="h4" fontWeight={700}>
-                Tom Cruise
-              </Typography>
-              <Typography variant="body2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit, itaque unde ea quia
-                voluptate omnis ex! Illum reiciendis, illo velit, tempore debitis explicabo iusto,
-                nisi laudantium accusamus ad delectus minus.
-              </Typography>
-            </Box>
-            <Typography variant="small1" color={colors.grey2}>
-              May 26, 2023
-            </Typography>
-            <Box margin={'auto'}>
-              <ButtonPrimary severity="cancel" padding={'10px 20px'}>
-                Chi tiết
-              </ButtonPrimary>
-            </Box>
-          </Box>
-          <Box className="card-feedback">
-            <Avatar></Avatar>
-            <Box className="content">
-              <Typography variant="h4" fontWeight={700}>
-                Tom Cruise
-              </Typography>
-              <Typography variant="body2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit, itaque unde ea quia
-                voluptate omnis ex! Illum reiciendis, illo velit, tempore debitis explicabo iusto,
-                nisi laudantium accusamus ad delectus minus.
+          {rows.map((row, index) => (
+            <Box className="card-feedback" key={index}>
+              <Avatar src={row.booking.customer.avatar} />
+              <Box className="content">
+                <Typography variant="h4" fontWeight={700}>
+                  {row.booking.customer.fullName}
+                </Typography>
+                <Typography variant="body2">{row.description}</Typography>
+              </Box>
+              <Typography variant="small1" color={colors.grey2}>
+                {formatDateTime(row.createdDate)}
               </Typography>
             </Box>
-            <Typography variant="small1" color={colors.grey2}>
-              May 26, 2023
-            </Typography>
-            <Box margin={'auto'}>
-              <ButtonPrimary severity="cancel" padding={'10px 20px'}>
-                Chi tiết
-              </ButtonPrimary>
-            </Box>
-          </Box>
-          <Box className="card-feedback">
-            <Avatar></Avatar>
-            <Box className="content">
-              <Typography variant="h4" fontWeight={700}>
-                Tom Cruise
-              </Typography>
-              <Typography variant="body2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit, itaque unde ea quia
-                voluptate omnis ex! Illum reiciendis, illo velit, tempore debitis explicabo iusto,
-                nisi laudantium accusamus ad delectus minus.
-              </Typography>
-            </Box>
-            <Typography variant="small1" color={colors.grey2}>
-              May 26, 2023
-            </Typography>
-            <Box margin={'auto'}>
-              <ButtonPrimary severity="cancel" padding={'10px 20px'}>
-                Chi tiết
-              </ButtonPrimary>
-            </Box>
-          </Box>
-          <Box className="card-feedback">
-            <Avatar></Avatar>
-            <Box className="content">
-              <Typography variant="h4" fontWeight={700}>
-                Tom Cruise
-              </Typography>
-              <Typography variant="body2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit, itaque unde ea quia
-                voluptate omnis ex! Illum reiciendis, illo velit, tempore debitis explicabo iusto,
-                nisi laudantium accusamus ad delectus minus.
-              </Typography>
-            </Box>
-            <Typography variant="small1" color={colors.grey2}>
-              May 26, 2023
-            </Typography>
-            <Box margin={'auto'}>
-              <ButtonPrimary severity="cancel" padding={'10px 20px'}>
-                Chi tiết
-              </ButtonPrimary>
-            </Box>
-          </Box>
-          <Box className="card-feedback">
-            <Avatar></Avatar>
-            <Box className="content">
-              <Typography variant="h4" fontWeight={700}>
-                Tom Cruise
-              </Typography>
-              <Typography variant="body2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit, itaque unde ea quia
-                voluptate omnis ex! Illum reiciendis, illo velit, tempore debitis explicabo iusto,
-                nisi laudantium accusamus ad delectus minus.
-              </Typography>
-            </Box>
-            <Typography variant="small1" color={colors.grey2}>
-              May 26, 2023
-            </Typography>
-            <Box margin={'auto'}>
-              <ButtonPrimary severity="cancel" padding={'10px 20px'}>
-                Chi tiết
-              </ButtonPrimary>
-            </Box>
-          </Box>
+          ))}
           <Box>
-            {' '}
             <TablePagination
               component="div"
-              count={100}
-              page={1}
-              onPageChange={() => {}}
-              rowsPerPage={10}
-              onRowsPerPageChange={() => {}}
+              count={paging.total}
+              page={paging.page}
+              rowsPerPage={paging.size}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              showFirstButton
+              showLastButton
             />
           </Box>
         </Grid>
 
-        <Grid item xs={4} display={'flex'} flexDirection={'column'} gap={20}>
-          <Box>
-            <Box className="card-right_header">
-              <Box className="card-right_header-top">
-                <Box className="card-right_header-top_content">
-                  <Typography variant="label1">Average Time</Typography>
-                  <Typography variant="body1">5.32%</Typography>
+        {feedbacks && (
+          <Grid item xs={4} display={'flex'} flexDirection={'column'} gap={20}>
+            <Box>
+              <Box className="card-right_bottom">
+                <Typography variant="h3" fontWeight={700}>
+                  Đánh giá trung bình
+                </Typography>
+                <Typography variant="body2" color={colors.grey2}>
+                  {feedbacks.length} đánh giá
+                </Typography>
+                <Divider variant="fullWidth"></Divider>
+                <Box height={10}></Box>
+                <Box>
+                  <Box display={'flex'} justifyContent={'space-between'}>
+                    <Typography variant="body2" fontWeight={600}>
+                      <BoxDot />5 sao
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey2}>
+                      {(feedbacks.filter((feedback) => feedback.rating === 5).length /
+                        feedbacks.length) *
+                        100}
+                      %
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      (feedbacks.filter((feedback) => feedback.rating === 5).length /
+                        feedbacks.length) *
+                      100
+                    }
+                  />
                 </Box>
-                <Divider
-                  sx={{ borderColor: colors.white, height: 50 }}
-                  variant="fullWidth"
-                  orientation="vertical"
-                ></Divider>
-                <Box className="card-right_header-top_content">
-                  <Typography variant="label1">Completion Rate</Typography>
-                  <Typography variant="body1">84.32%</Typography>
+                <Box height={10}></Box>
+                <Box>
+                  <Box display={'flex'} justifyContent={'space-between'}>
+                    <Typography variant="body2" fontWeight={600}>
+                      <BoxDot />4 sao
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey2}>
+                      {(feedbacks.filter((feedback) => feedback.rating === 4).length /
+                        feedbacks.length) *
+                        100}
+                      %
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      (feedbacks.filter((feedback) => feedback.rating === 4).length /
+                        feedbacks.length) *
+                      100
+                    }
+                  />
                 </Box>
-                <Divider
-                  sx={{ borderColor: colors.white, height: 50 }}
-                  variant="fullWidth"
-                  orientation="vertical"
-                ></Divider>
-                <Box className="card-right_header-top_content">
-                  <Typography variant="label1">Average Time</Typography>
-                  <Typography variant="body1">5.32%</Typography>
+                <Box height={10}></Box>
+                <Box>
+                  <Box display={'flex'} justifyContent={'space-between'}>
+                    <Typography variant="body2" fontWeight={600}>
+                      <BoxDot />3 sao
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey2}>
+                      {(feedbacks.filter((feedback) => feedback.rating === 3).length /
+                        feedbacks.length) *
+                        100}
+                      %
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      (feedbacks.filter((feedback) => feedback.rating === 3).length /
+                        feedbacks.length) *
+                      100
+                    }
+                  />
                 </Box>
+                <Box height={10}></Box>
+                <Box>
+                  <Box display={'flex'} justifyContent={'space-between'}>
+                    <Typography variant="body2" fontWeight={600}>
+                      <BoxDot />2 sao
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey2}>
+                      {(feedbacks.filter((feedback) => feedback.rating === 2).length /
+                        feedbacks.length) *
+                        100}
+                      %
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      (feedbacks.filter((feedback) => feedback.rating === 2).length /
+                        feedbacks.length) *
+                      100
+                    }
+                  />
+                </Box>
+                <Box height={10}></Box>
+                <Box>
+                  <Box display={'flex'} justifyContent={'space-between'}>
+                    <Typography variant="body2" fontWeight={600}>
+                      <BoxDot />1 sao
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey2}>
+                      {(feedbacks.filter((feedback) => feedback.rating === 1).length /
+                        feedbacks.length) *
+                        100}
+                      %
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      (feedbacks.filter((feedback) => feedback.rating === 1).length /
+                        feedbacks.length) *
+                      100
+                    }
+                  />
+                </Box>
+                <Box height={10}></Box>
               </Box>
-              <Box height={25}></Box>
-              <Typography variant="h1" fontWeight={700}>
-                94%
-                <span style={{ fontWeight: 400, fontSize: 24 }}> Tổng đánh giá</span>
-              </Typography>
-              <Box height={25}></Box>
             </Box>
-            <Box className="card-right_bottom">
-              <Typography variant="h3" fontWeight={700}>
-                {' '}
-                Average Rating
-              </Typography>
-              <Typography variant="body2" color={colors.grey2}>
-                40 answers
-              </Typography>
-              <Divider variant="fullWidth"></Divider>
-              <Box height={10}></Box>
-              <Box>
-                <Box display={'flex'} justifyContent={'space-between'}>
-                  <Typography variant="body2" fontWeight={600}>
-                    <BoxDot />
-                    Bad
-                  </Typography>
-                  <Typography variant="body2" color={colors.grey2}>
-                    40%
-                  </Typography>
-                </Box>
-                <LinearProgress variant="determinate" value={40} />
-              </Box>
-              <Box height={10}></Box>
-              <Box>
-                <Box display={'flex'} justifyContent={'space-between'}>
-                  <Typography variant="body2" fontWeight={600}>
-                    <BoxDot />
-                    Bad
-                  </Typography>
-                  <Typography variant="body2" color={colors.grey2}>
-                    40%
-                  </Typography>
-                </Box>
-                <LinearProgress variant="determinate" value={40} />
-              </Box>
-              <Box height={10}></Box>
-              <Box>
-                <Box display={'flex'} justifyContent={'space-between'}>
-                  <Typography variant="body2" fontWeight={600}>
-                    <BoxDot />
-                    Bad
-                  </Typography>
-                  <Typography variant="body2" color={colors.grey2}>
-                    40%
-                  </Typography>
-                </Box>
-                <LinearProgress variant="determinate" value={40} />
-              </Box>
-              <Box height={10}></Box>
-            </Box>
-          </Box>
-        </Grid>
+          </Grid>
+        )}
       </Grid>
     </FeedbackStyled>
   );
