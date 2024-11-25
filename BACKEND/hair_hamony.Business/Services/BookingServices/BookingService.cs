@@ -230,13 +230,12 @@ namespace hair_hamony.Business.Services.BookingServices
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7()
                         });
 
-                        int countServiceDuration = (int)Math.Ceiling(service.Duration!.Value / (decimal)60);
-                        countTimeSlot += countServiceDuration;
+                        int countServiceDuration = countTimeSlot + (int)Math.Ceiling(service.Duration!.Value / (decimal)60);
 
-                        for (int i = 0; i < countServiceDuration; i++)
+                        for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i + 1));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
@@ -268,6 +267,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             TransactionId = transactionId,
                         });
+
+                        countTimeSlot += countServiceDuration;
                     }
                 }
 
@@ -290,13 +291,12 @@ namespace hair_hamony.Business.Services.BookingServices
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7()
                         });
 
-                        int countServiceDuration = (int)Math.Ceiling(combo.Duration!.Value / (decimal)60);
-                        countTimeSlot += countServiceDuration;
+                        int countServiceDuration = countTimeSlot + (int)Math.Ceiling(combo.Duration!.Value / (decimal)60);
 
-                        for (int i = 0; i < countServiceDuration; i++)
+                        for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i + 1));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
@@ -328,6 +328,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             TransactionId = transactionId,
                         });
+
+                        countTimeSlot += countServiceDuration;
                     }
                 }
 
