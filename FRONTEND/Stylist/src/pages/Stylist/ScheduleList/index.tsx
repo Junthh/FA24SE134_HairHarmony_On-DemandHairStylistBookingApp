@@ -3,8 +3,8 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { Box } from '@mui/material';
 import styled from '@emotion/styled';
-import { useDispatch } from 'react-redux';
-import { setLoading } from 'redux/Reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCredentialInfo, setLoading } from 'redux/Reducer';
 import moment from 'moment';
 import { scheduleStylistServices } from 'services/schedule-stylist.services';
 
@@ -22,6 +22,7 @@ const EmployeeWorkScheduleStyled = styled(Box)({
 export default function ScheduleList() {
   const [events, setEvents] = useState([]);
   const dispatch = useDispatch();
+  const credentialInfo = useSelector(selectCredentialInfo);
 
   const handleGetStylistWorkships = useCallback(
     async (dateInfo) => {
@@ -30,6 +31,7 @@ export default function ScheduleList() {
         const params = {
           startDate: moment(dateInfo.start).format('YYYY/MM/DD'),
           endDate: moment(dateInfo.end).format('YYYY/MM/DD'),
+          stylistId: credentialInfo.Id,
         };
 
         const res = (await scheduleStylistServices.list(params)) as any;
