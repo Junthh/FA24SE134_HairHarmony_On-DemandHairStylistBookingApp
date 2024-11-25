@@ -11,6 +11,7 @@ import { stylistServices } from 'services/stylist.service';
 import { useDispatch } from 'react-redux';
 import { setLoading } from 'redux/Reducer';
 import { showToast } from 'components/Common/Toast';
+import DOMPurify from 'dompurify';
 
 const BoxImageLeft = styled(Box)({
   marginTop: '40px',
@@ -152,7 +153,11 @@ export default function StylistDetails() {
           Mô tả
         </Typography>
         <Box width={'60%'}>
-          <Typography variant="body1">{stylist.description}</Typography>
+          <Box className="description">
+            <div
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(stylist?.description || '') }}
+            />
+          </Box>
         </Box>
         {/*  */}
         <Box height={20}></Box>

@@ -18,6 +18,7 @@ import { STAFF_PATH, STYLIST_PATH, USER_PATH } from 'configurations/paths/paths'
 import { showToast } from 'components/Common/Toast';
 import { objectToFormData } from '../../../utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
+import EditorElement from 'components/Form/EditorElement/EditorElement';
 const ProfileStyled = styled(Box)({
   marginTop: '40px',
   margin: '40px auto',
@@ -151,12 +152,12 @@ export default function Profile() {
             placeholder="Nhập họ và tên"
             label={'Họ và tên'}
           />
-          <TextAreaElement
+          <EditorElement
+            placeholder="Nhập mô tả bản thân"
+            label="Mô tả về bản thân"
             name="description"
             control={control}
-            placeholder="Nhập mô tả bản thân"
-            label={'Mô tả về bản thân'}
-          />
+          ></EditorElement>
           <TextFieldElement
             name="experience"
             type="number"
