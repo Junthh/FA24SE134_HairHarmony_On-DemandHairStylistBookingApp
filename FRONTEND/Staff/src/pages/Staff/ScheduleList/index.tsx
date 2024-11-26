@@ -67,10 +67,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const STATUS_LABEL = {
-  Initialize: 'Đã tạo',
+  Initialize: 'Đã đặt lịch',
   Confirmed: 'Đã xác nhận',
   Processing: 'Bắt đầu thực hiện',
   Completed: 'Hoàn thành',
+  Finished: 'Kết thúc',
   Cancel: 'Huỷ',
 };
 
@@ -79,6 +80,7 @@ const STATUS_COLOR = {
   Confirmed: 'warning',
   Processing: 'info',
   Completed: 'default',
+  Finished: 'primary',
   Cancel: 'error',
 };
 
@@ -241,10 +243,11 @@ export default function ScheduleList() {
           }}
         >
           <Tab value="" label="Tất cả" />
-          <Tab value="Initialize" label="Đã tạo" />
+          <Tab value="Initialize" label="Đã đặt lịch" />
           <Tab value="Confirmed" label="Đã xác nhận" />
           <Tab value="Processing" label="Bắt đầu thực hiện" />
           <Tab value="Completed" label="Hoàn thành" />
+          <Tab value="Finished" label="Kết thúc" />
           <Tab value="Cancel" label="Huỷ" />
         </Tabs>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
