@@ -79,11 +79,12 @@ namespace hair_hamony.Business.Services.BookingServices
 
             if (stylistId != null)
             {
-                query = from booking in query
-                        join bookingDetail in _context.BookingDetails on booking.Id equals bookingDetail.BookingId
-                        join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
-                        where bookingSlotStylist.StylistId == stylistId
-                        select booking;
+                query = query.Where(booking =>
+                    booking.BookingDetails.Any(bookingDetail =>
+                        bookingDetail.BookingSlotStylists.Any(bookingSlotStylist =>
+                            bookingSlotStylist.Stylist.Id == stylistId)
+                        )
+                    );
             }
 
             query = query.GetWithSearch(searchBookingModel);
