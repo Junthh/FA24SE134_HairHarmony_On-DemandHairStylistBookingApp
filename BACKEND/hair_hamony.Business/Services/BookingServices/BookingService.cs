@@ -50,9 +50,11 @@ namespace hair_hamony.Business.Services.BookingServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel,
+        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(
+            PagingParam<BookingEnum.BookingSort> paginationModel,
             SearchBookingModel searchBookingModel,
-            string? customerPhoneNumber)
+            string? customerPhoneNumber,
+            Guid? stylistId)
         {
             var query = _context.Bookings
                 .Include(booking => booking.Customer)
@@ -73,6 +75,15 @@ namespace hair_hamony.Business.Services.BookingServices
             if (customerPhoneNumber != null)
             {
                 query = query.Where(booking => booking.Customer!.PhoneNumber!.Contains(customerPhoneNumber));
+            }
+
+            if (stylistId != null)
+            {
+                query = from booking in query
+                        join bookingDetail in _context.BookingDetails on booking.Id equals bookingDetail.BookingId
+                        join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
+                        where bookingSlotStylist.StylistId == stylistId
+                        select booking;
             }
 
             query = query.GetWithSearch(searchBookingModel);
