@@ -62,7 +62,7 @@ function Login() {
       navigate(STYLIST_PATH.TIMEKEEPING);
     } catch (error) {
       dispatch(setLoading(false));
-      showToast('error', handleError(error.message || error));
+      showToast('error', handleError(error.msg || error));
     }
   });
 
