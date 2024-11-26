@@ -7,6 +7,7 @@ using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.Services.FeedbackServices;
 using hair_hamony.Business.Services.File;
+using hair_hamony.Business.Services.MomoServices;
 using hair_hamony.Business.Services.NewsServices;
 using hair_hamony.Business.Services.OwnerServices;
 using hair_hamony.Business.Services.PaymentDetailServices;
@@ -32,6 +33,7 @@ namespace hair_hamony.Business.Services
         {
             services.AddScoped<IJwtHelper, JwtHelper>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<HttpClient, HttpClient>();
 
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingDetailService, BookingDetailService>();
@@ -55,6 +57,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IOwnerService, OwnerService>();
             services.AddScoped<IStaffService, StaffService>();
             services.AddScoped<IStaffSalaryService, StaffSalaryService>();
+            services.AddScoped<IMomoService, MomoService>();
         }
     }
 }
