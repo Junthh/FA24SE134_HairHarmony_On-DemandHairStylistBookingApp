@@ -108,7 +108,7 @@ export default function ScheduleList() {
   });
   const [tabValue, setTabValue] = useState('');
   const [isOpenModalCancel, setIsOpenModalCancel] = useState(false);
-  const [isOpenModalCompleted, setIsOpenModalCompleted] = useState(false);
+  const [isOpenModalFinished, setIsOpenModalFinished] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLoadingButtonCompleted, setIsLoadingButtonCompleted] = useState(false);
@@ -197,7 +197,7 @@ export default function ScheduleList() {
         showToast('success', 'Cập nhật thành công');
         setIsReloadData(!isReloadData);
         setIsOpenModalCancel(false);
-        setIsOpenModalCompleted(false);
+        setIsOpenModalFinished(false);
       })
       .catch((error) => {
         console.error(error);
@@ -332,13 +332,13 @@ export default function ScheduleList() {
                         Bắt đầu thực hiện
                       </Button>
                     )}
-                    {row.status === 'Processing' && (
+                    {row.status === 'Completed' && (
                       <Button
                         variant="contained"
                         color="success"
                         onClick={() => {
                           setBookingSelected(row);
-                          setIsOpenModalCompleted(true);
+                          setIsOpenModalFinished(true);
                           getSystemConfig();
 
                           let _totalPrice = 0;
@@ -359,7 +359,7 @@ export default function ScheduleList() {
                           setAmoutToPaid(_totalPrice);
                         }}
                       >
-                        Hoàn thành
+                        Kết thúc
                       </Button>
                     )}
                     {(row.status === 'Initialize' || row.status === 'Confirmed') && (
@@ -471,8 +471,8 @@ export default function ScheduleList() {
       <Dialog
         fullWidth
         maxWidth="md"
-        open={isOpenModalCompleted}
-        onClose={() => setIsOpenModalCompleted(false)}
+        open={isOpenModalFinished}
+        onClose={() => setIsOpenModalFinished(false)}
       >
         <DialogTitle>Thanh toán</DialogTitle>
         <DialogContent>
@@ -597,18 +597,14 @@ export default function ScheduleList() {
                 }
                 booking.totalPrice = totalPrice;
                 booking.amoutToPaid = amoutToPaid;
-                booking.status = 'Completed';
+                booking.status = 'Finished';
                 booking.paymentMethod = formSearch.getValues('paymentType');
                 handleUpdateBooking(booking);
               }}
             >
               Thanh toán
             </LoadingButton>
-            <Button
-              color="error"
-              variant="contained"
-              onClick={() => setIsOpenModalCompleted(false)}
-            >
+            <Button color="error" variant="contained" onClick={() => setIsOpenModalFinished(false)}>
               Huỷ
             </Button>
           </Box>
