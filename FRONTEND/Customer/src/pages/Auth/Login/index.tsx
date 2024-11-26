@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import {
@@ -18,18 +18,22 @@ import { LoginPayLoad } from 'models/Request.model';
 import { authService } from 'services/auth.service';
 import { AuthConsumer } from '../AuthProvider';
 import { setLoading } from 'redux/Reducer';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ADMIN_PATH, AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import { ResponseSuccessApi } from 'models/Response.model';
 import { Token } from 'models/CredentialInfo.model';
 import CheckboxElement from 'components/Form/CheckboxElement/CheckboxElement';
 import { LOGO } from 'configurations/logo';
 import { handleError } from 'utils/helper';
+import { usePreviousPath } from 'hooks/usePreviousPath';
 
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const authContext = AuthConsumer();
+  const location = useLocation();
+  const previousPath = usePreviousPath();
+
   const formContext = useForm<any>({
     defaultValues: loginFormDefaultValues,
     mode: 'onSubmit',
@@ -59,7 +63,11 @@ function Login() {
         authContext.saveToken({ token, refreshToken: '1' });
       }
       dispatch(setLoading(false));
-      navigate(-1);
+      if (previousPath === '/auth/register') {
+        navigate('/home');
+      } else {
+        navigate(-1);
+      }
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.msg || error));
