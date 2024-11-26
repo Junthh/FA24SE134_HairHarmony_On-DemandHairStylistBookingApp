@@ -173,6 +173,15 @@ namespace hair_hamony.Business.Services.StylistServices
                 };
             }
 
+            if (stylist.Status == "Inactive")
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tài khoản đã bị khoá"
+                };
+            }
+
             var token = _jwtHelper.GenerateJwtToken(
                 role: "Stylist",
                 id: stylist.Id,

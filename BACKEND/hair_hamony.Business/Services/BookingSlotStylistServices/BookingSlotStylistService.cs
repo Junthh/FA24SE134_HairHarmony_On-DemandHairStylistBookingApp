@@ -118,7 +118,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             // danh sach stylist freetime
             var stylistsFreetime = stylistWorkships.Except(bookingSlotStylist).ToList();
 
-            var stylists = _context.Stylists.AsNoTracking().Where(stylist => stylistsFreetime.Contains(stylist.Id));
+            var stylists = _context.Stylists.AsNoTracking().Where(stylist => stylistsFreetime.Contains(stylist.Id) && stylist.Status == "Active");
 
             var results = _mapper.Map<IList<GetStylistModel>>(stylists);
 

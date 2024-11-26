@@ -171,6 +171,15 @@ namespace hair_hamony.Business.Services.StaffServices
                 };
             }
 
+            if (staff.Status == "Inactive")
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tài khoản đã bị khoá"
+                };
+            }
+
             var token = _jwtHelper.GenerateJwtToken(
                 role: "Staff",
                 id: staff.Id,
