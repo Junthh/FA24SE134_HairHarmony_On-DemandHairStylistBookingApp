@@ -12,6 +12,16 @@ class ServiceServices {
       throw error;
     }
   }
+  async listCombo(params = {}) {
+    try {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/Combos`, {
+        params,
+      });
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const serviceServices = new ServiceServices();
