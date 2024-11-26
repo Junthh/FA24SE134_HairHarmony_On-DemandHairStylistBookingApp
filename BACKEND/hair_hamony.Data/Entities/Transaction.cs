@@ -16,6 +16,4 @@ public partial class Transaction
     public Guid? BookingId { get; set; }
 
     public virtual Booking? Booking { get; set; }
-
-    public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
 }

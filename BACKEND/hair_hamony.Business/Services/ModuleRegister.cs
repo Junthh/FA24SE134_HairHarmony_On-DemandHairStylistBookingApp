@@ -19,7 +19,6 @@ using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.Services.StylistWorkshipServices;
 using hair_hamony.Business.Services.SystemConfigServices;
 using hair_hamony.Business.Services.TimeSlotServices;
-using hair_hamony.Business.Services.TransactionDetailServices;
 using hair_hamony.Business.Services.TransactionServices;
 using hair_hamony.Business.Services.WorkshipServices;
 using hair_hamony.Business.Utilities;
@@ -49,7 +48,6 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<ITimeSlotService, TimeSlotService>();
             services.AddScoped<ITransactionService, TransactionService>();
-            services.AddScoped<ITransactionDetailService, TransactionDetailService>();
             services.AddScoped<IWorkshipService, WorkshipService>();
             services.AddScoped<INewsService, NewsService>();
             services.AddScoped<IPaymentService, PaymentService>();

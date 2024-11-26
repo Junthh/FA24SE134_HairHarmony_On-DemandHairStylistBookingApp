@@ -260,14 +260,6 @@ namespace hair_hamony.Business.Services.BookingServices
                             PaymentId = paymentId,
                         });
 
-                        _context.TransactionDetails.Add(new TransactionDetail
-                        {
-                            LoyaltyPoints = requestBody.LoyaltyPoints,
-                            Status = "Scheduled",
-                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
-                            TransactionId = transactionId,
-                        });
-
                         countTimeSlot += countServiceDuration;
                     }
                 }
@@ -321,14 +313,6 @@ namespace hair_hamony.Business.Services.BookingServices
                             PaymentId = paymentId,
                         });
 
-                        _context.TransactionDetails.Add(new TransactionDetail
-                        {
-                            LoyaltyPoints = requestBody.LoyaltyPoints,
-                            Status = "Scheduled",
-                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
-                            TransactionId = transactionId,
-                        });
-
                         countTimeSlot += countServiceDuration;
                     }
                 }
@@ -378,12 +362,13 @@ namespace hair_hamony.Business.Services.BookingServices
 
                 if (requestBody.Status != booking.Status)
                 {
-                    var transaction = _context.Transactions.FirstOrDefault(transaction => transaction.BookingId == requestBody.Id);
-                    _context.TransactionDetails.Add(new TransactionDetail
+                    _context.Transactions.Add(new Transaction
                     {
-                        Status = requestBody.Status,
+                        BookingId = requestBody.Id,
+                        Id = Guid.NewGuid(),
                         CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
-                        TransactionId = transaction!.Id
+                        Status = requestBody.Status,
+                        UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                     });
                 }
 
@@ -476,12 +461,6 @@ namespace hair_hamony.Business.Services.BookingServices
                     var transactionIds = _context.Transactions
                         .Where(transaction => transaction.BookingId == requestBody.Id)
                         .Select(transaction => transaction.Id).ToList();
-
-                    await _context.TransactionDetails
-                        .Where(transactionDetail => transactionIds.Contains(transactionDetail.Id))
-                        .ExecuteUpdateAsync(setters
-                            => setters.SetProperty(transactionDetail => transactionDetail.Status, "Cancel")
-                        );
 
                     var bookingDetailIds = _context.BookingDetails
                         .Where(bookingDetail => bookingDetail.BookingId == requestBody.Id).Select(bookingDetail => bookingDetail.Id).ToList();
