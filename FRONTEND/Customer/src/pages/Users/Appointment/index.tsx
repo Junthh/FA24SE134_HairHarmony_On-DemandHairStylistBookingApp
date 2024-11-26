@@ -55,6 +55,12 @@ export default function Appointment() {
     total: 0,
   });
   const { isOpen, openModal, closeModal } = useModal();
+  const {
+    isOpen: isOpenConfirmCancel,
+    openModal: openModalConfirmCancel,
+    closeModal: closeModalConfirmCancel,
+  } = useModal();
+
   const [rows, setRows] = useState([]);
   const credentialInfo = useSelector(selectCredentialInfo);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -194,8 +200,51 @@ export default function Appointment() {
       ></Dialog>
     );
   }, [isOpen]);
+  const renderDialogConfirmCancel = useMemo(() => {
+    return (
+      <Dialog
+        open={isOpenConfirmCancel}
+        onClose={() => {
+          closeModalConfirmCancel();
+        }}
+        width="100%"
+        title={'Bạn có chắc muốn hủy đặt lịch ?'}
+        content={
+          <Box display={'flex'} justifyContent={'flex-end'} padding={'9px 20px'}>
+            <ButtonPrimary
+              severity="primary"
+              padding={'9px 20px'}
+              onClick={() => handleCancelBooking()}
+            >
+              Hủy
+            </ButtonPrimary>
+          </Box>
+        }
+      ></Dialog>
+    );
+  }, [isOpenConfirmCancel]);
+  const handleCancelBooking = useCallback(() => {
+    dispatch(setLoading(true));
+    bookingServices
+      .update(selectedRow.id, {
+        ...selectedRow,
+        status: STATUS_LABEL.Cancel,
+      })
+      .then((res) => {
+        getListBookingHistory({ size: paging.size, page: paging.page });
+        selectedRow(null);
+        showToast('success', 'Hủy đặt lịch thành công!');
+      })
+      .catch((err) => {
+        showToast('error', 'Hủy đặt lịch thất bại!');
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  }, [selectedRow, isOpenConfirmCancel, paging.size, paging.page]);
   return (
     <>
+      {renderDialogConfirmCancel}
       {renderDialog}
       <AppointmentStyled>
         <Typography variant="h1" fontWeight={700}>
@@ -243,7 +292,12 @@ export default function Appointment() {
                     <span style={{ fontWeight: 700 }}>{currencyFormat(item?.totalPrice)}</span>
                   </Typography>
                 </Box>
-                <Box>
+                <Box
+                  display={'flex'}
+                  flexDirection={'column'}
+                  justifyContent={'center'}
+                  alignItems={'center'}
+                >
                   <Typography
                     variant="h5"
                     fontWeight={600}
@@ -251,6 +305,20 @@ export default function Appointment() {
                   >
                     {MAP_STATUS_LABEL[item?.status]?.label}
                   </Typography>
+                  <ButtonPrimary
+                    severity="cancel"
+                    sx={{
+                      color: 'red !important',
+                      border: '1px solid red !important',
+                    }}
+                    padding={'2px 20px'}
+                    onClick={() => {
+                      openModalConfirmCancel();
+                      setSelectedRow(item);
+                    }}
+                  >
+                    Hủy
+                  </ButtonPrimary>
                 </Box>
               </AppointmentCard>
             ) : (
