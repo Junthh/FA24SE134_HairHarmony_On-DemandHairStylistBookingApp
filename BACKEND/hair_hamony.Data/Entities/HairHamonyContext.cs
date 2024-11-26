@@ -57,8 +57,6 @@ public partial class HairHamonyContext : DbContext
 
     public virtual DbSet<Transaction> Transactions { get; set; }
 
-    public virtual DbSet<TransactionDetail> TransactionDetails { get; set; }
-
     public virtual DbSet<Workship> Workships { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -403,21 +401,6 @@ public partial class HairHamonyContext : DbContext
             entity.HasOne(d => d.Booking).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.BookingId)
                 .HasConstraintName("FK__Transacti__Booki__22751F6C");
-        });
-
-        modelBuilder.Entity<TransactionDetail>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07E164DD3B");
-
-            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Status)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Transaction).WithMany(p => p.TransactionDetails)
-                .HasForeignKey(d => d.TransactionId)
-                .HasConstraintName("FK__Transacti__Trans__2645B050");
         });
 
         modelBuilder.Entity<Workship>(entity =>

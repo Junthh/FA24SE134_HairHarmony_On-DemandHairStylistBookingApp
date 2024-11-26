@@ -25,7 +25,6 @@ public static class AutoMapperConfig
             mc.ConfigFeedback();
             mc.ConfigTimeSlot();
             mc.ConfigTransaction();
-            mc.ConfigTransactionDetail();
             mc.ConfigWorkship();
             mc.ConfigNew();
             mc.ConfigPayment();
