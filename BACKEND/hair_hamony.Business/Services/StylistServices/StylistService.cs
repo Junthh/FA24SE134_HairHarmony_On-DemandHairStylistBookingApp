@@ -61,6 +61,20 @@ namespace hair_hamony.Business.Services.StylistServices
             stylist.Status = "Active";
             stylist.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
             stylist.Rating = 5;
+            stylist.Id = Guid.NewGuid();
+
+            var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+            var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
+            await _context.StylistSalarys.AddAsync(new StylistSalary
+            {
+                CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                Month = monthCurrent,
+                Year = yearCurrent,
+                StylistId = stylist.Id,
+                TotalBooking = 0,
+                TotalCommission = 0,
+                TotalSalary = stylist.Salary
+            });
 
             await _context.Stylists.AddAsync(stylist);
             await _context.SaveChangesAsync();

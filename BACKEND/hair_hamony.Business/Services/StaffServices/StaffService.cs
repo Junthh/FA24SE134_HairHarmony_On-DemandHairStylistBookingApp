@@ -60,6 +60,18 @@ namespace hair_hamony.Business.Services.StaffServices
             staff.Password = passwordHashed;
             staff.Status = "Active";
             staff.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            staff.Id = Guid.NewGuid();
+
+            var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+            var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
+            await _context.StaffSalarys.AddAsync(new StaffSalary
+            {
+                CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                Month = monthCurrent,
+                Year = yearCurrent,
+                StaffId = staff.Id,
+                TotalSalary = staff.Salary
+            });
 
             await _context.Staffs.AddAsync(staff);
             await _context.SaveChangesAsync();
