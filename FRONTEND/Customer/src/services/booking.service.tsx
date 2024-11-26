@@ -45,6 +45,14 @@ class BookingServices {
       throw error;
     }
   }
+  async update(id: string, body = {}) {
+    try {
+      const resData = await axios.put(`${ENDPOINTS.ApiPrefix}/Bookings/${id}`, body);
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
   async bookingInit(body) {
     try {
       const resData = await axios.post(`${ENDPOINTS.ApiPrefix}/Bookings/Init`, body);
