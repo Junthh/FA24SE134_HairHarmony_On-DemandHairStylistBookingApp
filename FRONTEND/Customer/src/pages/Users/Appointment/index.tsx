@@ -28,7 +28,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { feedbackService } from 'services/feedback.service';
 import { showToast } from 'components/Common/Toast';
-
+import Timeline from '@mui/lab/Timeline';
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineDot from '@mui/lab/TimelineDot';
 const AppointmentStyled = styled(Box)({
   display: 'flex',
   alignItems: 'center',
@@ -60,10 +65,15 @@ export default function Appointment() {
     openModal: openModalConfirmCancel,
     closeModal: closeModalConfirmCancel,
   } = useModal();
-
+  const {
+    isOpen: isOpenDetails,
+    openModal: openModalDetails,
+    closeModal: closeModalDetails,
+  } = useModal();
   const [rows, setRows] = useState([]);
   const credentialInfo = useSelector(selectCredentialInfo);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [bookingDetail, setBookingDetail] = useState([]);
   const dispatch = useDispatch();
 
   const schemaFeedback = Yup.object().shape<any>({});
@@ -233,6 +243,7 @@ export default function Appointment() {
       .then((res) => {
         getListBookingHistory({ size: paging.size, page: paging.page });
         selectedRow(null);
+        closeModalConfirmCancel();
         showToast('success', 'Hủy đặt lịch thành công!');
       })
       .catch((err) => {
@@ -242,8 +253,75 @@ export default function Appointment() {
         dispatch(setLoading(false));
       });
   }, [selectedRow, isOpenConfirmCancel, paging.size, paging.page]);
+
+  const handleOpenDetails = useCallback((item: any) => {
+    dispatch(setLoading(true));
+    bookingServices
+      .findById(item.id)
+      .then((res) => {
+        const result = res.data.sort((a, b) => {
+          const dateA = new Date(a.createdDate);
+          const dateB = new Date(b.createdDate);
+          return dateB.getTime() - dateA.getTime();
+        });
+
+        setBookingDetail(result);
+        openModalDetails();
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  }, []);
+  const renderDialogDetails = useMemo(() => {
+    return (
+      <Dialog
+        open={isOpenDetails}
+        onClose={() => {
+          closeModalDetails();
+        }}
+        width="100%"
+        title={'Chi tiết đặt lịch'}
+        content={
+          <>
+            <Timeline>
+              {bookingDetail &&
+                bookingDetail.length > 0 &&
+                bookingDetail.map((item) => {
+                  return (
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot />
+                        <TimelineConnector />
+                      </TimelineSeparator>
+                      <TimelineContent display={'flex'} justifyContent={'space-between'} gap={10}>
+                        <Typography width={150} variant="h5">
+                          {formatDate(item.createdDate, 'dd/MM/yyyy HH:mm')}{' '}
+                        </Typography>{' '}
+                        <Typography
+                          variant="h5"
+                          fontWeight={600}
+                          color={MAP_STATUS_LABEL[item?.status]?.color}
+                          width={150}
+                          display={'flex'}
+                        >
+                          <Typography variant="h5" fontWeight={400} color={colors.grey2}>
+                            Trạng thái: &nbsp;&nbsp;
+                          </Typography>
+                          {MAP_STATUS_LABEL[item?.status]?.label}{' '}
+                        </Typography>
+                      </TimelineContent>
+                    </TimelineItem>
+                  );
+                })}
+            </Timeline>
+          </>
+        }
+      ></Dialog>
+    );
+  }, [isOpenDetails, bookingDetail]);
   return (
     <>
+      {renderDialogDetails}
       {renderDialogConfirmCancel}
       {renderDialog}
       <AppointmentStyled>
@@ -292,26 +370,15 @@ export default function Appointment() {
                     <span style={{ fontWeight: 700 }}>{currencyFormat(item?.totalPrice)}</span>
                   </Typography>
                 </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'column'}
-                  justifyContent={'center'}
-                  alignItems={'center'}
-                >
-                  <Typography
-                    variant="h5"
-                    fontWeight={600}
-                    color={MAP_STATUS_LABEL[item?.status]?.color}
-                  >
-                    {MAP_STATUS_LABEL[item?.status]?.label}
-                  </Typography>
+
+                <Box display={'flex'} gap={2} alignItems={'center'} marginBottom={2}>
                   <ButtonPrimary
                     severity="cancel"
                     sx={{
                       color: 'red !important',
                       border: '1px solid red !important',
                     }}
-                    padding={'2px 20px'}
+                    padding={'2px 10px'}
                     onClick={() => {
                       openModalConfirmCancel();
                       setSelectedRow(item);
@@ -319,6 +386,21 @@ export default function Appointment() {
                   >
                     Hủy
                   </ButtonPrimary>
+                  <ButtonPrimary
+                    padding={'2px 10px'}
+                    severity="cancel"
+                    variant="outlined"
+                    onClick={() => handleOpenDetails(item)}
+                  >
+                    Chi tiết
+                  </ButtonPrimary>
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    color={MAP_STATUS_LABEL[item?.status]?.color}
+                  >
+                    {MAP_STATUS_LABEL[item?.status]?.label}{' '}
+                  </Typography>
                 </Box>
               </AppointmentCard>
             ) : (
@@ -379,13 +461,42 @@ export default function Appointment() {
                   ) : (
                     <></>
                   )}
-                  <Typography
-                    variant="h5"
-                    fontWeight={600}
-                    color={MAP_STATUS_LABEL[item?.status]?.color}
-                  >
-                    {MAP_STATUS_LABEL[item?.status]?.label}
-                  </Typography>
+                  <Box display={'flex'} gap={2} alignItems={'center'} marginBottom={2}>
+                    {item?.status !== STATUS_LABEL.Cancel ? (
+                      <ButtonPrimary
+                        severity="cancel"
+                        sx={{
+                          color: 'red !important',
+                          border: '1px solid red !important',
+                        }}
+                        padding={'2px 10px'}
+                        onClick={() => {
+                          openModalConfirmCancel();
+                          setSelectedRow(item);
+                        }}
+                      >
+                        Hủy
+                      </ButtonPrimary>
+                    ) : (
+                      <></>
+                    )}
+                    <ButtonPrimary
+                      padding={'2px 10px'}
+                      severity="cancel"
+                      variant="outlined"
+                      onClick={() => handleOpenDetails(item)}
+                    >
+                      Chi tiết
+                    </ButtonPrimary>
+                    <Typography
+                      variant="h5"
+                      fontWeight={600}
+                      color={MAP_STATUS_LABEL[item?.status]?.color}
+                    >
+                      {MAP_STATUS_LABEL[item?.status]?.label}{' '}
+                    </Typography>
+                  </Box>
+
                   {item?.status === STATUS_LABEL.Completed && !item.isFeedback ? (
                     <ButtonPrimary
                       padding={'5px 10px'}
