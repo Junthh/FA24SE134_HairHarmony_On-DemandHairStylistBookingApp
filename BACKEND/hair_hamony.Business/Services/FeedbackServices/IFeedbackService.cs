@@ -6,7 +6,7 @@ namespace hair_hamony.Business.Services.FeedbackServices
 {
     public interface IFeedbackService
     {
-        Task<(IList<GetFeedbackModel>, int)> GetAll(PagingParam<FeedbackEnum.FeedbackSort> paginationModel, SearchFeedbackModel searchFeedbackModel);
+        Task<(IList<GetDetailFeedbackModel>, int)> GetAll(PagingParam<FeedbackEnum.FeedbackSort> paginationModel, SearchFeedbackModel searchFeedbackModel);
         Task<GetFeedbackModel> GetById(Guid id);
         Task<GetFeedbackModel> Create(CreateFeedbackModel requestBody);
         Task<GetFeedbackModel> Update(Guid id, UpdateFeedbackModel requestBody);

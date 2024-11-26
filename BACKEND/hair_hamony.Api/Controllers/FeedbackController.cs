@@ -24,7 +24,7 @@ namespace home_travel.API.Controllers
         /// <returns>List of feedback</returns>
         /// <response code="200">Returns the list of feedback</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetFeedbackModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailFeedbackModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<FeedbackEnum.FeedbackSort> paginationModel,
@@ -32,7 +32,7 @@ namespace home_travel.API.Controllers
         {
             var (feedbacks, total) = await _feedbackService.GetAll(paginationModel, searchFeedbackModel);
 
-            return Ok(new ModelsResponse<GetFeedbackModel>(
+            return Ok(new ModelsResponse<GetDetailFeedbackModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,
