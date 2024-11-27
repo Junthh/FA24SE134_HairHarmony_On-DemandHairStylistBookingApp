@@ -122,6 +122,8 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
 
             var results = _mapper.Map<IList<GetStylistModel>>(stylists);
 
+            var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+            var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
             foreach (var item in results)
             {
                 var systemConfig = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE");
@@ -130,8 +132,6 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                     item.ExpertFee = systemConfig.Value;
                 }
 
-                var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
-                var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
                 var stylistSalary = _context.StylistSalarys
                     .FirstOrDefault(stylistSalary =>
                         stylistSalary.StylistId == item.Id
@@ -159,6 +159,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             // sắp xếp theo stylist có tổng booking thấp nhất
             var stylistSorted = from stylist in results
                                 join stylistSalary in _context.StylistSalarys on stylist.Id equals stylistSalary.StylistId
+                                where stylistSalary.Month == monthCurrent && stylistSalary.Year == yearCurrent
                                 orderby stylistSalary.TotalBooking
                                 select stylist;
 
