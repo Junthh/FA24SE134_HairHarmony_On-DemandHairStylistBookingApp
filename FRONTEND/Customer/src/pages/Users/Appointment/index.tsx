@@ -462,7 +462,8 @@ export default function Appointment() {
                     <></>
                   )}
                   <Box display={'flex'} gap={2} alignItems={'center'} marginBottom={2}>
-                    {item?.status !== STATUS_LABEL.Cancel ? (
+                    {item?.status !== STATUS_LABEL.Initialize ||
+                    item?.status !== STATUS_LABEL.Confirmed ? (
                       <ButtonPrimary
                         severity="cancel"
                         sx={{
@@ -497,7 +498,7 @@ export default function Appointment() {
                     </Typography>
                   </Box>
 
-                  {item?.status === STATUS_LABEL.Completed && !item.isFeedback ? (
+                  {item?.status === STATUS_LABEL.Finished && !item.isFeedback ? (
                     <ButtonPrimary
                       padding={'5px 10px'}
                       severity="cancel"
