@@ -32,10 +32,10 @@ const NewStyled = styled(Box)({
       'linear-gradient(to bottom, rgb(255 255 255 / 0%) 0%, rgb(249 250 255 / 100%) 100%)',
     pointerEvents: 'none',
   },
-  '& .description': {
-    margin: '0 auto',
-    textAlign: 'center',
-  },
+  // '& .description': {
+  //   margin: '0 auto',
+  //   textAlign: 'center',
+  // },
   '& .author': {
     textAlign: 'end',
     marginRight: 50,
