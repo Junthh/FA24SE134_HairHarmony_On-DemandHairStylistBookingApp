@@ -33,7 +33,17 @@ export default function Profile() {
   const [profile, setProfile] = useState<any>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape<any>({
+    phoneNumber: Yup.string()
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
+      .required(`Vui lòng nhập số điện thoại.`),
+    fullName: Yup.string().required(`Vui lòng nhập họ tên.`),
+    username: Yup.string().required(`Vui lòng nhập username`),
+    status: Yup.string().required(`Vui lòng nhập trạng thái`),
+    description: Yup.string().required(`Vui lòng nhập mô tả`),
+    experience: Yup.string().required(`Vui lòng nhập kinh nghiệm`),
+    kpi: Yup.string().required(`Vui lòng nhập kpi`),
+  });
   const defaultValues = {
     id: '',
     loyaltyPoints: 0,

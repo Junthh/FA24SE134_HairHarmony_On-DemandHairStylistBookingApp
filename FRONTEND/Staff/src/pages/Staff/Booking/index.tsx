@@ -135,7 +135,7 @@ export default function Booking() {
   const schemaUser = Yup.object().shape({
     customerFullName: Yup.string().required('Họ và tên không được trống'),
     customerPhoneNummber: Yup.string()
-      .matches(/^0\d{9}$/, 'Số điện thoại phải bắt đầu bằng 0 và có 10 số')
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
       .required('Số điện thoại không được trống'),
   });
   const defaultValues = {

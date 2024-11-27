@@ -67,7 +67,15 @@ export default function ComboList() {
   });
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape<any>({
+    name: Yup.string().required(`Vui lòng nhập tên combo.`),
+    discount: Yup.string().required(`Vui lòng nhập mã giảm giá.`),
+    totalPrice: Yup.string().required(`Vui lòng nhập số tiền.`),
+    duration: Yup.string().required(`Vui lòng nhập khoảng thời gian.`),
+    description: Yup.string().required(`Vui lòng nhập mô tả.`),
+    categoryId: Yup.string().required(`Vui lòng chọn loại.`),
+    comboService: Yup.string().required(`Vui lòng chọn dịch vụ.`),
+  });
   const defaultValues = {
     id: '',
     name: '',
@@ -77,6 +85,7 @@ export default function ComboList() {
     image: '',
     description: '',
     comboService: null,
+    categoryId: null,
   };
   const formCombo = useForm<any>({
     defaultValues,

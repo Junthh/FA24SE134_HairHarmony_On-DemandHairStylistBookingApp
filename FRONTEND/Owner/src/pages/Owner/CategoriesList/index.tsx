@@ -66,7 +66,9 @@ export default function CategoriesList() {
   });
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape<any>({
+    name: Yup.string().required(`Vui lòng nhập tên dịch vụ.`),
+  });
   const defaultValues = {
     id: '',
     name: '',
