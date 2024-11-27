@@ -456,7 +456,7 @@ export default function Appointment() {
                   </Typography>
                 </Box>
                 <Box textAlign={'center'}>
-                  {item?.status === STATUS_LABEL.Completed && item.isFeedback ? (
+                  {item?.status === STATUS_LABEL.Finished && item.isFeedback ? (
                     <Rating precision={0.5} value={item.feedbacks[0].rating} readOnly></Rating>
                   ) : (
                     <></>
