@@ -115,7 +115,7 @@ export default function CardServices({
               </Box>
               <Box className="content">
                 <Typography fontFamily={'none !important'} variant="body2">
-                  Giá chỉ từ: {currencyFormat(item.price)}
+                  Giá chỉ từ: {currencyFormat(item.price ?? item.totalPrice)}
                 </Typography>
               </Box>
               <Box className="content-img">
