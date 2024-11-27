@@ -96,7 +96,7 @@ namespace hair_hamony.Business.Services.BookingServices
 
             foreach (var item in results)
             {
-                item.IsFeedback = item.Feedbacks != null && item.Feedbacks.Any() && item.Status == "Completed";
+                item.IsFeedback = item.Feedbacks != null && item.Feedbacks.Any() && item.Status == "Finished";
             }
 
             return (results, total);
