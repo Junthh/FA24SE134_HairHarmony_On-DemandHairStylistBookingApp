@@ -462,8 +462,8 @@ export default function Appointment() {
                     <></>
                   )}
                   <Box display={'flex'} gap={2} alignItems={'center'} marginBottom={2}>
-                    {item?.status !== STATUS_LABEL.Initialize ||
-                    item?.status !== STATUS_LABEL.Confirmed ? (
+                    {item?.status === STATUS_LABEL.Initialize ||
+                    item?.status === STATUS_LABEL.Confirmed ? (
                       <ButtonPrimary
                         severity="cancel"
                         sx={{
