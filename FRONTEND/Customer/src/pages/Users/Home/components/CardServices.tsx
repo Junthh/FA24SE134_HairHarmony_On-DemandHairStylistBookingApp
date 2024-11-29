@@ -126,7 +126,7 @@ export default function CardServices({
                 <Typography className="minutes" variant="body2" fontFamily={'none !important'}>
                   {item.duration} Phút
                 </Typography>
-                <Box
+                {/* <Box
                   display={'flex'}
                   alignItems={'center'}
                   sx={{
@@ -140,7 +140,7 @@ export default function CardServices({
                     Tìm hiểu thêm
                   </Typography>
                   <ArrowRightIcon />
-                </Box>
+                </Box> */}
               </Box>
             </BoxCardService>
           </Grid>
