@@ -48,10 +48,10 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       link: USER_PATH.OUR_TEAMMATES,
       name: 'Đội Ngũ Chúng Tôi',
     },
-    {
-      link: '',
-      name: 'Liên hệ',
-    },
+    // {
+    //   link: '',
+    //   name: 'Liên hệ',
+    // },
   ]);
   // get categories options
   const renderNav = useMemo(() => {
