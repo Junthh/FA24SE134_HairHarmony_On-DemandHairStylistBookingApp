@@ -83,12 +83,12 @@ namespace home_travel.API.Controllers
         /// <response code="200">Returns the stylist</response>
         /// <response code="404">Returns if the stylist is not exist</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<GetDetailStylistModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return Ok(new BaseResponse<GetStylistModel>(
+            return Ok(new BaseResponse<GetDetailStylistModel>(
                     data: await _stylistService.GetById(id)
                 ));
         }

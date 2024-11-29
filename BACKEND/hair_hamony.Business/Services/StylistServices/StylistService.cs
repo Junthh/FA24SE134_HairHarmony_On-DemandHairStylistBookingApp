@@ -101,16 +101,19 @@ namespace hair_hamony.Business.Services.StylistServices
             return (results, total);
         }
 
-        public async Task<GetStylistModel> GetById(Guid id)
+        public async Task<GetDetailStylistModel> GetById(Guid id)
         {
-            var stylist = await _context.Stylists.AsNoTracking().FirstOrDefaultAsync(stylist => stylist.Id == id)
+            var stylist = await _context.Stylists.AsNoTracking()
+                .Include(stylist => stylist.BookingSlotStylists)
+                .Include(stylist => stylist.Feedbacks)
+                .FirstOrDefaultAsync(stylist => stylist.Id == id)
                 ?? throw new CException
                 {
                     StatusCode = StatusCodes.Status404NotFound,
                     ErrorMessage = $"Id {id} không tồn tại"
                 };
 
-            return _mapper.Map<GetStylistModel>(stylist);
+            return _mapper.Map<GetDetailStylistModel>(stylist);
         }
 
         public async Task<GetStylistModel> Update(Guid id, UpdateStylistModel requestBody)
