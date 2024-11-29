@@ -174,9 +174,9 @@ export default function StylistDetails() {
               {stylist.feedbacks?.map((feedback, index) => (
                 <React.Fragment key={index}>
                   <Box className="user-comment">
-                    <Avatar sx={{ width: 80, height: 80 }} src={stylist.customer?.avatar} />
+                    <Avatar sx={{ width: 80, height: 80 }} src={feedback?.booking.customer?.avatar} />
                     <Box>
-                      <Typography variant="h2">{feedback.customer?.name}</Typography>
+                      <Typography variant="h2">{feedback?.booking.customer?.name}</Typography>
                       <Typography variant="caption">
                         {formatDateTime(feedback.createdDate)}
                       </Typography>
