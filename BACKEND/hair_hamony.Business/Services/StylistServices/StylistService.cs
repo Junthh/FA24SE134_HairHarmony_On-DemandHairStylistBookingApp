@@ -106,6 +106,8 @@ namespace hair_hamony.Business.Services.StylistServices
             var stylist = await _context.Stylists.AsNoTracking()
                 .Include(stylist => stylist.BookingSlotStylists)
                 .Include(stylist => stylist.Feedbacks)
+                .ThenInclude(feedback => feedback.Booking)
+                .ThenInclude(booking => booking.Customer)
                 .FirstOrDefaultAsync(stylist => stylist.Id == id)
                 ?? throw new CException
                 {
