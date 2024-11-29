@@ -31,12 +31,23 @@ function formatDateTime(date: string | Date, pattern = 'dd/MM/yyyy HH:mm') {
   return format(new Date(date), pattern);
 }
 
-function formatTime(date: string | Date, pattern = 'HH:mm') {
-  return format(new Date(date), pattern);
+function formatTime(time: string | Date, pattern = 'HH:mm') {
+  var nowDateTime = new Date().toISOString();
+  var nowDate = nowDateTime.split('T')[0];
+
+  return format(new Date(nowDate + 'T' + time), pattern);
 }
 
 // Days order should always be from Sunday(0) to Saturday(6)
-export const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+export const weekDays = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 
 function getWeekDay(date: Date) {
   return weekDays[date.getDay()];
@@ -127,7 +138,7 @@ const calculateTimeCreateAt = (timeProcess: string) => {
     return `${minutes} min${minutes > 1 ? 's' : ''} ago`;
   }
   return `${seconds} senconds ago`;
-}
+};
 
 export {
   calculateAge,
@@ -140,5 +151,5 @@ export {
   getTimelineSlot,
   getTimeDetail,
   calculateTimeCreateAt,
-  formatDateTime
+  formatDateTime,
 };

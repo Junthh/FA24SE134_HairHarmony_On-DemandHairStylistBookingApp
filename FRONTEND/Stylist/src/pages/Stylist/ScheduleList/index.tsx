@@ -36,7 +36,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCredentialInfo, setLoading } from 'redux/Reducer';
 import { scheduleListServices } from 'services/scheduleLists.service';
-import { formatDate, formatDateTime } from 'utils/datetime';
+import { formatDate, formatDateTime, formatTime } from 'utils/datetime';
 import { currencyFormat } from 'utils/helper';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
@@ -98,7 +98,7 @@ export default function ScheduleList() {
     page: 0,
     total: 0,
   });
-  const [tabValue, setTabValue] = useState('');
+  const [tabValue, setTabValue] = useState('Processing');
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [isReloadData, setIsReloadData] = useState(false);
   const [bookingSelected, setBookingSelected] = useState<any>();
@@ -244,6 +244,9 @@ export default function ScheduleList() {
                 Stylist
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                Thời gian bắt đầu
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng tiền
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -265,16 +268,17 @@ export default function ScheduleList() {
                   {id + 1}
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.customer?.fullName}</StyledTableCell>
-                <StyledTableCell align="center">{formatDate(row.bookingDate)}</StyledTableCell>
+                <StyledTableCell align="center">{formatDate(row?.bookingDate)}</StyledTableCell>
                 <StyledTableCell align="center">{row.customer?.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="center">
                   {row.bookingDetails[0]?.bookingSlotStylists[0]?.stylist?.fullName}
                 </StyledTableCell>
+                <StyledTableCell align="center">{formatTime(row?.startTime)}</StyledTableCell>
                 <StyledTableCell align="center">{currencyFormat(row.totalPrice)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Chip label={STATUS_LABEL[row.status]} color={STATUS_COLOR[row.status]} />
                 </StyledTableCell>
-                <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
+                <StyledTableCell align="center">{formatDateTime(row?.createdDate)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Box
                     sx={{
