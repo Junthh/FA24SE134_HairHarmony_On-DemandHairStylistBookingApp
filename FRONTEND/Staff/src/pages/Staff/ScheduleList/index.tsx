@@ -414,10 +414,10 @@ export default function ScheduleList() {
         <DialogContent>
           {bookingSelected ? (
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 Tên khách hàng
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={6}>
                 {bookingSelected.customer.fullName}
               </Grid>
               <Grid item xs={12}>
@@ -425,10 +425,11 @@ export default function ScheduleList() {
               </Grid>
               {bookingSelected.bookingDetails.map((item, index) => (
                 <React.Fragment key={index}>
-                  <Grid item xs={4}>
+                  <Grid item xs={1} />
+                  <Grid item xs={5}>
                     {item.service ? item.service.name : item.combo ? item.combo.name : ''}
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={6}>
                     {item.service
                       ? currencyFormat(item.service.price)
                       : item.combo
@@ -437,6 +438,35 @@ export default function ScheduleList() {
                   </Grid>
                 </React.Fragment>
               ))}
+              <Grid item xs={6}>
+                Tổng phí dịch vụ
+              </Grid>
+              <Grid item xs={6}>
+                {currencyFormat(
+                  bookingSelected.bookingDetails.reduce((sum, item) => sum + item.price, 0),
+                )}
+              </Grid>
+              {bookingSelected.expertFee && (
+                <>
+                  <Grid item xs={6}>
+                    Phí chuyên gia
+                  </Grid>
+                  <Grid item xs={6}>
+                    {currencyFormat(
+                      (bookingSelected.bookingDetails.reduce((sum, item) => sum + item.price, 0) *
+                        bookingSelected.expertFee) /
+                        100,
+                    )}{' '}
+                    ({bookingSelected.expertFee}%)
+                  </Grid>
+                </>
+              )}
+              <Grid item xs={6}>
+                <b>Tổng tiền</b>
+              </Grid>
+              <Grid item xs={6}>
+                <b>{currencyFormat(bookingSelected.totalPrice)}</b>
+              </Grid>
             </Grid>
           ) : null}
         </DialogContent>
