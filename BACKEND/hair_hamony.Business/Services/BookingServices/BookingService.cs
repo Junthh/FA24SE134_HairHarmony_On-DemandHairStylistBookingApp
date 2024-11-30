@@ -258,7 +258,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i + 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
@@ -311,7 +311,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i + 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
