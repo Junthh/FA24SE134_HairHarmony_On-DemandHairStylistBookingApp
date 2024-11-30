@@ -57,10 +57,6 @@ export const MAP_STATUS_LABEL = {
     label: 'Bắt đầu thực hiện',
     color: colors.positiveP400,
   },
-  [STATUS_LABEL.Processing]: {
-    label: 'Bắt đầu thực hiện',
-    color: colors.positiveP400,
-  },
   [STATUS_LABEL.Completed]: {
     label: 'Hoàn thành',
     color: colors.primary1,
