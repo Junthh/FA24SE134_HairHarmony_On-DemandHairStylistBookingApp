@@ -49,7 +49,7 @@ import _ from 'lodash';
 import { systemConfigService } from 'services/systemConfigs.service';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import { DetailsOutlined, InfoOutlined } from '@mui/icons-material';
-import { formatDate, formatDateTime } from 'utils/datetime';
+import { formatDate, formatDateTime, formatTime } from 'utils/datetime';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -269,6 +269,9 @@ export default function ScheduleList() {
                 Stylist
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                Thời gian bắt đầu
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng tiền
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -295,6 +298,7 @@ export default function ScheduleList() {
                 <StyledTableCell align="center">
                   {row.bookingDetails[0]?.bookingSlotStylists[0]?.stylist?.fullName}
                 </StyledTableCell>
+                <StyledTableCell align="center">{formatTime(row?.startTime)}</StyledTableCell>
                 <StyledTableCell align="center">{currencyFormat(row.totalPrice)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Chip label={STATUS_LABEL[row.status]} color={STATUS_COLOR[row.status]} />
