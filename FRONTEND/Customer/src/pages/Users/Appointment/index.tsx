@@ -1,39 +1,30 @@
 import styled from '@emotion/styled';
-import {
-  Box,
-  Typography,
-  Stack,
-  Pagination,
-  Divider,
-  Rating,
-  TablePagination,
-} from '@mui/material';
-import React, { useEffect, useMemo, useState } from 'react';
-import * as colors from 'constants/colors';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectCredentialInfo, setLoading } from 'redux/Reducer';
-import { useCallback } from 'react';
-import { bookingServices } from 'services/booking.service';
-import { formatDate } from 'utils/datetime';
-import { currencyFormat } from 'utils/helper';
-import { MAP_STATUS_LABEL, STATUS_LABEL } from 'configurations/constants/globalConstants';
-import { ButtonPrimary } from 'pages/common/style/Button';
-import { Dialog } from 'components/Common/Dialog';
-import useModal from 'hooks/useModal';
-import { FormContainer } from 'components/Form/FormContainer';
-import RatingElement from 'components/Form/RatingElement/RatingElement';
-import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { feedbackService } from 'services/feedback.service';
-import { showToast } from 'components/Common/Toast';
 import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
+import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import { Box, Chip, Rating, Stack, TablePagination, Typography } from '@mui/material';
+import { Dialog } from 'components/Common/Dialog';
+import { showToast } from 'components/Common/Toast';
+import { FormContainer } from 'components/Form/FormContainer';
+import RatingElement from 'components/Form/RatingElement/RatingElement';
+import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
+import { MAP_STATUS_LABEL, STATUS_LABEL } from 'configurations/constants/globalConstants';
+import * as colors from 'constants/colors';
+import useModal from 'hooks/useModal';
+import { ButtonPrimary } from 'pages/common/style/Button';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCredentialInfo, setLoading } from 'redux/Reducer';
+import { bookingServices } from 'services/booking.service';
+import { feedbackService } from 'services/feedback.service';
+import { formatDate, formatTime } from 'utils/datetime';
+import { currencyFormat } from 'utils/helper';
+import * as Yup from 'yup';
 const AppointmentStyled = styled(Box)({
   display: 'flex',
   alignItems: 'center',
@@ -279,30 +270,35 @@ export default function Appointment() {
         onClose={() => {
           closeModalDetails();
         }}
-        width="100%"
+        maxWidth="sm"
         title={'Chi tiết đặt lịch'}
         content={
-          <>
-            <Timeline>
-              {bookingDetail &&
-                bookingDetail.length > 0 &&
-                bookingDetail.map((item) => {
-                  return (
-                    <TimelineItem>
-                      <TimelineSeparator>
-                        <TimelineDot />
-                        <TimelineConnector />
-                      </TimelineSeparator>
-                      <TimelineContent display={'flex'} justifyContent={'space-between'} gap={10}>
-                        <Typography width={150} variant="h5">
-                          {formatDate(item.createdDate, 'dd/MM/yyyy HH:mm')}{' '}
-                        </Typography>{' '}
+          <Timeline
+            sx={{
+              [`& .${timelineItemClasses.root}:before`]: {
+                flex: 0,
+                padding: 0,
+              },
+            }}
+          >
+            {bookingDetail &&
+              bookingDetail.length > 0 &&
+              bookingDetail.map((item, index) => {
+                return (
+                  <TimelineItem>
+                    <TimelineSeparator>
+                      <TimelineDot />
+                      {bookingDetail.length > index + 1 && <TimelineConnector />}
+                    </TimelineSeparator>
+                    <TimelineContent>
+                      <TimelineContent sx={{ py: '12px', px: 2 }}>
+                        <Typography variant="h6" component="span">
+                          {formatDate(item.createdDate, 'dd/MM/yyyy HH:mm')}
+                        </Typography>
                         <Typography
-                          variant="h5"
-                          fontWeight={600}
                           color={MAP_STATUS_LABEL[item?.status]?.color}
-                          width={150}
                           display={'flex'}
+                          alignItems="center"
                         >
                           <Typography variant="h5" fontWeight={400} color={colors.grey2}>
                             Trạng thái: &nbsp;&nbsp;
@@ -310,11 +306,11 @@ export default function Appointment() {
                           {MAP_STATUS_LABEL[item?.status]?.label}{' '}
                         </Typography>
                       </TimelineContent>
-                    </TimelineItem>
-                  );
-                })}
-            </Timeline>
-          </>
+                    </TimelineContent>
+                  </TimelineItem>
+                );
+              })}
+          </Timeline>
         }
       ></Dialog>
     );
@@ -353,15 +349,7 @@ export default function Appointment() {
                         fontSize: 14,
                       }}
                     >
-                      {item?.bookingDetails[0]?.bookingSlotStylists[0]?.timeSlot?.startTime
-                        .split(':')
-                        .slice(0, 2)
-                        .join(':')}
-                      ,{' '}
-                      {formatDate(
-                        item?.bookingDetails[0]?.bookingSlotStylists[0]?.bookingDate,
-                        'dd/MM/yyyy',
-                      )}
+                      {formatTime(item?.startTime)}, {formatDate(item?.bookingDate, 'dd/MM/yyyy')}
                     </span>
                     <br />
                   </Typography>
@@ -371,7 +359,7 @@ export default function Appointment() {
                   </Typography>
                 </Box>
 
-                <Box display={'flex'} gap={2} alignItems={'center'} marginBottom={2}>
+                <Box display={'flex'} gap={2} flexDirection="column" marginBottom={2}>
                   <ButtonPrimary
                     severity="cancel"
                     sx={{
@@ -433,15 +421,7 @@ export default function Appointment() {
                         fontSize: 14,
                       }}
                     >
-                      {item?.bookingDetails[0]?.bookingSlotStylists[0]?.timeSlot?.startTime
-                        .split(':')
-                        .slice(0, 2)
-                        .join(':')}
-                      ,{' '}
-                      {formatDate(
-                        item?.bookingDetails[0]?.bookingSlotStylists[0]?.bookingDate,
-                        'dd/MM/yyyy',
-                      )}
+                      {formatTime(item?.startTime)}, {formatDate(item?.bookingDate, 'dd/MM/yyyy')}
                     </span>
                     <br />
                   </Typography>
@@ -461,7 +441,7 @@ export default function Appointment() {
                   ) : (
                     <></>
                   )}
-                  <Box display={'flex'} gap={2} alignItems={'center'} marginBottom={2}>
+                  <Box display={'flex'} gap={2} flexDirection="column" marginBottom={2}>
                     {item?.status === STATUS_LABEL.Initialize ||
                     item?.status === STATUS_LABEL.Confirmed ? (
                       <ButtonPrimary
@@ -477,6 +457,18 @@ export default function Appointment() {
                         }}
                       >
                         Hủy
+                      </ButtonPrimary>
+                    ) : (
+                      <></>
+                    )}
+                    {item?.status === STATUS_LABEL.Finished && !item.isFeedback ? (
+                      <ButtonPrimary
+                        padding={'5px 10px'}
+                        severity="cancel"
+                        variant="outlined"
+                        onClick={() => handleOpenFeedback(item)}
+                      >
+                        Đánh giá
                       </ButtonPrimary>
                     ) : (
                       <></>
@@ -497,19 +489,6 @@ export default function Appointment() {
                       {MAP_STATUS_LABEL[item?.status]?.label}{' '}
                     </Typography>
                   </Box>
-
-                  {item?.status === STATUS_LABEL.Finished && !item.isFeedback ? (
-                    <ButtonPrimary
-                      padding={'5px 10px'}
-                      severity="cancel"
-                      variant="outlined"
-                      onClick={() => handleOpenFeedback(item)}
-                    >
-                      Feedback
-                    </ButtonPrimary>
-                  ) : (
-                    <></>
-                  )}
                 </Box>
               </AppointmentCard>
             ) : (
