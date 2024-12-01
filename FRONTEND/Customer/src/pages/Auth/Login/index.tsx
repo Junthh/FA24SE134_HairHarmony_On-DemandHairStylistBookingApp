@@ -17,15 +17,16 @@ import { showToast } from 'components/Common/Toast';
 import { LoginPayLoad } from 'models/Request.model';
 import { authService } from 'services/auth.service';
 import { AuthConsumer } from '../AuthProvider';
-import { setLoading } from 'redux/Reducer';
+import { setCredentialInfo, setLoading } from 'redux/Reducer';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ADMIN_PATH, AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import { ResponseSuccessApi } from 'models/Response.model';
-import { Token } from 'models/CredentialInfo.model';
+import { CredentialInfo, Token } from 'models/CredentialInfo.model';
 import CheckboxElement from 'components/Form/CheckboxElement/CheckboxElement';
 import { LOGO } from 'configurations/logo';
 import { handleError } from 'utils/helper';
 import { usePreviousPath } from 'hooks/usePreviousPath';
+import jwtDecode from 'jwt-decode';
 
 function Login() {
   const dispatch = useDispatch();
@@ -61,13 +62,20 @@ function Login() {
       if (res?.success) {
         const { token } = res.data as Token;
         authContext.saveToken({ token, refreshToken: '1' });
+        const info: CredentialInfo = {
+          accessToken: token,
+          refreshToken: '1',
+          ...jwtDecode(res.data.token),
+        };
+        dispatch(setCredentialInfo<CredentialInfo>(info));
+        console.log(previousPath);
+        if (previousPath === '/auth/register') {
+          navigate('/home');
+        } else {
+          navigate(previousPath);
+        }
       }
       dispatch(setLoading(false));
-      if (previousPath === '/auth/register') {
-        navigate('/home');
-      } else {
-        navigate(-1);
-      }
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.msg || error));
