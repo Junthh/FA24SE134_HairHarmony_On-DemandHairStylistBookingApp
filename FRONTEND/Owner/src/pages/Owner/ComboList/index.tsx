@@ -74,7 +74,7 @@ export default function ComboList() {
     duration: Yup.string().required(`Vui lòng nhập khoảng thời gian.`),
     description: Yup.string().required(`Vui lòng nhập mô tả.`),
     categoryId: Yup.string().required(`Vui lòng chọn loại.`),
-    comboService: Yup.string().required(`Vui lòng chọn dịch vụ.`),
+    comboService: Yup.array().required(`Vui lòng chọn dịch vụ.`),
   });
   const defaultValues = {
     id: '',
