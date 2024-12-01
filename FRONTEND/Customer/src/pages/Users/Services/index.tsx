@@ -3,11 +3,13 @@ import { Box, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import CardServices from '../Home/components/CardServices';
 import * as colors from 'constants/colors';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { serviceServices } from 'services/services.service';
 import { showToast } from 'components/Common/Toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectLoading, setLoading } from 'redux/Reducer';
+import { USER_PATH } from 'configurations/paths/paths';
+import { ButtonPrimary } from 'pages/common/style/Button';
 
 const ServiceStyled = styled(Box)({
   '& .services-content': {
@@ -40,6 +42,7 @@ const ServiceStyled = styled(Box)({
 export default function Services() {
   const dispatch = useDispatch();
   const [services, setServices] = useState([]);
+  const navigate = useNavigate();
   const params = useParams();
 
   useEffect(() => {
@@ -52,7 +55,10 @@ export default function Services() {
       const res = await serviceServices.list({
         categoryId: params.id,
       });
-      setServices(res.data); // Set services after receiving the data
+      const resCombo = await serviceServices.listCombo({
+        categoryId: params.id,
+      });
+      setServices([...res.data, ...resCombo.data]); // Set services after receiving the data
     } catch (error) {
       showToast('error', error.msg); // Show toast on error
     } finally {
@@ -68,6 +74,20 @@ export default function Services() {
         </Typography>
         <Box className="list-card-container">
           <CardServices type="services" services={services} />
+        </Box>
+        <Box height={50}></Box>
+        <Box>
+          <ButtonPrimary
+            sx={{ width: '35%', margin: '0 auto' }}
+            severity="primary"
+            padding={'20px 40px'}
+            borderradius={9}
+            onClick={() => {
+              navigate(USER_PATH.BOOKING);
+            }}
+          >
+            Đặt lịch ngay
+          </ButtonPrimary>
         </Box>
       </Box>
       <Box className="contact">

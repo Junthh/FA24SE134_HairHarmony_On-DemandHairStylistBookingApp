@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.StylistWorkships;
 using hair_hamony.Data.Entities;
@@ -33,7 +34,9 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                     {
                         var stylistWorkship = _context.StylistWorkships
                             .FirstOrDefault(stylistWorkship =>
-                                stylistWorkship.RegisterDate == requestBody.RegisterDate && stylistWorkship.WorkshipId == workshipId
+                                stylistWorkship.RegisterDate == requestBody.RegisterDate
+                                && stylistWorkship.WorkshipId == workshipId
+                                && stylistWorkship.StylistId == requestBody.StylistId
                             );
 
                         if (stylistWorkship != null)
@@ -42,14 +45,16 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                             throw new CException
                             {
                                 StatusCode = StatusCodes.Status400BadRequest,
-                                ErrorMessage = $"Ca làm việc {workship.StartTime} - {workship.EndTime} ngày {requestBody.RegisterDate} đã được đăng ký, vui lòng chọn ca làm việc khác"
+                                ErrorMessage = $"Ca làm việc {workship.StartTime.Value.ToString("HH:mm")} - {workship.EndTime.Value.ToString("HH:mm")} ngày " +
+                                    $"{requestBody.RegisterDate.Value.ToString("dd/MM/yyyy")} " +
+                                    $"đã được đăng ký, vui lòng chọn ca làm việc khác"
                             };
                         }
                         var newStylistWorkship = new StylistWorkship
                         {
                             RegisterDate = requestBody.RegisterDate,
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                            UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             WorkshipId = workshipId,
                             StylistId = requestBody.StylistId,
                         };
@@ -78,12 +83,21 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
 
         public async Task<(IList<GetDetailStylistWorkshipModel>, int)> GetAll(
             PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
-            SearchStylistWorkshipModel searchStylistWorkshipModel)
+            SearchStylistWorkshipModel searchStylistWorkshipModel,
+            DateOnly? startDate, DateOnly? endDate)
         {
             var query = _context.StylistWorkships
                 .Include(stylistWorkship => stylistWorkship.Workship)
                 .Include(stylistWorkship => stylistWorkship.Stylist)
                 .AsQueryable();
+
+            if (startDate != null && endDate != null)
+            {
+                query = query.Where(stylistWorkship =>
+                    stylistWorkship.RegisterDate >= startDate && stylistWorkship.RegisterDate <= endDate
+                );
+            }
+
             query = query.GetWithSearch(searchStylistWorkshipModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
@@ -120,6 +134,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                             .FirstOrDefault(stylistWorkship =>
                                 stylistWorkship.RegisterDate == requestBody.RegisterDate
                                 && stylistWorkship.WorkshipId == requestBody.WorkshipId
+                                && stylistWorkship.StylistId == requestBody.StylistId
                             );
 
             if (stylistWorkship != null)
@@ -128,13 +143,15 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Ca làm việc {workship.StartTime} - {workship.EndTime} ngày {requestBody.RegisterDate} đã được đăng ký, vui lòng chọn ca làm việc khác"
+                    ErrorMessage = $"Ca làm việc {workship.StartTime.Value.ToString("HH:mm")} - {workship.EndTime.Value.ToString("HH:mm")} ngày " +
+                            $"{requestBody.RegisterDate.Value.ToString("dd/MM/yyyy")}" +
+                            $"đã được đăng ký, vui lòng chọn ca làm việc khác"
                 };
             }
 
             var updateStylistWorkship = _mapper.Map<StylistWorkship>(await GetById(id));
             _mapper.Map(requestBody, updateStylistWorkship);
-            updateStylistWorkship.UpdatedDate = DateTime.Now;
+            updateStylistWorkship.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.StylistWorkships.Update(updateStylistWorkship);
             await _context.SaveChangesAsync();

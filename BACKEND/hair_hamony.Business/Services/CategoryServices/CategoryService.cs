@@ -4,6 +4,7 @@ using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.File;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Categories;
 using hair_hamony.Data.Entities;
@@ -27,8 +28,8 @@ namespace hair_hamony.Business.Services.CategoryServices
         public async Task<GetCategoryModel> Create(CreateCategoryModel requestBody)
         {
             var category = _mapper.Map<Category>(requestBody);
-            category.CreatedDate = DateTime.Now;
-            category.UpdatedDate = DateTime.Now;
+            category.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            category.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             if (requestBody.Image != null)
             {
@@ -159,7 +160,7 @@ namespace hair_hamony.Business.Services.CategoryServices
             {
                 category.Image = oldImage;
             }
-            category.UpdatedDate = DateTime.Now;
+            category.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();

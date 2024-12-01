@@ -9,22 +9,12 @@ const StaffPage = lazy(() => import('pages/Staff'));
 //
 const BookingHistory = lazy(() => import('pages/Staff/BookingHistory'));
 const ScheduleList = lazy(() => import('pages/Staff/ScheduleList'));
-const StylistStatus = lazy(() => import('pages/Staff/StylistStatus'));
+const StylistStatus = lazy(() => import('pages/Staff/Stylists'));
+const Booking = lazy(() => import('pages/Staff/Booking'));
+const News = lazy(() => import('pages/Staff/News'));
+const ChangePassword = lazy(() => import('pages/Staff/ChangePassword'));
+const Profile = lazy(() => import('pages/Staff/Profile'));
 
-// const StaffArticleDetails = lazy(() => import('pages/Staff/Article/ArticleDetails'));
-// const StaffOurReaderStories = lazy(() => import('pages/Staff/OurReaderStories'));
-// const StaffOurReaderStoriesDetails = lazy(
-//   () => import('pages/Staff/OurReaderStories/OurReaderStoriesDetails'),
-// );
-// const StaffCategory = lazy(() => import('pages/Staff/Category'));
-// const StaffCategoryDetails = lazy(() => import('pages/Staff/Category/CategoryDetails'));
-// const StaffVideo = lazy(() => import('pages/Staff/Video'));
-// const StaffVideoDetails = lazy(() => import('pages/Staff/Video/VideoDetails'));
-// const StaffProject = lazy(() => import('pages/Staff/Project'));
-// const StaffProjectDetails = lazy(() => import('pages/Staff/Project/ProjectDetails'));
-// const StaffWriter = lazy(() => import('pages/Staff/Writer'));
-// const StaffWriterDetails = lazy(() => import('pages/Staff/Writer/WriterDetails'));
-// const StaffEmail = lazy(() => import('pages/Staff/Email'));
 export const StaffRouter = {
   path: '/',
   element: (
@@ -37,7 +27,27 @@ export const StaffRouter = {
   children: [
     {
       path: '/',
-      element: <Navigate to={`${STAFF_PATH.SCHEDULE_LIST}`} replace />,
+      element: <Navigate to={`${STAFF_PATH.BOOKING}`} replace />,
+    },
+    {
+      path: `${STAFF_PATH.BOOKING}`,
+      element: <Booking />,
+    },
+    {
+      path: `${STAFF_PATH.PROFILE}/:id`,
+      element: (
+        <AuthProvider>
+          <Profile />
+        </AuthProvider>
+      ),
+    },
+    {
+      path: `${STAFF_PATH.CHANGE_PASSWORD}/:id`,
+      element: (
+        <AuthProvider>
+          <ChangePassword />
+        </AuthProvider>
+      ),
     },
     //
     {
@@ -49,8 +59,12 @@ export const StaffRouter = {
       element: <BookingHistory />,
     },
     {
-      path: `${STAFF_PATH.STYLIST_STATUS}`,
+      path: `${STAFF_PATH.STYLISTS}`,
       element: <StylistStatus />,
+    },
+    {
+      path: `${STAFF_PATH.NEWS}`,
+      element: <News />,
     },
   ],
 };

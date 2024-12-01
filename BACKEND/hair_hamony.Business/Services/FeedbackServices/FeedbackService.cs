@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Feedbacks;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.FeedbackServices
         public async Task<GetFeedbackModel> Create(CreateFeedbackModel requestBody)
         {
             var feedback = _mapper.Map<Feedback>(requestBody);
-            feedback.CreatedDate = DateTime.Now;
+            feedback.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Feedbacks.AddAsync(feedback);
             await _context.SaveChangesAsync();
@@ -39,14 +40,17 @@ namespace hair_hamony.Business.Services.FeedbackServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetFeedbackModel>, int)> GetAll(PagingParam<FeedbackEnum.FeedbackSort> paginationModel, SearchFeedbackModel searchFeedbackModel)
+        public async Task<(IList<GetDetailFeedbackModel>, int)> GetAll(PagingParam<FeedbackEnum.FeedbackSort> paginationModel, SearchFeedbackModel searchFeedbackModel)
         {
-            var query = _context.Feedbacks.AsQueryable();
+            var query = _context.Feedbacks
+                .Include(feedback => feedback.Booking)
+                .ThenInclude(booking => booking.Customer)
+                .AsQueryable();
             query = query.GetWithSearch(searchFeedbackModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetFeedbackModel>>(query);
+            var results = _mapper.Map<IList<GetDetailFeedbackModel>>(query);
 
             return (results, total);
         }

@@ -43,6 +43,8 @@ public partial class HairHamonyContext : DbContext
 
     public virtual DbSet<Staff> Staffs { get; set; }
 
+    public virtual DbSet<StaffSalary> StaffSalarys { get; set; }
+
     public virtual DbSet<Stylist> Stylists { get; set; }
 
     public virtual DbSet<StylistSalary> StylistSalarys { get; set; }
@@ -54,8 +56,6 @@ public partial class HairHamonyContext : DbContext
     public virtual DbSet<TimeSlot> TimeSlots { get; set; }
 
     public virtual DbSet<Transaction> Transactions { get; set; }
-
-    public virtual DbSet<TransactionDetail> TransactionDetails { get; set; }
 
     public virtual DbSet<Workship> Workships { get; set; }
 
@@ -190,9 +190,6 @@ public partial class HairHamonyContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(100)
                 .IsUnicode(false);
-            entity.Property(e => e.Username)
-                .HasMaxLength(100)
-                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Feedback>(entity =>
@@ -310,6 +307,18 @@ public partial class HairHamonyContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<StaffSalary>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__StaffSal__3214EC0787DE0A03");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.StaffSalaries)
+                .HasForeignKey(d => d.StaffId)
+                .HasConstraintName("FK__StaffSala__Staff__09746778");
+        });
+
         modelBuilder.Entity<Stylist>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Stylists__3214EC0787544767");
@@ -392,29 +401,6 @@ public partial class HairHamonyContext : DbContext
             entity.HasOne(d => d.Booking).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.BookingId)
                 .HasConstraintName("FK__Transacti__Booki__22751F6C");
-        });
-
-        modelBuilder.Entity<TransactionDetail>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07E164DD3B");
-
-            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Status)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.BookingDetail).WithMany(p => p.TransactionDetails)
-                .HasForeignKey(d => d.BookingDetailId)
-                .HasConstraintName("FK__Transacti__Booki__2739D489");
-
-            entity.HasOne(d => d.PaymentDetail).WithMany(p => p.TransactionDetails)
-                .HasForeignKey(d => d.PaymentDetailId)
-                .HasConstraintName("FK_TransactionDetails_PaymentDetail");
-
-            entity.HasOne(d => d.Transaction).WithMany(p => p.TransactionDetails)
-                .HasForeignKey(d => d.TransactionId)
-                .HasConstraintName("FK__Transacti__Trans__2645B050");
         });
 
         modelBuilder.Entity<Workship>(entity =>

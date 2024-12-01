@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ECOCUPID_ENDPOINTS } from 'configurations/constants/globalConstants';
+import { ENDPOINTS } from 'configurations/constants/globalConstants';
 import { CategoryForm } from 'models/Category.model';
 import {
   DataServiceError,
@@ -12,10 +12,9 @@ import {
 class CategoryService {
   async list(params = {}) {
     try {
-      const resData: ListServiceSuccess = await axios.get(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/categories`,
-        { params },
-      );
+      const resData: ListServiceSuccess = await axios.get(`${ENDPOINTS.ApiPrefix}/categories`, {
+        params,
+      });
       const resWriters = resData.data;
       let data = [];
       if (resData.data.length !== 0) {
@@ -43,11 +42,21 @@ class CategoryService {
     }
   }
 
+  async listComboAndServices() {
+    try {
+      const resData: ListServiceSuccess = await axios.get(
+        `${ENDPOINTS.ApiPrefix}/Categorys/ComboAndService`,
+      );
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
   async colorOptions() {
     try {
       const params = { select: 'name,color' };
       const resData: OptionServiceSuccess = await axios.get(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/categories/all`,
+        `${ENDPOINTS.ApiPrefix}/categories/all`,
         { params },
       );
       const resCategories = resData.data;
@@ -82,7 +91,7 @@ class CategoryService {
   async find(id: string) {
     try {
       const resData: DataServiceSuccess = await axios.get(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/categories/${id}`,
+        `${ENDPOINTS.ApiPrefix}/categories/${id}`,
       );
       return {
         success: resData.success,
@@ -99,7 +108,7 @@ class CategoryService {
   async create(data: CategoryForm) {
     try {
       const resData: DataServiceSuccess = await axios.post(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/categories`,
+        `${ENDPOINTS.ApiPrefix}/categories`,
         data,
       );
       return {
@@ -117,7 +126,7 @@ class CategoryService {
   async update(id: string, data: CategoryForm) {
     try {
       const resData: DataServiceSuccess = await axios.put(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/categories/${id}`,
+        `${ENDPOINTS.ApiPrefix}/categories/${id}`,
         data,
       );
       return {
@@ -135,7 +144,7 @@ class CategoryService {
   async delete(id: string) {
     try {
       const resData: DataServiceSuccess = await axios.delete(
-        `${ECOCUPID_ENDPOINTS.ApiPrefix}/categories/${id}`,
+        `${ENDPOINTS.ApiPrefix}/categories/${id}`,
       );
       return {
         success: resData.success,

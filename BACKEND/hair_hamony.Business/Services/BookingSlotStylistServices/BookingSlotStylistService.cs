@@ -3,6 +3,8 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Services.StylistSalaryServices;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.BookingSlotStylists;
 using hair_hamony.Business.ViewModels.Stylists;
@@ -16,17 +18,19 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
     {
         private readonly HairHamonyContext _context;
         private readonly IMapper _mapper;
-        public BookingSlotStylistService(IMapper mapper)
+        private readonly IStylistSalaryService _stylistSalaryService;
+        public BookingSlotStylistService(IMapper mapper, IStylistSalaryService stylistSalaryService)
         {
             _context = new HairHamonyContext();
             _mapper = mapper;
+            _stylistSalaryService = stylistSalaryService;
         }
 
         public async Task<GetBookingSlotStylistModel> Create(CreateBookingSlotStylistModel requestBody)
         {
             var bookingSlotStylist = _mapper.Map<BookingSlotStylist>(requestBody);
-            bookingSlotStylist.CreatedDate = DateTime.Now;
-            bookingSlotStylist.UpdatedDate = DateTime.Now;
+            bookingSlotStylist.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            bookingSlotStylist.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.BookingSlotStylists.AddAsync(bookingSlotStylist);
             await _context.SaveChangesAsync();
@@ -41,14 +45,37 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetBookingSlotStylistModel>, int)> GetAll(PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel, SearchBookingSlotStylistModel searchBookingSlotStylistModel)
+        public async Task<(IList<GetDetailBookingSlotStylistModel>, int)> GetAll(
+            PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel,
+            SearchBookingSlotStylistModel searchBookingSlotStylistModel,
+            DateOnly? startDate, DateOnly? endDate)
         {
-            var query = _context.BookingSlotStylists.AsQueryable();
+            var query = _context.BookingSlotStylists
+                .Include(bookingSlotStylist => bookingSlotStylist.Stylist)
+                .Include(bookingSlotStylist => bookingSlotStylist.TimeSlot)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Booking)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Combo)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Service)
+                .Include(bookingSlotStylist => bookingSlotStylist.BookingDetail)
+                .ThenInclude(bookingDetail => bookingDetail.Booking)
+                .ThenInclude(booking => booking.Customer)
+                .AsQueryable();
+
+            if (startDate != null && endDate != null)
+            {
+                query = query.Where(bookingSlotStylist =>
+                    bookingSlotStylist.BookingDate >= startDate && bookingSlotStylist.BookingDate <= endDate
+                );
+            }
+
             query = query.GetWithSearch(searchBookingSlotStylistModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetBookingSlotStylistModel>>(query);
+            var results = _mapper.Map<IList<GetDetailBookingSlotStylistModel>>(query);
 
             return (results, total);
         }
@@ -65,7 +92,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             return _mapper.Map<GetBookingSlotStylistModel>(bookingSlotStylist);
         }
 
-        public IList<GetStylistModel> GetListStylistFreetime(DateOnly bookingDate, Guid timeSlotId)
+        public async Task<IList<GetStylistModel>> GetListStylistFreetime(DateOnly bookingDate, Guid timeSlotId)
         {
             var timeSlot = _context.TimeSlots.AsNoTracking().FirstOrDefault(timeSlot => timeSlot.Id == timeSlotId);
 
@@ -81,16 +108,62 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
 
             // danh sach stylist da co booking
             var bookingSlotStylist = _context.BookingSlotStylists
-                .Where(bookingSlotStylist => bookingSlotStylist.BookingDate.Equals(bookingDate) && bookingSlotStylist.TimeSlotId == timeSlotId)
+                .Where(bookingSlotStylist =>
+                    bookingSlotStylist.BookingDate.Equals(bookingDate)
+                    && bookingSlotStylist.TimeSlotId == timeSlotId
+                    && bookingSlotStylist.Status == "Booked")
                 .Select(bookingSlotStylist => bookingSlotStylist.StylistId)
                 .ToList();
 
             // danh sach stylist freetime
             var stylistsFreetime = stylistWorkships.Except(bookingSlotStylist).ToList();
 
-            var stylists = _context.Stylists.AsNoTracking().Where(stylist => stylistsFreetime.Contains(stylist.Id));
+            var stylists = _context.Stylists.AsNoTracking().Where(stylist => stylistsFreetime.Contains(stylist.Id) && stylist.Status == "Active");
 
-            return _mapper.Map<IList<GetStylistModel>>(stylists);
+            var results = _mapper.Map<IList<GetStylistModel>>(stylists);
+
+            var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+            var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
+            foreach (var item in results)
+            {
+                var systemConfig = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE");
+                if (item.Level == "Expert")
+                {
+                    item.ExpertFee = systemConfig.Value;
+                }
+
+                var stylistSalary = _context.StylistSalarys
+                    .FirstOrDefault(stylistSalary =>
+                        stylistSalary.StylistId == item.Id
+                        && stylistSalary.Month == monthCurrent
+                        && stylistSalary.Year == yearCurrent
+                    );
+
+                var stylist = _context.Stylists
+                        .FirstOrDefault(stylist => stylist.Id == item.Id);
+                // nếu trong tháng này chưa có booking thì tạo để có dữ liệu so sánh tổng booking trong tháng
+                if (stylistSalary == null)
+                {
+                    await _stylistSalaryService.Create(new ViewModels.StylistSalarys.CreateStylistSalaryModel
+                    {
+                        Month = monthCurrent,
+                        Year = yearCurrent,
+                        StylistId = item.Id,
+                        TotalBooking = 0,
+                        TotalCommission = 0,
+                        TotalSalary = stylist.Salary
+                    });
+                }
+            }
+
+            // sắp xếp theo stylist có tổng booking thấp nhất
+            var stylistSorted = from stylist in results
+                                join stylistSalary in _context.StylistSalarys on stylist.Id equals stylistSalary.StylistId
+                                where stylistSalary.Month == monthCurrent && stylistSalary.Year == yearCurrent
+                                orderby stylistSalary.TotalBooking
+                                select stylist;
+
+            return stylistSorted.ToList();
         }
 
         public async Task<GetBookingSlotStylistModel> Update(Guid id, UpdateBookingSlotStylistModel requestBody)
@@ -105,7 +178,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             }
             var bookingSlotStylist = _mapper.Map<BookingSlotStylist>(await GetById(id));
             _mapper.Map(requestBody, bookingSlotStylist);
-            bookingSlotStylist.UpdatedDate = DateTime.Now;
+            bookingSlotStylist.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.BookingSlotStylists.Update(bookingSlotStylist);
             await _context.SaveChangesAsync();

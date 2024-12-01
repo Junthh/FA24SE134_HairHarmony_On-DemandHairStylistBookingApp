@@ -3,7 +3,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import { IconButton, Stack, Typography } from '@mui/material';
+import { Breakpoint, IconButton, Stack, Typography } from '@mui/material';
 import { ICONS } from 'configurations/icons';
 
 interface DialogPropsType {
@@ -15,6 +15,7 @@ interface DialogPropsType {
   confirmButtonText?: string;
   cancelButtonText?: string;
   width?: number | string;
+  maxWidth?: Breakpoint | false;
   onClose: () => void;
   onConfirm?: () => void;
 }
@@ -26,12 +27,14 @@ function CustomDialog({
   content,
   footerActions,
   width,
+  maxWidth,
   onClose,
 }: DialogPropsType) {
   return (
     <Dialog
       open={open}
-      maxWidth="lg"
+      maxWidth={maxWidth || 'lg'}
+      fullWidth
       onClose={onClose}
       scroll="body"
       sx={{ zIndex: 1299, height: '100vh' }}
@@ -51,7 +54,7 @@ function CustomDialog({
       ) : (
         title
       )}
-      <DialogContent sx={{ width: width || 600, padding: '0px' }}>{content}</DialogContent>
+      <DialogContent sx={{ width: width, padding: '0px' }}>{content}</DialogContent>
       {footerActions}
     </Dialog>
   );

@@ -109,13 +109,13 @@ export default function CardServices({
           <Grid item xs={3} key={index}>
             <BoxCardService type="services">
               <Box className="content">
-                <Typography fontWeight={'bold'} variant="h4">
+                <Typography whiteSpace={'nowrap'} fontWeight={'bold'} variant="h4">
                   {item.name}
                 </Typography>
               </Box>
               <Box className="content">
                 <Typography fontFamily={'none !important'} variant="body2">
-                  Giá chỉ từ: {currencyFormat(item.price)}
+                  Giá chỉ từ: {currencyFormat(item.price ?? item.totalPrice)}
                 </Typography>
               </Box>
               <Box className="content-img">
@@ -126,7 +126,7 @@ export default function CardServices({
                 <Typography className="minutes" variant="body2" fontFamily={'none !important'}>
                   {item.duration} Phút
                 </Typography>
-                <Box
+                {/* <Box
                   display={'flex'}
                   alignItems={'center'}
                   sx={{
@@ -140,7 +140,7 @@ export default function CardServices({
                     Tìm hiểu thêm
                   </Typography>
                   <ArrowRightIcon />
-                </Box>
+                </Box> */}
               </Box>
             </BoxCardService>
           </Grid>

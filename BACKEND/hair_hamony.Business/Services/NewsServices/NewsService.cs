@@ -4,6 +4,7 @@ using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.File;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.News;
 using hair_hamony.Data.Entities;
@@ -27,8 +28,8 @@ namespace hair_hamony.Business.Services.NewsServices
         public async Task<GetNewsModel> Create(CreateNewsModel requestBody)
         {
             var news = _mapper.Map<News>(requestBody);
-            news.CreatedDate = DateTime.Now;
-            news.UpdatedDate = DateTime.Now;
+            news.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            news.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
             if (requestBody.Thumbnail != null)
             {
                 var file = await _fileService.UploadFile(requestBody.Thumbnail);
@@ -83,12 +84,17 @@ namespace hair_hamony.Business.Services.NewsServices
                 };
             }
             var news = _mapper.Map<News>(await GetById(id));
+            var oldThumbnail = news.Thumbnail;
             _mapper.Map(requestBody, news);
-            news.UpdatedDate = DateTime.Now;
+            news.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
             if (requestBody.Thumbnail != null)
             {
                 var file = await _fileService.UploadFile(requestBody.Thumbnail);
                 news.Thumbnail = file.Url;
+            }
+            else
+            {
+                news.Thumbnail = oldThumbnail;
             }
 
             _context.News.Update(news);

@@ -2,14 +2,17 @@ import { Box, Link, Popover, Typography } from '@mui/material';
 import { AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import * as colors from 'constants/colors';
 import { ButtonPrimary } from 'pages/common/style/Button';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { NavbarStyled } from './styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCredentialInfo, setCredentialInfo } from 'redux/Reducer';
 import PopoverContent from 'pages/common/PopoverContent';
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
-import { CredentialInfo } from 'models/CredentialInfo.model';
+import { CredentialInfo, Token } from 'models/CredentialInfo.model';
+import { LOCAL_STORAGE_KEYS } from 'configurations/constants/globalConstants';
+import jwtDecode from 'jwt-decode';
+import { authService } from 'services/auth.service';
 
 interface NavBarUserProps {
   onSidebarChange?: any;
@@ -23,6 +26,12 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
+  const [token, setToken] = useState<Token>(() => {
+    const accessToken = localStorage.getItem(LOCAL_STORAGE_KEYS.AccessToken);
+    const refreshToken = localStorage.getItem(LOCAL_STORAGE_KEYS.RefreshToken);
+
+    return (accessToken && refreshToken && { token: accessToken, refreshToken }) || null;
+  });
   // popover
   const [typePopover, setTypePopover] = useState<{
     type: string;
@@ -48,11 +57,52 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       link: USER_PATH.OUR_TEAMMATES,
       name: 'Đội Ngũ Chúng Tôi',
     },
-    {
-      link: '',
-      name: 'Liên hệ',
-    },
+    // {
+    //   link: '',
+    //   name: 'Liên hệ',
+    // },
   ]);
+  useEffect(() => {
+    if (token) {
+      const { exp, email, role, id } = jwtDecode(token.token) as any;
+
+      if (Date.now() >= exp * 1000) {
+        if (!token.refreshToken) {
+          localStorage.clear();
+          navigate(AUTH_PATH.LOGIN);
+          dispatch(setCredentialInfo<CredentialInfo>({}));
+          return;
+        }
+        authService
+          .refreshAccessToken({ refreshToken: token.refreshToken })
+          .then((res) => {
+            if (res) {
+              localStorage.setItem(LOCAL_STORAGE_KEYS.AccessToken, res.data.accessToken);
+              localStorage.setItem(LOCAL_STORAGE_KEYS.RefreshToken, res.data.refreshToken);
+              setToken({
+                token: res.data.accessToken,
+                refreshToken: res.data.refreshToken,
+              });
+            }
+          })
+          .catch((error) => {
+            localStorage.clear();
+            navigate(AUTH_PATH.LOGIN);
+            dispatch(setCredentialInfo<CredentialInfo>({}));
+          });
+      } else {
+        const info: CredentialInfo = {
+          accessToken: token.token,
+          refreshToken: token.refreshToken,
+          ...jwtDecode(token.token),
+        };
+        dispatch(setCredentialInfo<CredentialInfo>(info));
+      }
+    } else {
+      localStorage.clear();
+      dispatch(setCredentialInfo<CredentialInfo>({}));
+    }
+  }, [token?.token, token?.refreshToken]);
   // get categories options
   const renderNav = useMemo(() => {
     const arrUrl = location.pathname.split('/');
@@ -94,7 +144,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       </Box>
       <Box className="nav-right">
         {renderNav}
-        {credentialInfo?.Username ? (
+        {credentialInfo?.PhoneNumber ? (
           <>
             <ButtonPrimary
               severity="primary"
@@ -106,7 +156,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
                 setAnchorEl(event.currentTarget);
               }}
             >
-              {'Wellcome ' + credentialInfo.Username}
+              {'Wellcome ' + credentialInfo.FullName}
             </ButtonPrimary>
             <Popover
               id={id}
@@ -123,6 +173,18 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
               }}
             >
               <PopoverContent>
+                <Box
+                  padding={'10px 20px'}
+                  className="content"
+                  onClick={() => {
+                    handleClose();
+                    navigate(`${USER_PATH.PROFILE}/${credentialInfo.Id}`);
+                  }}
+                >
+                  <Typography variant="body2" fontWeight={500}>
+                    Hồ sơ người dùng
+                  </Typography>
+                </Box>
                 <Box
                   padding={'10px 20px'}
                   className="content"

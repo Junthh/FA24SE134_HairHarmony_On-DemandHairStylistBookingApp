@@ -10,9 +10,9 @@ class AuthService {
       data: payload,
     });
   };
-  register = (payload: RegisterPayload) => {
+  register = (payload: FormData) => {
     return axios({
-      url: `${ENDPOINTS.ApiPrefix}/Customers/regist`,
+      url: `${ENDPOINTS.ApiPrefix}/Customers`,
       method: 'POST',
       data: payload,
     });
@@ -22,6 +22,26 @@ class AuthService {
       url: `${ENDPOINTS.ApiPrefix}/Customers/login`,
       method: 'POST',
       data: payload,
+    });
+  };
+  findById = async (id: string) => {
+    return await axios({
+      url: `${ENDPOINTS.ApiPrefix}/Customers/${id}`,
+      method: 'GET',
+    });
+  };
+  update = async (id: string, body: FormData) => {
+    return await axios({
+      url: `${ENDPOINTS.ApiPrefix}/Customers/${id}`,
+      method: 'PUT',
+      data: body,
+    });
+  };
+  changePassword = async (id: string, body: FormData) => {
+    return await axios({
+      url: `${ENDPOINTS.ApiPrefix}/Customers/${id}/changePassword`,
+      method: 'PUT',
+      data: body,
     });
   };
 }

@@ -14,6 +14,9 @@ const Booking = lazy(() => import('pages/Users/Booking'));
 const Appointment = lazy(() => import('pages/Users/Appointment'));
 const AboutUs = lazy(() => import('pages/Users/AboutUs'));
 const OurTeammates = lazy(() => import('pages/Users/OurTeammates'));
+const News = lazy(() => import('pages/Users/News'));
+const Profile = lazy(() => import('pages/Users/Profile'));
+const ChangePassword = lazy(() => import('pages/Users/ChangePassword'));
 
 export const UsersRouter = {
   path: '',
@@ -29,6 +32,22 @@ export const UsersRouter = {
       element: <Navigate to={`${USER_PATH.HOME}`} replace />,
     },
     {
+      path: `${USER_PATH.PROFILE}/:id`,
+      element: (
+        <AuthProvider>
+          <Profile />
+        </AuthProvider>
+      ),
+    },
+    {
+      path: `${USER_PATH.CHANGE_PASSWORD}/:id`,
+      element: (
+        <AuthProvider>
+          <ChangePassword />
+        </AuthProvider>
+      ),
+    },
+    {
       path: USER_PATH.HOME,
       element: <UserHome />,
     },
@@ -37,15 +56,19 @@ export const UsersRouter = {
       element: <Services />,
     },
     {
-      path: USER_PATH.STYLIST_DETAIL,
+      path: `${USER_PATH.STYLIST_DETAIL}/:id`,
       element: <StylistDetails />,
+    },
+    {
+      path: `${USER_PATH.NEWS}/:id`,
+      element: <News />,
     },
     {
       path: USER_PATH.BOOKING,
       element: (
-        // <AuthProvider>
-        <Booking />
-        // </AuthProvider>
+        <AuthProvider>
+          <Booking />{' '}
+        </AuthProvider>
       ),
     },
     {

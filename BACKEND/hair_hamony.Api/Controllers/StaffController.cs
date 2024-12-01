@@ -41,10 +41,10 @@ namespace home_travel.API.Controllers
         [HttpPut("{id}/changePassword")]
         [ProducesResponseType(typeof(BaseResponse<GetStaffModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public async Task<IActionResult> ChangePassword(Guid id, string oldPassword, string newPassword)
+        public async Task<IActionResult> ChangePassword(Guid id, [FromForm] UpdatePasswordModel requestBody)
         {
             return Ok(new BaseResponse<GetStaffModel>(
-                    data: await _staffService.ChangePassword(id, oldPassword, newPassword)
+                    data: await _staffService.ChangePassword(id, requestBody.OldPassword, requestBody.NewPassword)
                 ));
         }
 
@@ -142,6 +142,12 @@ namespace home_travel.API.Controllers
         {
             await _staffService.Delete(id);
             return NoContent();
+        }
+
+        public class UpdatePasswordModel
+        {
+            public string OldPassword { get; set; }
+            public string NewPassword { get; set; }
         }
     }
 }

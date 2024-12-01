@@ -13,6 +13,8 @@ import TopStyledList1 from '../mock/top-sylist-1.png';
 import TopStyledList2 from '../mock/top-sylist-2.png';
 import TopStyledList3 from '../mock/top-sylist-3.png';
 import TopStyledList4 from '../mock/top-sylist-4.png';
+import { useNavigate } from 'react-router-dom';
+import { USER_PATH } from 'configurations/paths/paths';
 
 const BoxCarouselStyled = styled(Box)({
   margin: '4px 0px',
@@ -52,8 +54,10 @@ export const SwiperStyled = styled(Swiper)({
 });
 export default function TopSylistSlider({ stylist }) {
   const [swiperRef, setSwiperRef] = useState(null);
-
-  const handleGetDetail = () => {};
+  const navigate = useNavigate();
+  const handleGetDetail = (stylistId: string) => {
+    navigate(`${USER_PATH.STYLIST_DETAIL}/${stylistId}`);
+  };
 
   return (
     <BoxCarouselStyled>

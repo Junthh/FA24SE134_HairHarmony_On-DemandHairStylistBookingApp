@@ -1,4 +1,5 @@
-﻿using hair_hamony.Business.ViewModels.Stylists;
+﻿using hair_hamony.Business.ViewModels.BookingDetails;
+using hair_hamony.Business.ViewModels.Stylists;
 using hair_hamony.Business.ViewModels.TimeSlots;
 
 namespace hair_hamony.Business.ViewModels.BookingSlotStylists
@@ -16,5 +17,6 @@ namespace hair_hamony.Business.ViewModels.BookingSlotStylists
         public Guid? StylistWorkshipId { get; set; }
         public GetTimeSlotModel? TimeSlot { get; set; }
         public GetStylistModel? Stylist { get; set; }
+        public GetDetailBookingDetailModel? BookingDetail { get; set; }
     }
 }

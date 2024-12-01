@@ -9,7 +9,7 @@ namespace hair_hamony.Business.Utilities
 
     public interface IJwtHelper
     {
-        string GenerateJwtToken(string role, Guid id, string? email = null, string? phoneNumber = null, string? username = null);
+        string GenerateJwtToken(string role, Guid id, string? email = null, string? phoneNumber = null, string? username = null, string? fullName = null);
     }
     public class JwtHelper : IJwtHelper
     {
@@ -20,7 +20,7 @@ namespace hair_hamony.Business.Utilities
             _config = config;
         }
 
-        public string GenerateJwtToken(string role, Guid id, string? email = null, string? phoneNumber = null, string? username = null)
+        public string GenerateJwtToken(string role, Guid id, string? email = null, string? phoneNumber = null, string? username = null, string? fullName = null)
         {
             // symmetric security key
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]!));
@@ -34,6 +34,7 @@ namespace hair_hamony.Business.Utilities
                 new Claim("PhoneNumber", phoneNumber ?? ""),
                 new Claim("Id", id.ToString()),
                 new Claim("Role", role),
+                new Claim("FullName", fullName ?? ""),
                 new Claim(ClaimTypes.Role, role)
             };
 
@@ -41,8 +42,8 @@ namespace hair_hamony.Business.Utilities
             var token = new JwtSecurityToken(
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddHours(1),
+                notBefore: UtilitiesHelper.DatetimeNowUTC7(),
+                expires: UtilitiesHelper.DatetimeNowUTC7().AddHours(1),
                 signingCredentials: signingCredentials,
                 claims: claim
             );

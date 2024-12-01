@@ -3,7 +3,6 @@ using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.ViewModels;
-using hair_hamony.Business.ViewModels.Customers;
 using hair_hamony.Business.ViewModels.Stylists;
 using hair_hamony.Business.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -42,10 +41,10 @@ namespace home_travel.API.Controllers
         [HttpPut("{id}/changePassword")]
         [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public async Task<IActionResult> ChangePassword(Guid id, string oldPassword, string newPassword)
+        public async Task<IActionResult> ChangePassword(Guid id, [FromForm] UpdatePasswordModel requestBody)
         {
             return Ok(new BaseResponse<GetStylistModel>(
-                    data: await _stylistService.ChangePassword(id, oldPassword, newPassword)
+                    data: await _stylistService.ChangePassword(id, requestBody.OldPassword, requestBody.NewPassword)
                 ));
         }
 
@@ -84,12 +83,12 @@ namespace home_travel.API.Controllers
         /// <response code="200">Returns the stylist</response>
         /// <response code="404">Returns if the stylist is not exist</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(BaseResponse<GetStylistModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<GetDetailStylistModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return Ok(new BaseResponse<GetStylistModel>(
+            return Ok(new BaseResponse<GetDetailStylistModel>(
                     data: await _stylistService.GetById(id)
                 ));
         }
@@ -145,6 +144,12 @@ namespace home_travel.API.Controllers
         {
             await _stylistService.Delete(id);
             return NoContent();
+        }
+
+        public class UpdatePasswordModel
+        {
+            public string OldPassword { get; set; }
+            public string NewPassword { get; set; }
         }
     }
 }

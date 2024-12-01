@@ -30,7 +30,7 @@ import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled'
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectServices, setLoading } from 'redux/Reducer';
+import { selectCategorys, selectServices, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
@@ -43,6 +43,8 @@ export default function ComboList() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const services = useSelector(selectServices);
+  const categorys = useSelector(selectCategorys);
+
   const [image, setImage] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -65,7 +67,15 @@ export default function ComboList() {
   });
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape<any>({
+    name: Yup.string().required(`Vui lòng nhập tên combo.`),
+    discount: Yup.string().required(`Vui lòng nhập mã giảm giá.`),
+    totalPrice: Yup.string().required(`Vui lòng nhập số tiền.`),
+    duration: Yup.string().required(`Vui lòng nhập khoảng thời gian.`),
+    description: Yup.string().required(`Vui lòng nhập mô tả.`),
+    categoryId: Yup.string().required(`Vui lòng chọn loại.`),
+    comboService: Yup.array().required(`Vui lòng chọn dịch vụ.`),
+  });
   const defaultValues = {
     id: '',
     name: '',
@@ -75,6 +85,7 @@ export default function ComboList() {
     image: '',
     description: '',
     comboService: null,
+    categoryId: null,
   };
   const formCombo = useForm<any>({
     defaultValues,
@@ -154,6 +165,11 @@ export default function ComboList() {
       comboServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
+          getCombosList({
+            size: paging.size,
+            page: paging.page,
+            name: formSearch.getValues('name'),
+          });
           showToast('success', res.msg);
           dispatch(setLoading(false));
         })
@@ -162,7 +178,7 @@ export default function ComboList() {
           dispatch(setLoading(false));
         });
     },
-    [selectedRow],
+    [selectedRow, paging.size, paging.page],
   );
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
@@ -247,6 +263,19 @@ export default function ComboList() {
                 placeholder="Nhập tên combo"
                 label={'Tên combo'}
                 //   onKeyUp={handleKeyup}
+              />
+              <SelectElement
+                name="categoryId"
+                label="Loại dịch vụ"
+                control={control}
+                options={
+                  categorys &&
+                  Object.keys(categorys).map((id) => ({
+                    value: id,
+                    label: categorys[id].name,
+                  }))
+                }
+                placeholder="Select items"
               />
               <SelectMultiElement
                 name="comboService"

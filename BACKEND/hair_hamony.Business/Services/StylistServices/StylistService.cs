@@ -56,12 +56,25 @@ namespace hair_hamony.Business.Services.StylistServices
                 var file = await _fileService.UploadFile(requestBody.Avatar);
                 stylist.Avatar = file.Url;
             }
-            var defaultPassword = "123";
-            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
             stylist.Password = passwordHashed;
             stylist.Status = "Active";
-            stylist.CreatedDate = DateTime.Now;
-            stylist.Rating = 0;
+            stylist.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            stylist.Rating = 5;
+            stylist.Id = Guid.NewGuid();
+
+            var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+            var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
+            await _context.StylistSalarys.AddAsync(new StylistSalary
+            {
+                CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                Month = monthCurrent,
+                Year = yearCurrent,
+                StylistId = stylist.Id,
+                TotalBooking = 0,
+                TotalCommission = 0,
+                TotalSalary = stylist.Salary
+            });
 
             await _context.Stylists.AddAsync(stylist);
             await _context.SaveChangesAsync();
@@ -88,16 +101,21 @@ namespace hair_hamony.Business.Services.StylistServices
             return (results, total);
         }
 
-        public async Task<GetStylistModel> GetById(Guid id)
+        public async Task<GetDetailStylistModel> GetById(Guid id)
         {
-            var stylist = await _context.Stylists.AsNoTracking().FirstOrDefaultAsync(stylist => stylist.Id == id)
+            var stylist = await _context.Stylists.AsNoTracking()
+                .Include(stylist => stylist.BookingSlotStylists)
+                .Include(stylist => stylist.Feedbacks)
+                .ThenInclude(feedback => feedback.Booking)
+                .ThenInclude(booking => booking.Customer)
+                .FirstOrDefaultAsync(stylist => stylist.Id == id)
                 ?? throw new CException
                 {
                     StatusCode = StatusCodes.Status404NotFound,
                     ErrorMessage = $"Id {id} không tồn tại"
                 };
 
-            return _mapper.Map<GetStylistModel>(stylist);
+            return _mapper.Map<GetDetailStylistModel>(stylist);
         }
 
         public async Task<GetStylistModel> Update(Guid id, UpdateStylistModel requestBody)
@@ -174,7 +192,23 @@ namespace hair_hamony.Business.Services.StylistServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Stylist", id: stylist.Id, email: "", phoneNumber: stylist.PhoneNumber, username: stylist.Username);
+            if (stylist.Status == "Inactive")
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tài khoản đã bị khoá"
+                };
+            }
+
+            var token = _jwtHelper.GenerateJwtToken(
+                role: "Stylist",
+                id: stylist.Id,
+                email: "",
+                phoneNumber: stylist.PhoneNumber,
+                username: stylist.Username,
+                fullName: stylist.FullName
+            );
             return (token, _mapper.Map<GetStylistModel>(stylist));
         }
 

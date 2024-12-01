@@ -17,6 +17,8 @@ export enum OWNER_PATH {
   EMPLOYEE_WORK_SCHEDULE = '/employee-work-schedule',
   EMPLOYEE_STAFF_LIST = '/employee-staff-list',
   EMPLOYEE_STYLIST_LIST = '/employee-stylist',
+  CUSTOMER_LIST = '/customer',
+  STAFF_SALARY = '/staff-salary',
   EMPLOYEE_SALARY = '/employee-salary',
   DASHBOARD = '/dashboard',
   CATEGORIES = '/categories',
@@ -47,13 +49,23 @@ export const OWNER_PATH_SIDEBAR = [
     icon: <PeopleAltIcon />,
   },
   {
+    title: 'Danh sách khách hàng',
+    path: OWNER_PATH.CUSTOMER_LIST,
+    icon: <PeopleAltIcon />,
+  },
+  {
     title: 'Lịch nhân viên',
     path: OWNER_PATH.EMPLOYEE_WORK_SCHEDULE,
     icon: <CalendarMonthIcon />,
   },
   {
-    title: 'Lương nhân viên',
+    title: 'Lương stylist',
     path: OWNER_PATH.EMPLOYEE_SALARY,
+    icon: <PaidIcon />,
+  },
+  {
+    title: 'Lương staff',
+    path: OWNER_PATH.STAFF_SALARY,
     icon: <PaidIcon />,
   },
   {

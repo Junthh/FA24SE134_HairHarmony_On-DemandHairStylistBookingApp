@@ -177,7 +177,7 @@ export default function RegisterWorkSchedule() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', err.msg);
             dispatch(setLoading(false));
           });
       } else {
@@ -192,7 +192,7 @@ export default function RegisterWorkSchedule() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', err.msg);
             dispatch(setLoading(false));
           });
       }

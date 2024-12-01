@@ -84,16 +84,18 @@ function Staff() {
       setTabName('Danh sách đặt lịch');
     } else if (name === STAFF_PATH.HISTORY.split('/')[1]) {
       setTabName('Lịch sử đặt lịch');
-    } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
-      setTabName('Tình Trạng Stylist');
+    } else if (name === STAFF_PATH.STYLISTS.split('/')[1]) {
+      setTabName('Danh sách Stylist');
+    } else if (name === STAFF_PATH.BOOKING.split('/')[1]) {
+      setTabName('Đặt lịch');
+    } else if (name === STAFF_PATH.NEWS.split('/')[1]) {
+      setTabName('Tin tức');
+    } else if (name === STAFF_PATH.PROFILE.split('/')[1]) {
+      setTabName('Cập nhật thông tin');
+    } else if (name === STAFF_PATH.CHANGE_PASSWORD.split('/')[1]) {
+      setTabName('Thay đổi mật khẩu');
     }
   }, [location]);
-
-  useEffect(() => {
-    if (credentialInfo?.email) {
-      // setEmail(credentialInfo.email);
-    }
-  }, [credentialInfo]);
 
   return (
     <SideBar>
@@ -101,7 +103,7 @@ function Staff() {
         <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
           <Avatar src="" />
-          {/* <EmailWrapper>
+          <EmailWrapper>
             <Typography
               variant="body2"
               fontWeight={700}
@@ -112,9 +114,9 @@ function Staff() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {email}
+              {credentialInfo.FullName}
             </Typography>
-          </EmailWrapper> */}
+          </EmailWrapper>
           <ArrowDropDownIcon sx={{ color: '#F2FFE3' }} />
           {toggle && (
             <Box

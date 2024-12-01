@@ -60,7 +60,7 @@ namespace hair_hamony.Business.Services.OwnerServices
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             owner.Password = passwordHashed;
             owner.Status = "Active";
-            owner.CreatedDate = DateTime.Now;
+            owner.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Owners.AddAsync(owner);
             await _context.SaveChangesAsync();
@@ -172,7 +172,22 @@ namespace hair_hamony.Business.Services.OwnerServices
                 };
             }
 
-            var token = _jwtHelper.GenerateJwtToken(role: "Owner", id: owner.Id, email: "", phoneNumber: owner.PhoneNumber, username: owner.Username);
+            if (owner.Status == "Inactive")
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tài khoản đã bị khoá"
+                };
+            }
+
+            var token = _jwtHelper.GenerateJwtToken(role: "Owner",
+                id: owner.Id,
+                email: "",
+                phoneNumber: owner.PhoneNumber,
+                username: owner.Username,
+                fullName: owner.FullName
+            );
             return (token, _mapper.Map<GetOwnerModel>(owner));
         }
 

@@ -63,6 +63,9 @@ export const SidebarStyled = styled(Box)<{ isopen: number }>(({ isopen }) => ({
           fontWeight: 700,
           color: '#285D9A',
         },
+        '& .icon': {
+          color: '#285D9A',
+        },
       },
       '& .active': {
         // borderRight: '4px solid white',
@@ -93,6 +96,9 @@ export const MenuSidebarStyled = styled(Box)({
     '& .link': {
       paddingLeft: '20px',
       borderBottom: '#fff 0.5px solid',
+      '& .icon': {
+        color: '#285D9A',
+      },
     },
   },
 });
