@@ -7,18 +7,19 @@ using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.Services.FeedbackServices;
 using hair_hamony.Business.Services.File;
+using hair_hamony.Business.Services.MomoServices;
 using hair_hamony.Business.Services.NewsServices;
 using hair_hamony.Business.Services.OwnerServices;
 using hair_hamony.Business.Services.PaymentDetailServices;
 using hair_hamony.Business.Services.PaymentServices;
 using hair_hamony.Business.Services.ServiceServices;
+using hair_hamony.Business.Services.StaffSalaryServices;
 using hair_hamony.Business.Services.StaffServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.Services.StylistWorkshipServices;
 using hair_hamony.Business.Services.SystemConfigServices;
 using hair_hamony.Business.Services.TimeSlotServices;
-using hair_hamony.Business.Services.TransactionDetailServices;
 using hair_hamony.Business.Services.TransactionServices;
 using hair_hamony.Business.Services.WorkshipServices;
 using hair_hamony.Business.Utilities;
@@ -32,6 +33,7 @@ namespace hair_hamony.Business.Services
         {
             services.AddScoped<IJwtHelper, JwtHelper>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<HttpClient, HttpClient>();
 
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingDetailService, BookingDetailService>();
@@ -48,13 +50,14 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<ITimeSlotService, TimeSlotService>();
             services.AddScoped<ITransactionService, TransactionService>();
-            services.AddScoped<ITransactionDetailService, TransactionDetailService>();
             services.AddScoped<IWorkshipService, WorkshipService>();
             services.AddScoped<INewsService, NewsService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IPaymentDetailService, PaymentDetailService>();
             services.AddScoped<IOwnerService, OwnerService>();
             services.AddScoped<IStaffService, StaffService>();
+            services.AddScoped<IStaffSalaryService, StaffSalaryService>();
+            services.AddScoped<IMomoService, MomoService>();
         }
     }
 }

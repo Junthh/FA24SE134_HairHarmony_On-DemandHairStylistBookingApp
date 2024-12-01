@@ -8,5 +8,10 @@
             string[] splitCurrency = formatCurrency.Split(" ");
             return splitCurrency[0];
         }
+
+        public static DateTime DatetimeNowUTC7()
+        {
+            return TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+        }
     }
 }

@@ -9,6 +9,12 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import NewsAbou1 from '../mock/news-about-1.png';
 import NewsAbou2 from '../mock/news-about-2.png';
 import NewsAbou3 from '../mock/news-about-3.png';
+import { newsServices } from 'services/news.service';
+import { useDispatch } from 'react-redux';
+import { setLoading } from 'redux/Reducer';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { USER_PATH } from 'configurations/paths/paths';
 const BoxCarouselStyled = styled(Box)({
   margin: '4px 0px',
   position: 'relative',
@@ -47,25 +53,29 @@ const SwiperStyled = styled(Swiper)({
 });
 export default function NewsAboutHairHamony() {
   const [swiperRef, setSwiperAboutRef] = useState(null);
-  const [datas] = useState([
-    {
-      image: NewsAbou1,
-      description:
-        'HairHamony tham gia khóa đào tạo kỹ thuật salon chuyên nghiệp cao cấp toàn Châu Á',
-      onClick: () => {},
-    },
-    {
-      image: NewsAbou2,
-      description: 'HairHamony đầu tư lớn vào công nghệ làm đẹp sau cú hích 15 triệu USD',
-      onClick: () => {},
-    },
-    {
-      image: NewsAbou3,
-      description: 'Doanh nghiệp đào tạo nhân viên thành TikToker để tiết kiệm phí marketing',
-      onClick: () => {},
-    },
-  ]);
-  const handleGetDetail = () => {};
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [datas, setDatas] = useState([]);
+  const handleGetListNews = () => {
+    dispatch(setLoading(true));
+    try {
+      newsServices
+        .list()
+        .then((res) => {
+          setDatas(res.data);
+        })
+        .finally(() => dispatch(setLoading(false)));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetListNews();
+  }, []);
+  const handleGetDetail = (id) => {
+    navigate(`${USER_PATH.NEWS}/${id}`);
+  };
   return (
     <BoxCarouselStyled>
       <IconButton className="swiper-button image-news-about-swiper-button-prev">

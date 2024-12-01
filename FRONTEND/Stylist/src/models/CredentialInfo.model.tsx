@@ -2,6 +2,7 @@ export interface CredentialInfo {
   Username?: string;
   Email?: string;
   PhoneNumber?: string;
+  FullName?: string;
   Id?: string;
   Role?: string;
   nbf?: number;

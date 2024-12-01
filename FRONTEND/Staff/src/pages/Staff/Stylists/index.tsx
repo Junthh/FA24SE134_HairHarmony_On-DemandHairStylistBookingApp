@@ -34,17 +34,17 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from 'redux/Reducer';
-import { formatDate } from 'utils/datetime';
+import { formatDate, formatDateTime } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
 import { employeeStylistServices } from 'services/employee-stylist.services';
-import { objectToFormData } from 'utils/helper';
+import { currencyFormat, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import CurrencyFieldElement from 'components/Form/CurrencyFieldElement/CurrencyFieldElement';
 
-export default function StylistStatus() {
+export default function Stylists() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -250,14 +250,6 @@ export default function StylistStatus() {
                 label={'Họ và tên'}
                 //   onKeyUp={handleKeyup}
               />
-              <TextAreaElement
-                name="description"
-                control={control}
-                type="text"
-                placeholder="Nhập description"
-                label={'Description'}
-                //   onKeyUp={handleKeyup}
-              />
               <TextFieldElement
                 name="phoneNumber"
                 control={control}
@@ -277,8 +269,8 @@ export default function StylistStatus() {
                 control={control}
                 name="experience"
                 type="number"
-                placeholder="Nhập experience"
-                label={'Experience'}
+                placeholder="Nhập kinh nghiệm"
+                label={'Kinh nghiệm'}
               ></TextFieldElement>
               <TextFieldElement
                 name="kpi"
@@ -321,7 +313,7 @@ export default function StylistStatus() {
             <TextFieldElement
               name="username"
               control={controlSearch}
-              placeholder="Search"
+              placeholder="Tìm theo username"
               InputProps={{
                 startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
               }}
@@ -354,38 +346,34 @@ export default function StylistStatus() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="left">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Username
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="left">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Họ và tên
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Số điện thoại
-              </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white', minWidth: 200 }} align="left">
-                Mô tả
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Level
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Experience
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Kinh nghiệm
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 KPI
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Lương
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Rating
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Đánh giá
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Trạng thái
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="right">
+              <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Ngày tạo
               </StyledTableCell>
               <StyledTableCell
@@ -396,7 +384,7 @@ export default function StylistStatus() {
                   backgroundColor: '#2d3748',
                   zIndex: 1,
                 }}
-                align="right"
+                align="center"
               ></StyledTableCell>
             </TableRow>
           </TableHead>
@@ -404,49 +392,38 @@ export default function StylistStatus() {
             {rows.map((row) => (
               <StyledTableRow key={row.username}>
                 <StyledTableCell component="th" scope="row">
-                  <img
-                    style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
-                    src={row.avatar}
-                    alt=""
-                  />
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                      style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                      src={row.avatar}
+                      alt=""
+                    />
+                    <Typography sx={{ ml: 2 }} variant="body2">
+                      {row.username}
+                    </Typography>
+                  </Box>
                 </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
-                  {row.username}
-                </StyledTableCell>
-                <StyledTableCell align="right" style={{ color: 'white', minWidth: 120 }}>
-                  {row.fullName}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.phoneNumber}</StyledTableCell>
-                <StyledTableCell align="right" style={{ color: 'white', minWidth: 200 }}>
-                  {row.description}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.level}</StyledTableCell>
-                <StyledTableCell align="right">{row.experience}</StyledTableCell>
-                <StyledTableCell align="right">{row.kpi}</StyledTableCell>
-                <StyledTableCell align="right">{row.salary}</StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">{row.fullName}</StyledTableCell>
+                <StyledTableCell align="center">{row.phoneNumber}</StyledTableCell>
+                <StyledTableCell align="center">{row.level}</StyledTableCell>
+                <StyledTableCell align="center">{row.experience}</StyledTableCell>
+                <StyledTableCell align="center">{row.kpi}</StyledTableCell>
+                <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell>
+                <StyledTableCell align="center">
                   <Rating readOnly precision={0.5} name="read-only" value={row.rating} />
                 </StyledTableCell>
 
-                <StyledTableCell align="right">{row.status}</StyledTableCell>
-                <StyledTableCell align="right" style={{ color: 'white', minWidth: 200 }}>
-                  {formatDate(row.createdDate)}
-                </StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  style={{
-                    position: 'sticky',
-                    right: 0,
-                    background: '#fff',
-                    zIndex: 1,
-                  }}
-                >
+                <StyledTableCell align="center">{row.status}</StyledTableCell>
+                <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
+                <StyledTableCell align="center">
                   <IconButton
-                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                      handleClick(event, row)
-                    }
+                    className="content"
+                    onClick={() => {
+                      setSelectedRow(row);
+                      handleEdit(row);
+                    }}
                   >
-                    <ICONS.IconThreeDot />
+                    <EditIcon />
                   </IconButton>
                 </StyledTableCell>
               </StyledTableRow>
@@ -467,45 +444,6 @@ export default function StylistStatus() {
           showLastButton
         />
       </Stack>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <PopoverContent>
-          <Box
-            className="content"
-            onClick={() => {
-              handleEdit(selectedRow);
-            }}
-          >
-            <EditIcon />
-            <Typography variant="body2" fontWeight={500}>
-              Edit user
-            </Typography>
-          </Box>
-          <Box
-            className="content"
-            onClick={() => {
-              handleDelete(selectedRow);
-            }}
-          >
-            <DeleteIcon />
-            <Typography variant="body2" fontWeight={500}>
-              Delete user
-            </Typography>
-          </Box>
-        </PopoverContent>
-      </Popover>
       {renderDialog}
     </Box>
   );

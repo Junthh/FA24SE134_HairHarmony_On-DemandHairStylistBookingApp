@@ -7,7 +7,10 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
 {
     public interface IBookingSlotStylistService
     {
-        Task<(IList<GetBookingSlotStylistModel>, int)> GetAll(PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel, SearchBookingSlotStylistModel searchBookingSlotStylistModel);
+        Task<(IList<GetDetailBookingSlotStylistModel>, int)> GetAll(
+            PagingParam<BookingSlotStylistEnum.BookingSlotStylistSort> paginationModel, 
+            SearchBookingSlotStylistModel searchBookingSlotStylistModel,
+            DateOnly? startDate, DateOnly? endDate);
         Task<GetBookingSlotStylistModel> GetById(Guid id);
         Task<GetBookingSlotStylistModel> Create(CreateBookingSlotStylistModel requestBody);
         Task<GetBookingSlotStylistModel> Update(Guid id, UpdateBookingSlotStylistModel requestBody);

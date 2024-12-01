@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import {
@@ -18,18 +18,22 @@ import { LoginPayLoad } from 'models/Request.model';
 import { authService } from 'services/auth.service';
 import { AuthConsumer } from '../AuthProvider';
 import { setLoading } from 'redux/Reducer';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ADMIN_PATH, AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
 import { ResponseSuccessApi } from 'models/Response.model';
 import { Token } from 'models/CredentialInfo.model';
 import CheckboxElement from 'components/Form/CheckboxElement/CheckboxElement';
 import { LOGO } from 'configurations/logo';
 import { handleError } from 'utils/helper';
+import { usePreviousPath } from 'hooks/usePreviousPath';
 
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const authContext = AuthConsumer();
+  const location = useLocation();
+  const previousPath = usePreviousPath();
+
   const formContext = useForm<any>({
     defaultValues: loginFormDefaultValues,
     mode: 'onSubmit',
@@ -49,20 +53,24 @@ function Login() {
     dispatch(setLoading(true));
     try {
       const payload: LoginPayLoad = {
-        username: data.username,
+        phoneNumber: data.phoneNumber,
         password: data.password,
       };
       const res = (await authService.login(payload)) as unknown as ResponseSuccessApi;
 
       if (res?.success) {
-        const { token, refreshToken } = res.data as Token;
-        authContext.saveToken({ token, refreshToken });
+        const { token } = res.data as Token;
+        authContext.saveToken({ token, refreshToken: '1' });
       }
       dispatch(setLoading(false));
-      navigate(-1);
+      if (previousPath === '/auth/register') {
+        navigate('/home');
+      } else {
+        navigate(-1);
+      }
     } catch (error) {
       dispatch(setLoading(false));
-      showToast('error', handleError(error.message || error));
+      showToast('error', handleError(error.msg || error));
     }
   });
 
@@ -93,16 +101,16 @@ function Login() {
               fontWeight: 600,
             }}
           >
-            Sign in
+            Đăng nhập
           </Typography>
         </FormTitle>
 
         <FormItem>
           <TextFieldElement
-            name={authProps.username.propertyName}
+            name={authProps.phoneNumber.propertyName}
             control={control}
-            label={authProps.username.propertyLabel}
-            placeholder="Your phone number"
+            label={'Nhập số điện thoại'}
+            placeholder=""
             onKeyDown={handleKeyDown}
             autoFocus
           />
@@ -114,24 +122,18 @@ function Login() {
           <TextFieldElement
             name={authProps.password.propertyName}
             control={control}
-            label={authProps.password.propertyLabel}
+            label={'Nhập mật khẩu'}
             type="password"
-            placeholder="Password"
+            placeholder=""
             onKeyDown={handleKeyDown}
           />
         </FormItem>
 
         <Box>
-          <Typography sx={{ color: colors.primary1, fontWeight: '700' }}>
-            Forgot password
-          </Typography>
+          <Typography sx={{ color: colors.primary1, fontWeight: '700' }}>Quên mật khẩu</Typography>
         </Box>
 
         <Box height={2}></Box>
-
-        <Box>
-          <CheckboxElement name="rememberMe" control={control} label="Remember me" />
-        </Box>
 
         <Box height={5}></Box>
 
@@ -146,7 +148,7 @@ function Login() {
             }}
             onClick={handleLogin}
           >
-            Login
+            Đăng nhập
           </ButtonPrimary>
         </FormItem>
 
@@ -165,7 +167,7 @@ function Login() {
               border: `1px solid ${colors.b2}`,
             }}
           ></Box>
-          <Typography sx={{ color: colors.b2 }}>or</Typography>
+          <Typography sx={{ color: colors.b2 }}>Hoặc</Typography>
           <Box
             sx={{
               width: '45%',
@@ -183,7 +185,7 @@ function Login() {
               columnGap: '10px',
             }}
           >
-            <Typography>Don’t have an account?</Typography>
+            <Typography>Bạn chưa có tài khoản?</Typography>
             <Typography
               sx={{
                 color: colors.primary,
@@ -191,10 +193,24 @@ function Login() {
               }}
               onClick={handleSwitchToRegister}
             >
-              Register
+              Đăng ký
             </Typography>
           </Box>
         </Box>
+        <FormItem>
+          <ButtonPrimary
+            padding={'9px'}
+            severity="cancel"
+            variant="outlined"
+            sx={{
+              textTransform: 'none',
+              // width: '25%',
+            }}
+            onClick={() => navigate(-1)}
+          >
+            Quay về trang chủ
+          </ButtonPrimary>
+        </FormItem>
       </FormContent>
     </FormContainer>
   );

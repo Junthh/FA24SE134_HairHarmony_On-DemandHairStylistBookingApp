@@ -84,12 +84,16 @@ function Staff() {
       setTabName('Danh sách đặt lịch');
     } else if (name === STAFF_PATH.HISTORY.split('/')[1]) {
       setTabName('Lịch sử đặt lịch');
-    } else if (name === STAFF_PATH.STYLIST_STATUS.split('/')[1]) {
-      setTabName('Tình Trạng Stylist');
+    } else if (name === STAFF_PATH.STYLISTS.split('/')[1]) {
+      setTabName('Danh sách Stylist');
     } else if (name === STAFF_PATH.BOOKING.split('/')[1]) {
       setTabName('Đặt lịch');
-    }else if (name === STAFF_PATH.NEWS.split('/')[1]) {
+    } else if (name === STAFF_PATH.NEWS.split('/')[1]) {
       setTabName('Tin tức');
+    } else if (name === STAFF_PATH.PROFILE.split('/')[1]) {
+      setTabName('Cập nhật thông tin');
+    } else if (name === STAFF_PATH.CHANGE_PASSWORD.split('/')[1]) {
+      setTabName('Thay đổi mật khẩu');
     }
   }, [location]);
 

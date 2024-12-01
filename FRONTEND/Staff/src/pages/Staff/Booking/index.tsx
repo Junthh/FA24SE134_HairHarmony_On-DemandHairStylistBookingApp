@@ -135,7 +135,7 @@ export default function Booking() {
   const schemaUser = Yup.object().shape({
     customerFullName: Yup.string().required('Họ và tên không được trống'),
     customerPhoneNummber: Yup.string()
-      .matches(/^0\d{9}$/, 'Số điện thoại phải bắt đầu bằng 0 và có 10 số')
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
       .required('Số điện thoại không được trống'),
   });
   const defaultValues = {
@@ -308,7 +308,7 @@ export default function Booking() {
       .filter(([, option]: any) => option.checked)
       .map(([id, option]: any) => ({ id, ...option }));
     const timeChecked = times.find((time) => time.isActive);
-    const stylistId = stylists.find((item) => item.isActive)?.id;
+    const stylist = stylists.find((item) => item.isActive);
     const timeSlotId = times.find((time) => time.isActive)?.id;
     const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
     const combos = serviceChecked
@@ -328,11 +328,12 @@ export default function Booking() {
       bookingDate,
       staffId: credentialInfo.Id,
       timeSlotId,
-      stylistId,
+      stylistId: stylist?.id,
       combos,
       services: servicesResult,
+      expertFee: stylist?.expertFee || 0,
     };
-    if (stylistId === 1) {
+    if (stylist?.id === 1) {
       payload = {
         ...payload,
         isRandomStylist: true,
@@ -622,6 +623,21 @@ export default function Booking() {
                           {item.level}
                         </Typography>
                         <Rating precision={0.5} value={item.rating} />
+                        {item.expertFee && (
+                          <Box
+                            display={'flex'}
+                            flexDirection={'column'}
+                            justifyContent={'center'}
+                            alignItems={'center'}
+                          >
+                            <Typography variant="small1" color={colors.grey2}>
+                              Phí chuyên gia
+                            </Typography>
+                            <Typography variant="small1" color={colors.grey2}>
+                              {item.expertFee}%
+                            </Typography>
+                          </Box>
+                        )}
                       </BoxStylistCard>
                     </Grid>
                   );
@@ -792,6 +808,16 @@ export default function Booking() {
                     </Box>
                     {<Rating value={stylistActive?.rating} precision={0.5} />}
                   </Box>
+                  {stylistActive.expertFee && (
+                    <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                      <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
+                        Phí chuyên gia
+                      </Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {stylistActive.expertFee}%
+                      </Typography>
+                    </Box>
+                  )}
                   <Divider variant="fullWidth"></Divider>
                 </>
               ) : (
@@ -805,9 +831,21 @@ export default function Booking() {
                 <Typography variant="body1" fontWeight={600}>
                   {services &&
                     currencyFormat(
-                      Object.values(services)
-                        .filter((option: any) => option.checked === true)
-                        .reduce((total, option: any) => total + option.price, 0),
+                      stylistActive?.expertFee
+                        ? Number(
+                            Object.values(services)
+                              .filter((option: any) => option.checked === true)
+                              .reduce((total, option: any): any => total + option.price, 0),
+                          ) *
+                            (stylistActive?.expertFee / 100) +
+                            Number(
+                              Object.values(services)
+                                .filter((option: any) => option.checked === true)
+                                .reduce((total, option: any): any => total + option.price, 0),
+                            )
+                        : Object.values(services)
+                            .filter((option: any) => option.checked === true)
+                            .reduce((total, option: any) => total + option.price, 0),
                     )}{' '}
                 </Typography>
               </Box>

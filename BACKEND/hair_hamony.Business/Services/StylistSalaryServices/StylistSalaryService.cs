@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.StylistSalarys;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
         public async Task<GetStylistSalaryModel> Create(CreateStylistSalaryModel requestBody)
         {
             var stylistSalary = _mapper.Map<StylistSalary>(requestBody);
-            stylistSalary.CreatedDate = DateTime.Now;
+            stylistSalary.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.StylistSalarys.AddAsync(stylistSalary);
             await _context.SaveChangesAsync();
@@ -39,14 +40,25 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetStylistSalaryModel>, int)> GetAll(PagingParam<StylistSalaryEnum.StylistSalarySort> paginationModel, SearchStylistSalaryModel searchStylistSalaryModel)
+        public async Task<(IList<GetDetailStylistSalaryModel>, int)> GetAll(
+            PagingParam<StylistSalaryEnum.StylistSalarySort> paginationModel, 
+            SearchStylistSalaryModel searchStylistSalaryModel,
+            string? stylistName)
         {
-            var query = _context.StylistSalarys.AsQueryable();
+            var query = _context.StylistSalarys
+                .Include(stylistSalary => stylistSalary.Stylist)
+                .AsQueryable();
+
+            if(stylistName != null)
+            {
+                query = query.Where(stylistSalary => stylistSalary.Stylist.FullName.Contains(stylistName));
+            }
+
             query = query.GetWithSearch(searchStylistSalaryModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetStylistSalaryModel>>(query);
+            var results = _mapper.Map<IList<GetDetailStylistSalaryModel>>(query);
 
             return (results, total);
         }

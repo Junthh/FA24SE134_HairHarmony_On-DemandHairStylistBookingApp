@@ -30,7 +30,7 @@ export default function EmployeeWorkSchedule() {
 
         const res = (await employeeStylistServices.listStylistWorkships(params)) as any;
         const newEvents = res.data.map((item) => ({
-          title: `${item.stylist.username} - ${item.stylist.fullName}`,
+          title: ` ${item.stylist.fullName}`,
           start: moment(
             `${item.registerDate} ${item.workship.startTime}`,
             'YYYY-MM-DD HH:mm:ss',

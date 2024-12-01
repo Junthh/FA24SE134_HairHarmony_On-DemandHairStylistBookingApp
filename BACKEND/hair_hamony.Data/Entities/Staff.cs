@@ -26,4 +26,6 @@ public partial class Staff
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     public virtual ICollection<News> News { get; set; } = new List<News>();
+
+    public virtual ICollection<StaffSalary> StaffSalaries { get; set; } = new List<StaffSalary>();
 }

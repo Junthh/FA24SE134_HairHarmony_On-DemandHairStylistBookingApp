@@ -7,12 +7,13 @@ import {
   Path,
   FieldValues,
 } from 'react-hook-form';
-import { TextFieldProps } from '@mui/material';
+import { FormControl, TextFieldProps, Typography } from '@mui/material';
+import { BaseTextField } from 'components/Base/BaseTextField';
 export declare type ParseAbleDate<TDate> = string | number | Date | null | undefined | TDate;
 
 export type DatePickerElementProps<T extends FieldValues, TInputDate, TDate = TInputDate> = Omit<
   DatePickerProps<TDate>,
-  'value' | 'onChange' | 'renderInput'
+  'value' | 'onChange'
 > & {
   name: Path<T>;
   required?: boolean;
@@ -28,6 +29,7 @@ export type DatePickerElementProps<T extends FieldValues, TInputDate, TDate = TI
   size?: string;
   views?: string[];
   inputFormat?: string;
+  label: string;
 };
 
 export default function DatePickerElement<TFieldValues extends FieldValues>({
@@ -44,27 +46,49 @@ export default function DatePickerElement<TFieldValues extends FieldValues>({
   inputFormat = 'dd/MM/yyyy',
   readOnly = true,
   size,
+  label,
   ...rest
 }: DatePickerElementProps<TFieldValues, any, any>): JSX.Element {
   return (
-    <Controller
-      name={name}
-      rules={validation}
-      control={control}
-      render={({ field: { onChange, value, onBlur }, fieldState: { error } }) => {
-        return (
-          <DatePicker
-            views={views}
-            {...rest}
-            value={value || ''}
-            onChange={onChange}
-            // @ts-ignore
-            dayOfWeekFormatter={(d: any) => {
-              return d;
-            }}
-          />
-        );
-      }}
-    />
+    <FormControl fullWidth variant="outlined" sx={{ position: 'relative' }}>
+      {label && (
+        <Typography
+          sx={{
+            marginLeft: 1,
+            marginBottom: '6px',
+            color: '#666666',
+          }}
+        >
+          {label}
+        </Typography>
+      )}
+      <Controller
+        name={name}
+        rules={validation}
+        control={control}
+        render={({ field: { onChange, value, onBlur }, fieldState: { error } }) => {
+          return (
+            <DatePicker
+              views={views}
+              format={inputFormat}
+              {...rest}
+              value={value || ''}
+              onChange={onChange}
+              slots={{
+                textField: BaseTextField,
+              }}
+              slotProps={{
+                textField: {
+                  error: !!error,
+                  helperText: error ? parseError?.(error) : '',
+                  style: extendStyleDate,
+                },
+                actionBar: { actions: ['clear'] },
+              }}
+            />
+          );
+        }}
+      />
+    </FormControl>
   );
 }

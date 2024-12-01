@@ -48,10 +48,10 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       link: USER_PATH.OUR_TEAMMATES,
       name: 'Đội Ngũ Chúng Tôi',
     },
-    {
-      link: '',
-      name: 'Liên hệ',
-    },
+    // {
+    //   link: '',
+    //   name: 'Liên hệ',
+    // },
   ]);
   // get categories options
   const renderNav = useMemo(() => {
@@ -94,7 +94,7 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
       </Box>
       <Box className="nav-right">
         {renderNav}
-        {credentialInfo?.Username ? (
+        {credentialInfo?.PhoneNumber ? (
           <>
             <ButtonPrimary
               severity="primary"
@@ -123,6 +123,18 @@ export default function NavBarUser({ onSidebarChange }: NavBarUserProps) {
               }}
             >
               <PopoverContent>
+                <Box
+                  padding={'10px 20px'}
+                  className="content"
+                  onClick={() => {
+                    handleClose();
+                    navigate(`${USER_PATH.PROFILE}/${credentialInfo.Id}`);
+                  }}
+                >
+                  <Typography variant="body2" fontWeight={500}>
+                    Hồ sơ người dùng
+                  </Typography>
+                </Box>
                 <Box
                   padding={'10px 20px'}
                   className="content"

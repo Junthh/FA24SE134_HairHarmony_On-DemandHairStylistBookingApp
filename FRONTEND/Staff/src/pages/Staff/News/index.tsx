@@ -63,7 +63,9 @@ export default function News() {
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
   const schemaUser = Yup.object().shape<any>({});
-  const defaultValues = {};
+  const defaultValues = {
+    author: credentialInfo.FullName,
+  };
   const formUser = useForm<any>({
     defaultValues,
     mode: 'onChange',
@@ -250,6 +252,7 @@ export default function News() {
                 control={control}
                 placeholder="Nhập Author"
                 label={'Author'}
+                disabled
                 //   onKeyUp={handleKeyup}
               />
               <Box display={'flex'} justifyContent={'flex-end'}>
@@ -307,9 +310,9 @@ export default function News() {
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Tiêu đề
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              {/* <StyledTableCell style={{ color: 'white' }} align="right">
                 Mô tả
-              </StyledTableCell>
+              </StyledTableCell> */}
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Tác giả
               </StyledTableCell>
@@ -337,7 +340,7 @@ export default function News() {
                   />{' '}
                   {row.title}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.description}</StyledTableCell>
+                {/* <StyledTableCell align="right">{row.description}</StyledTableCell> */}
                 <StyledTableCell align="right">{row.author}</StyledTableCell>
                 <StyledTableCell align="right">
                   {formatDate(row.createdDate, 'dd/MM/yyyy')}

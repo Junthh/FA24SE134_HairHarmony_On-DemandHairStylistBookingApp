@@ -72,7 +72,7 @@ function AuthProvider({ children }) {
           });
       } else {
         const info: CredentialInfo = {
-          acessToken: token.token,
+          accessToken: token.token,
           refreshToken: token.refreshToken,
           ...jwtDecode(token.token),
         };
