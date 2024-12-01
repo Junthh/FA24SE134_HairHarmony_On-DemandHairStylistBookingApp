@@ -5,8 +5,10 @@ using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.Services.BookingSlotStylistServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Bookings;
+using hair_hamony.Business.ViewModels.TimeSlots;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -33,8 +35,8 @@ namespace hair_hamony.Business.Services.BookingServices
         public async Task<GetBookingModel> Create(CreateBookingModel requestBody)
         {
             var booking = _mapper.Map<Booking>(requestBody);
-            booking.CreatedDate = DateTime.Now;
-            booking.UpdatedDate = DateTime.Now;
+            booking.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            booking.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Bookings.AddAsync(booking);
             await _context.SaveChangesAsync();
@@ -49,9 +51,11 @@ namespace hair_hamony.Business.Services.BookingServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(PagingParam<BookingEnum.BookingSort> paginationModel,
+        public async Task<(IList<GetDetailBookingModel>, int)> GetAll(
+            PagingParam<BookingEnum.BookingSort> paginationModel,
             SearchBookingModel searchBookingModel,
-            string? customerPhoneNumber)
+            string? customerPhoneNumber,
+            Guid? stylistId)
         {
             var query = _context.Bookings
                 .Include(booking => booking.Customer)
@@ -74,6 +78,16 @@ namespace hair_hamony.Business.Services.BookingServices
                 query = query.Where(booking => booking.Customer!.PhoneNumber!.Contains(customerPhoneNumber));
             }
 
+            if (stylistId != null)
+            {
+                query = query.Where(booking =>
+                    booking.BookingDetails.Any(bookingDetail =>
+                        bookingDetail.BookingSlotStylists.Any(bookingSlotStylist =>
+                            bookingSlotStylist.Stylist.Id == stylistId)
+                        )
+                    );
+            }
+
             query = query.GetWithSearch(searchBookingModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
@@ -83,7 +97,17 @@ namespace hair_hamony.Business.Services.BookingServices
 
             foreach (var item in results)
             {
-                item.IsFeedback = item.Feedbacks != null && item.Feedbacks.Any() && item.Status == "Completed";
+                item.IsFeedback = item.Feedbacks != null && item.Feedbacks.Any() && item.Status == "Finished";
+                var timeSlots = new List<GetTimeSlotModel>();
+                foreach (var bookingDetail in item.BookingDetails)
+                {
+                    foreach (var bookingSlotStylist in bookingDetail.BookingSlotStylists)
+                    {
+                        timeSlots.Add(bookingSlotStylist.TimeSlot);
+                    }
+                }
+
+                item.StartTime = timeSlots.OrderBy(x => x.StartTime).FirstOrDefault().StartTime;
             }
 
             return (results, total);
@@ -158,7 +182,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             FullName = requestBody.CustomerFullName,
                             PhoneNumber = requestBody.CustomerPhoneNummber,
                             LoyaltyPoints = 0,
-                            CreatedDate = DateTime.Now,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             Status = "Active"
                         });
                     }
@@ -181,16 +205,16 @@ namespace hair_hamony.Business.Services.BookingServices
                     CustomerId = requestBody.CustomerId ?? customerId,
                     StaffId = requestBody.StaffId,
                     Status = "Initialize",
-                    CreatedDate = DateTime.Now,
-                    UpdatedDate = DateTime.Now,
+                    CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                    UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                 }).Entity;
 
                 var transactionId = Guid.NewGuid();
                 _context.Transactions.Add(new Transaction
                 {
                     Id = transactionId,
-                    CreatedDate = DateTime.Now,
-                    UpdatedDate = DateTime.Now,
+                    CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                    UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                     Status = "Initialize",
                     BookingId = bookingId,
                 });
@@ -203,7 +227,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     Price = amoutToPaid,
                     PaymentMethod = null,
                     Status = "Initialize",
-                    CreatedDate = DateTime.Now,
+                    CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                     BookingId = bookingId
                 });
 
@@ -226,24 +250,23 @@ namespace hair_hamony.Business.Services.BookingServices
                             ServiceId = serviceModel.Id,
                             Duration = service!.Duration,
                             BookingId = bookingId,
-                            CreatedDate = DateTime.Now
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7()
                         });
 
-                        int countServiceDuration = (int)Math.Ceiling(service.Duration!.Value / (decimal)60);
-                        countTimeSlot += countServiceDuration;
+                        int countServiceDuration = countTimeSlot + (int)Math.Ceiling(service.Duration!.Value / (decimal)60);
 
-                        for (int i = 0; i < countServiceDuration; i++)
+                        for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
                                 Status = "Booked",
                                 BookingDate = requestBody.BookingDate,
-                                CreatedDate = DateTime.Now,
-                                UpdatedDate = DateTime.Now,
+                                CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                                UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                                 BookingDetailId = bookingDetailId,
                                 TimeSlotId = timeSlotNext.Id,
                                 StylistId = stylist!.Id,
@@ -255,18 +278,12 @@ namespace hair_hamony.Business.Services.BookingServices
                         _context.PaymentDetails.Add(new PaymentDetail
                         {
                             Id = paymentDetailId,
-                            CreatedDate = DateTime.Now,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             Price = serviceModel.Price,
                             PaymentId = paymentId,
                         });
 
-                        _context.TransactionDetails.Add(new TransactionDetail
-                        {
-                            LoyaltyPoints = requestBody.LoyaltyPoints,
-                            Status = "Scheduled",
-                            CreatedDate = DateTime.Now,
-                            TransactionId = transactionId,
-                        });
+                        countTimeSlot += countServiceDuration;
                     }
                 }
 
@@ -286,24 +303,23 @@ namespace hair_hamony.Business.Services.BookingServices
                             ComboId = comboModel.Id,
                             Duration = combo.Duration,
                             BookingId = bookingId,
-                            CreatedDate = DateTime.Now
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7()
                         });
 
-                        int countServiceDuration = (int)Math.Ceiling(combo.Duration!.Value / (decimal)60);
-                        countTimeSlot += countServiceDuration;
+                        int countServiceDuration = countTimeSlot + (int)Math.Ceiling(combo.Duration!.Value / (decimal)60);
 
-                        for (int i = 0; i < countServiceDuration; i++)
+                        for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(countTimeSlot - 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
                                 Status = "Booked",
                                 BookingDate = requestBody.BookingDate,
-                                CreatedDate = DateTime.Now,
-                                UpdatedDate = DateTime.Now,
+                                CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                                UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                                 BookingDetailId = bookingDetailId,
                                 TimeSlotId = timeSlotNext.Id,
                                 StylistId = stylist!.Id,
@@ -315,18 +331,12 @@ namespace hair_hamony.Business.Services.BookingServices
                         _context.PaymentDetails.Add(new PaymentDetail
                         {
                             Id = paymentDetailId,
-                            CreatedDate = DateTime.Now,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             Price = comboModel.TotalPrice,
                             PaymentId = paymentId,
                         });
 
-                        _context.TransactionDetails.Add(new TransactionDetail
-                        {
-                            LoyaltyPoints = requestBody.LoyaltyPoints,
-                            Status = "Scheduled",
-                            CreatedDate = DateTime.Now,
-                            TransactionId = transactionId,
-                        });
+                        countTimeSlot += countServiceDuration;
                     }
                 }
 
@@ -375,12 +385,13 @@ namespace hair_hamony.Business.Services.BookingServices
 
                 if (requestBody.Status != booking.Status)
                 {
-                    var transaction = _context.Transactions.FirstOrDefault(transaction => transaction.BookingId == requestBody.Id);
-                    _context.TransactionDetails.Add(new TransactionDetail
+                    _context.Transactions.Add(new Transaction
                     {
+                        BookingId = requestBody.Id,
+                        Id = Guid.NewGuid(),
+                        CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                         Status = requestBody.Status,
-                        CreatedDate = DateTime.Now,
-                        TransactionId = transaction!.Id
+                        UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                     });
                 }
 
@@ -389,10 +400,11 @@ namespace hair_hamony.Business.Services.BookingServices
                 {
                     var stylistIds = from bookingDetail in _context.BookingDetails
                                      join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
+                                     where bookingDetail.BookingId == requestBody.Id
                                      select bookingSlotStylist.StylistId;
 
-                    var monthCurrent = DateTime.Now.Month;
-                    var yearCurrent = DateTime.Now.Year;
+                    var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+                    var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
 
                     var stylist = await _context.Stylists
                             .FirstOrDefaultAsync(stylist => stylist.Id == stylistIds.FirstOrDefault());
@@ -422,8 +434,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         var commissionRate = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "COMMISSION_RATE")!.Value!.Value;
 
                         var totalBooking = stylistSalary.TotalBooking + 1;
-                        var totalCommission = stylistSalary.TotalCommission
-                            + stylist.Kpi > stylistSalary.TotalBooking + 1 ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        var newCommission = totalBooking > stylist.Kpi ? requestBody.TotalPrice * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -431,8 +442,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             Year = stylistSalary.Year,
                             StylistId = stylistSalary.StylistId,
                             TotalBooking = totalBooking,
-                            TotalCommission = totalCommission,
-                            TotalSalary = stylist.Salary + totalCommission
+                            TotalCommission = stylistSalary.TotalCommission + newCommission,
+                            TotalSalary = stylistSalary.TotalSalary + newCommission
                         });
                     }
 
@@ -454,7 +465,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     payment.Status = "Completed";
                     payment.Price = requestBody.AmoutToPaid;
                     payment.PaymentMethod = requestBody.PaymentMethod;
-                    payment.CreatedDate = DateTime.Now;
+                    payment.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
                     _context.Payments.Update(payment);
                 }
                 else if (requestBody.Status == "Cancel")
@@ -474,12 +485,6 @@ namespace hair_hamony.Business.Services.BookingServices
                         .Where(transaction => transaction.BookingId == requestBody.Id)
                         .Select(transaction => transaction.Id).ToList();
 
-                    await _context.TransactionDetails
-                        .Where(transactionDetail => transactionIds.Contains(transactionDetail.Id))
-                        .ExecuteUpdateAsync(setters
-                            => setters.SetProperty(transactionDetail => transactionDetail.Status, "Cancel")
-                        );
-
                     var bookingDetailIds = _context.BookingDetails
                         .Where(bookingDetail => bookingDetail.BookingId == requestBody.Id).Select(bookingDetail => bookingDetail.Id).ToList();
 
@@ -491,7 +496,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
 
                 _mapper.Map(requestBody, booking);
-                booking.UpdatedDate = DateTime.Now;
+                booking.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
                 _context.Bookings.Update(booking);
 

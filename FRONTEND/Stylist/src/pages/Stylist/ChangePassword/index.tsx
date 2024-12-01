@@ -28,7 +28,10 @@ export default function ChangePassword() {
   const navigate = useNavigate();
   const params = useParams();
   const dispatch = useDispatch();
-  const schemaChangePassword = Yup.object().shape<any>({});
+  const schemaChangePassword = Yup.object().shape<any>({
+    oldPassword: Yup.string().required(`Vui lòng nhập mật khẩu cũ`),
+    newPassword: Yup.string().required(`Vui lòng nhập mật khẩu mới`),
+  });
   const formChangePassword = useForm<any>({
     defaultValues: {
       oldPassword: '',

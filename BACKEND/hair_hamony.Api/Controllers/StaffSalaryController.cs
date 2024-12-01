@@ -21,7 +21,7 @@ namespace home_travel.API.Controllers
         /// </summary>
         /// <param name="searchStaffSalaryModel">An object contains value wanna search</param>
         /// <param name="paginationModel">An object contains paging criteria</param>
-        /// <param name="stylistName">A fullname of stylist</param>
+        /// <param name="staffName">A fullname of staff</param>
         /// <returns>List of staffSalary</returns>
         /// <response code="200">Returns the list of staffSalary</response>
         [HttpGet]
@@ -29,10 +29,11 @@ namespace home_travel.API.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel,
-            [FromQuery] SearchStaffSalaryModel searchStaffSalaryModel)
+            [FromQuery] SearchStaffSalaryModel searchStaffSalaryModel,
+            [FromQuery] string? staffName)
         {
             var (staffSalarys, total) = await _staffSalaryService
-                .GetAll(paginationModel, searchStaffSalaryModel);
+                .GetAll(paginationModel, searchStaffSalaryModel, staffName);
 
             return Ok(new ModelsResponse<GetDetailStaffSalaryModel>(
                     paging: new PagingResponse()

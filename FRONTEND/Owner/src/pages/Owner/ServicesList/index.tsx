@@ -64,11 +64,18 @@ export default function ServicesList() {
   });
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape<any>({
+    name: Yup.string().required(`Vui lòng nhập tên dịch vụ.`),
+    description: Yup.string().required(`Vui lòng nhập mô tả.`),
+    duration: Yup.string().required(`Vui lòng nhập khoảng thời gian.`),
+    price: Yup.string().required(`Vui lòng nhập giá cả.`),
+    categoryId: Yup.string().required(`Vui lòng chọn loại dịch vụ.`),
+  });
   const defaultValues = {
     id: '',
     name: '',
     image: '',
+    description: '',
     duration: 0,
     price: 0,
     categoryId: null,

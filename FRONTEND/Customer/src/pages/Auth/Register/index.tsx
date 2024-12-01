@@ -1,29 +1,28 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Typography } from '@mui/material';
+import { showToast } from 'components/Common/Toast';
+import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
+import { ADMIN_PATH, AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
+import * as colors from 'constants/colors';
+import { Token } from 'models/CredentialInfo.model';
+import { RegisterPayload } from 'models/Request.model';
+import { ResponseSuccessApi } from 'models/Response.model';
+import { ButtonPrimary } from 'pages/common/style/Button';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setLoading } from 'redux/Reducer';
+import { authService } from 'services/auth.service';
+import { handleError } from 'utils/helper';
+import { AuthConsumer } from '../AuthProvider';
+import { FormContainer, FormContent, FormItem, FormTitle } from '../styles';
 import {
   AuthKeys,
   authProps,
   registerFormDefaultValues,
   registerSchema,
 } from '../Validators/AuthValidators';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { FormContainer, FormContent, FormItem, FormTitle } from '../styles';
-import { Box, Typography } from '@mui/material';
-import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
-import { ButtonPrimary } from 'pages/common/style/Button';
-import * as colors from 'constants/colors';
-import { showToast } from 'components/Common/Toast';
-import { RegisterPayload } from 'models/Request.model';
-import { authService } from 'services/auth.service';
-import { AuthConsumer } from '../AuthProvider';
-import { setLoading } from 'redux/Reducer';
-import { useNavigate } from 'react-router-dom';
-import { ADMIN_PATH, AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
-import { ResponseSuccessApi } from 'models/Response.model';
-import { Token } from 'models/CredentialInfo.model';
-import { LOGO } from 'configurations/logo';
-import { handleError } from 'utils/helper';
 
 function Register() {
   const dispatch = useDispatch();
@@ -48,20 +47,26 @@ function Register() {
     dispatch(setLoading(true));
     try {
       const payload: RegisterPayload = {
-        username: data.username,
+        phoneNumber: data.phoneNumber,
+        fullName: data.fullName,
         password: data.password,
       };
-      const res = (await authService.register(payload)) as unknown as ResponseSuccessApi;
+      const formData = new FormData();
+      formData.append('phoneNumber', payload.phoneNumber);
+      formData.append('fullName', payload.fullName);
+      formData.append('password', payload.password);
+      const res = (await authService.register(formData)) as unknown as ResponseSuccessApi;
 
-      if (res?.success) {
-        const { token, refreshToken } = res.data as Token;
-        authContext.saveToken({ token, refreshToken });
-      }
+      // if (res?.success) {
+      //   const { token, refreshToken } = res.data as Token;
+      //   authContext.saveToken({ token, refreshToken });
+      // }
+      showToast('success', 'Tạo tài khoản thành công');
       dispatch(setLoading(false));
-      navigate(ADMIN_PATH.ADMIN);
+      navigate(AUTH_PATH.LOGIN);
     } catch (error) {
       dispatch(setLoading(false));
-      showToast('error', handleError(error.message || error));
+      showToast('error', handleError(error.msg || error));
     }
   });
 
@@ -92,26 +97,35 @@ function Register() {
               fontWeight: 600,
             }}
           >
-            Register
+            Đăng ký
           </Typography>
         </FormTitle>
         <FormItem>
           <TextFieldElement
-            name={authProps.username.propertyName}
+            name={authProps.phoneNumber.propertyName}
             control={control}
-            label={authProps.username.propertyLabel}
-            placeholder="Your phone number"
+            label="Nhập số điện thoại"
+            placeholder=""
             onKeyDown={handleKeyDown}
             autoFocus
           />
         </FormItem>
         <FormItem>
           <TextFieldElement
+            name={authProps.fullName.propertyName}
+            control={control}
+            label="Nhập họ tên"
+            placeholder=""
+            onKeyDown={handleKeyDown}
+          />
+        </FormItem>
+        <FormItem>
+          <TextFieldElement
             name={authProps.password.propertyName}
             control={control}
-            label={authProps.password.propertyLabel}
+            label="Nhập mật khẩu"
             type="password"
-            placeholder="Password"
+            placeholder=""
             onKeyDown={handleKeyDown}
           />
         </FormItem>
@@ -119,9 +133,9 @@ function Register() {
           <TextFieldElement
             name={authProps.confirmPassword.propertyName}
             control={control}
-            label={authProps.confirmPassword.propertyLabel}
+            label="Nhập lại mật khẩu"
             type="password"
-            placeholder="Confirm password"
+            placeholder=""
             onKeyDown={handleKeyDown}
           />
         </FormItem>
@@ -136,7 +150,7 @@ function Register() {
             }}
             onClick={handleRegister}
           >
-            Register
+            Đăng ký
           </ButtonPrimary>
         </FormItem>
 
@@ -155,7 +169,7 @@ function Register() {
               border: `1px solid ${colors.b2}`,
             }}
           ></Box>
-          <Typography sx={{ color: colors.b2 }}>or</Typography>
+          <Typography sx={{ color: colors.b2 }}>hoặc</Typography>
           <Box
             sx={{
               width: '45%',
@@ -173,7 +187,7 @@ function Register() {
               columnGap: '10px',
             }}
           >
-            <Typography>You have an account?</Typography>
+            <Typography>Bạn chưa có tài khoản?</Typography>
             <Typography
               sx={{
                 color: colors.primary,
@@ -181,7 +195,7 @@ function Register() {
               }}
               onClick={handleSwitchToLogin}
             >
-              Login
+              Đăng nhập
             </Typography>
           </Box>
         </Box>

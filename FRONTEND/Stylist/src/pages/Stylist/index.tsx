@@ -84,7 +84,7 @@ function Staff() {
     if (name === STYLIST_PATH.SCHEDULE_LIST.split('/')[1]) {
       setTabName('Danh sách đặt lịch');
     } else if (name === STYLIST_PATH.FEEDBACK.split('/')[1]) {
-      setTabName('Feedback');
+      setTabName('Đánh giá');
     } else if (name === STYLIST_PATH.TIMEKEEPING.split('/')[1]) {
       setTabName('Đăng kí lịch làm');
     } else if (name === STYLIST_PATH.PROFILE.split('/')[1]) {
@@ -123,7 +123,7 @@ function Staff() {
       <HeaderStyled>
         <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
-          <Avatar src="" />
+          {/* <Avatar src="" /> */}
           <EmailWrapper>
             <Typography
               variant="body2"

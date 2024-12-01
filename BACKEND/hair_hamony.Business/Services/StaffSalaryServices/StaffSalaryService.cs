@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.StaffSalarys;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.StaffSalaryServices
         public async Task<GetStaffSalaryModel> Create(CreateStaffSalaryModel requestBody)
         {
             var staffSalary = _mapper.Map<StaffSalary>(requestBody);
-            staffSalary.CreatedDate = DateTime.Now;
+            staffSalary.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.StaffSalarys.AddAsync(staffSalary);
             await _context.SaveChangesAsync();
@@ -39,11 +40,19 @@ namespace hair_hamony.Business.Services.StaffSalaryServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDetailStaffSalaryModel>, int)> GetAll(PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel, SearchStaffSalaryModel searchStaffSalaryModel)
+        public async Task<(IList<GetDetailStaffSalaryModel>, int)> GetAll(
+            PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel,
+            SearchStaffSalaryModel searchStaffSalaryModel,
+            string? staffName)
         {
             var query = _context.StaffSalarys
                 .Include(staffSalary => staffSalary.Staff)
                 .AsQueryable();
+
+            if (staffName != null)
+            {
+                query = query.Where(staffSalary => staffSalary.Staff.FullName.Contains(staffName));
+            }
 
             query = query.GetWithSearch(searchStaffSalaryModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);

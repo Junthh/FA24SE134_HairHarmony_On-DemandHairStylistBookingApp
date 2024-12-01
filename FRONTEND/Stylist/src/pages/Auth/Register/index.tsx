@@ -61,7 +61,7 @@ function Register() {
       // navigate(ADMIN_PATH.ADMIN);
     } catch (error) {
       dispatch(setLoading(false));
-      showToast('error', handleError(error.message || error));
+      showToast('error', handleError(error.msg || error));
     }
   });
 

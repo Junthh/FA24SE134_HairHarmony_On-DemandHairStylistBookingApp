@@ -34,7 +34,8 @@ const NewStyled = styled(Box)({
   },
   '& .description': {
     margin: '0 auto',
-    textAlign: 'center',
+    // textAlign: 'center',
+    padding: '20px 10rem',
   },
   '& .author': {
     textAlign: 'end',

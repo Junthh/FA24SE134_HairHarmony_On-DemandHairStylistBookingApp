@@ -12,6 +12,7 @@ export const ButtonPrimary = styled(Button)<{
   color?;
   fontSize?;
   lineHeight?;
+  width?;
 }>(
   ({
     texttransform,
@@ -24,6 +25,7 @@ export const ButtonPrimary = styled(Button)<{
     color,
     fontSize,
     lineHeight,
+    width,
   }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -38,6 +40,7 @@ export const ButtonPrimary = styled(Button)<{
     padding: padding ? padding : '16px 32px',
     margin: margin,
     borderRadius: borderradius ? borderradius : '8px',
+    width: width,
     border: border
       ? border
       : severity === 'cancel'

@@ -55,7 +55,10 @@ export default function Services() {
       const res = await serviceServices.list({
         categoryId: params.id,
       });
-      setServices(res.data); // Set services after receiving the data
+      const resCombo = await serviceServices.listCombo({
+        categoryId: params.id,
+      });
+      setServices([...res.data, ...resCombo.data]); // Set services after receiving the data
     } catch (error) {
       showToast('error', error.msg); // Show toast on error
     } finally {

@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.BookingDetails;
 using hair_hamony.Data.Entities;
@@ -24,7 +25,7 @@ namespace hair_hamony.Business.Services.BookingDetailServices
         public async Task<GetBookingDetailModel> Create(CreateBookingDetailModel requestBody)
         {
             var bookingDetail = _mapper.Map<BookingDetail>(requestBody);
-            bookingDetail.CreatedDate = DateTime.Now;
+            bookingDetail.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.BookingDetails.AddAsync(bookingDetail);
             await _context.SaveChangesAsync();

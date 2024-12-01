@@ -41,11 +41,12 @@ export const STATUS_LABEL = {
   Confirmed: 'Confirmed',
   Processing: 'Processing',
   Completed: 'Completed',
+  Finished: 'Finished',
   Cancel: 'Cancel',
 };
 export const MAP_STATUS_LABEL = {
   [STATUS_LABEL.Initialize]: {
-    label: 'Đã tạo',
+    label: 'Đã đặt lịch',
     color: colors.tagColor,
   },
   [STATUS_LABEL.Confirmed]: {
@@ -59,6 +60,10 @@ export const MAP_STATUS_LABEL = {
   [STATUS_LABEL.Completed]: {
     label: 'Hoàn thành',
     color: colors.primary1,
+  },
+  [STATUS_LABEL.Finished]: {
+    label: 'Kết thúc',
+    color: colors.primary2,
   },
   [STATUS_LABEL.Cancel]: {
     label: 'Huỷ',

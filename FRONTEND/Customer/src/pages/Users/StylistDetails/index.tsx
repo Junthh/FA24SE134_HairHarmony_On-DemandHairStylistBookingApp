@@ -11,15 +11,18 @@ import { stylistServices } from 'services/stylist.service';
 import { useDispatch } from 'react-redux';
 import { setLoading } from 'redux/Reducer';
 import { showToast } from 'components/Common/Toast';
+import DOMPurify from 'dompurify';
+import { formatDate, formatDateTime } from 'utils/datetime';
 
 const BoxImageLeft = styled(Box)({
-  marginTop: '40px',
+  marginTop: '0px',
   width: 350,
   height: 380,
   '& img': {
     width: '100%',
     height: '100%',
     borderRadius: 24,
+    objectFit: 'cover',
   },
 });
 const BoxInfoStyled = styled(Box)({
@@ -47,7 +50,7 @@ const BoxImageList = styled(Box)({
 });
 const BoxEvaluate = styled(Box)({
   padding: '20px 0px',
-  borderBottom: '1px solid #969696',
+  // borderBottom: '1px solid #969696',
   '& .user-comment': { display: 'flex', alignItems: 'flex-start', gap: 20 },
   '& .comment-content': {
     display: 'flex',
@@ -75,155 +78,139 @@ export default function StylistDetails() {
     }
   };
   return (
-    <Grid container spacing={2} paddingLeft={10} marginTop={15} marginBottom={10}>
-      <Grid item xs={3}>
-        <BoxImageLeft>
-          <img src={stylist.avatar} alt="" />
-        </BoxImageLeft>
+    stylist && (
+      <Grid container spacing={2} paddingLeft={10} marginTop={15} marginBottom={10}>
+        <Grid item xs={4}>
+          <BoxImageLeft>
+            <img src={stylist.avatar} alt="" />
+          </BoxImageLeft>
+        </Grid>
+        <Grid item xs={8}>
+          <Typography variant="h3" fontWeight={700}>
+            {stylist.fullName} &nbsp;
+            <span style={{ fontSize: '14px', fontWeight: 500, color: '#5C4ACE' }}>
+              ({stylist.level})
+            </span>
+          </Typography>
+          <Box height={10}></Box>
+          <Box display={'flex'} justifyContent={'space-around'} alignItems={'center'}>
+            <BoxInfoStyled>
+              <Typography className="content-header" variant="body2">
+                Đã được đặt
+              </Typography>
+              <Typography className="content-body" variant="body1">
+                {stylist.bookingSlotStylists?.filter((x) => x.status === 'Booked').length}
+              </Typography>
+            </BoxInfoStyled>
+            <BoxInfoStyled>
+              <Typography className="content-header" variant="body2">
+                Đã hoàn thành
+              </Typography>
+              <Typography className="content-body" variant="body1">
+                {(
+                  (stylist.bookingSlotStylists?.filter((x) => x.status === 'Booked').length /
+                    stylist.bookingSlotStylists?.length) *
+                  100
+                ).toFixed(2)}
+                %
+              </Typography>
+            </BoxInfoStyled>
+            <BoxInfoStyled>
+              <Typography className="content-header" variant="body2">
+                Kinh nghiệm
+              </Typography>
+              <Typography className="content-body" variant="body1">
+                {stylist.experience} năm
+              </Typography>
+            </BoxInfoStyled>
+            <BoxInfoStyled>
+              <Typography className="content-header" variant="body2">
+                Rating
+              </Typography>
+              <Typography className="content-body" variant="body1">
+                {stylist?.rating?.toFixed(1)}
+              </Typography>
+            </BoxInfoStyled>
+            <ButtonPrimary
+              padding={'16px 28px'}
+              severity="cancel"
+              borderradius={9}
+              border={'1px solid #969696'}
+              // color={'#969696'}
+              fontWeight={700}
+              onClick={() => {
+                navigate(USER_PATH.BOOKING);
+              }}
+            >
+              Đặt lịch ngay
+            </ButtonPrimary>
+          </Box>
+          <Box height={20}></Box>
+          <Divider variant="fullWidth"></Divider>
+          <Box height={20}></Box>
+          {/* <Typography variant="h3" fontWeight={700}>
+        Thông tin
+      </Typography>
+      <Box height={10}></Box>
+      <BoxImageList>
+        <img src={StylistImage1} alt="" />
+        <img src={StylistImage2} alt="" />
+      </BoxImageList>
+      <Box height={20}></Box> */}
+          <Typography variant="h4" fontWeight={600}>
+            Mô tả
+          </Typography>
+          <Box width={'60%'}>
+            <Box className="description">
+              <div
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(stylist?.description || '') }}
+              />
+            </Box>
+          </Box>
+          {/*  */}
+          <Box height={20}></Box>
+          <Typography variant="h4" fontWeight={600}>
+            Đánh giá
+          </Typography>
+          <Box width={'60%'}>
+            <BoxEvaluate>
+              {stylist.feedbacks?.map((feedback, index) => (
+                <React.Fragment key={index}>
+                  <Box className="user-comment">
+                    <Avatar
+                      sx={{ width: 80, height: 80 }}
+                      src={feedback?.booking.customer?.avatar}
+                    />
+                    <Box>
+                      <Typography variant="h2">{feedback?.booking.customer?.name}</Typography>
+                      <Typography variant="caption">
+                        {formatDateTime(feedback.createdDate)}
+                      </Typography>
+                    </Box>
+                    <Box width={40}></Box>
+                    <Box display={'flex'} alignItems={'center'} gap={2}>
+                      <span style={{ fontWeight: 600 }}>{feedback.rating}</span>{' '}
+                      <Rating precision={0.5} name="read-only" value={5} readOnly />
+                    </Box>
+                  </Box>
+
+                  <Box className="comment-content">
+                    <Box width={80}></Box>
+                    <Typography variant="body1">{feedback.description}</Typography>
+                  </Box>
+                  <hr />
+                </React.Fragment>
+              ))}
+            </BoxEvaluate>
+
+            <Box height={40}></Box>
+            {/* <Stack spacing={2} alignItems={'center'}>
+              <Pagination count={10} showFirstButton showLastButton />
+            </Stack> */}
+          </Box>
+          <Box height={20}></Box>
+        </Grid>
       </Grid>
-      <Grid item xs={9}>
-        <Typography variant="h3" fontWeight={700}>
-          {stylist.fullName} &nbsp;
-          <span style={{ fontSize: '14px', fontWeight: 500, color: '#5C4ACE' }}>
-            ({stylist.level})
-          </span>
-        </Typography>
-        <Box height={10}></Box>
-        <Box display={'flex'} justifyContent={'space-around'} alignItems={'center'}>
-          <BoxInfoStyled>
-            <Typography className="content-header" variant="body2">
-              Đã được đặt
-            </Typography>
-            <Typography className="content-body" variant="body1">
-              0
-            </Typography>
-          </BoxInfoStyled>
-          <BoxInfoStyled>
-            <Typography className="content-header" variant="body2">
-              Đã hoàn thành
-            </Typography>
-            <Typography className="content-body" variant="body1">
-              0%
-            </Typography>
-          </BoxInfoStyled>
-          <BoxInfoStyled>
-            <Typography className="content-header" variant="body2">
-              Kinh nghiệm
-            </Typography>
-            <Typography className="content-body" variant="body1">
-              {stylist.experience} năm
-            </Typography>
-          </BoxInfoStyled>
-          <BoxInfoStyled>
-            <Typography className="content-header" variant="body2">
-              Rating
-            </Typography>
-            <Typography className="content-body" variant="body1">
-              {stylist?.rating?.toFixed(1)}
-            </Typography>
-          </BoxInfoStyled>
-          <ButtonPrimary
-            padding={'16px 28px'}
-            severity="cancel"
-            borderradius={9}
-            border={'1px solid #969696'}
-            // color={'#969696'}
-            fontWeight={700}
-            onClick={() => {
-              navigate(USER_PATH.BOOKING);
-            }}
-          >
-            Đặt lịch ngay
-          </ButtonPrimary>
-        </Box>
-        <Box height={20}></Box>
-        <Divider variant="fullWidth"></Divider>
-        <Box height={20}></Box>
-        {/* <Typography variant="h3" fontWeight={700}>
-          Thông tin
-        </Typography>
-        <Box height={10}></Box>
-        <BoxImageList>
-          <img src={StylistImage1} alt="" />
-          <img src={StylistImage2} alt="" />
-        </BoxImageList>
-        <Box height={20}></Box> */}
-        <Typography variant="h4" fontWeight={600}>
-          Mô tả
-        </Typography>
-        <Box width={'60%'}>
-          <Typography variant="body1">{stylist.description}</Typography>
-        </Box>
-        {/*  */}
-        <Box height={20}></Box>
-        <Typography variant="h4" fontWeight={600}>
-          Đánh giá
-        </Typography>
-        <Box width={'60%'}>
-          <BoxEvaluate>
-            <Box className="user-comment">
-              <Avatar sx={{ width: 80, height: 80 }}></Avatar>
-              <Box>
-                <Typography variant="h2">Junth</Typography>
-                <Typography variant="caption">14:29:35 14/9/2024</Typography>
-              </Box>
-              <Box width={40}></Box>
-              <Box display={'flex'} alignItems={'center'} gap={2}>
-                <span style={{ fontWeight: 600 }}>5.0</span>{' '}
-                <Rating precision={0.5} name="read-only" value={5} readOnly />
-              </Box>
-            </Box>
-
-            <Box className="comment-content">
-              <Box width={80}></Box>
-              <Typography variant="body1">Cắt tóc đẹp quá!!</Typography>
-            </Box>
-          </BoxEvaluate>
-          <BoxEvaluate>
-            <Box className="user-comment">
-              <Avatar sx={{ width: 80, height: 80 }}></Avatar>
-              <Box>
-                <Typography variant="h2">Junth</Typography>
-                <Typography variant="caption">14:29:35 14/9/2024</Typography>
-              </Box>
-              <Box width={40}></Box>
-              <Box display={'flex'} alignItems={'center'} gap={2}>
-                <span style={{ fontWeight: 600 }}>5.0</span>{' '}
-                <Rating precision={0.5} name="read-only" value={5} readOnly />
-              </Box>
-            </Box>
-
-            <Box className="comment-content">
-              <Box width={80}></Box>
-              <Typography variant="body1">Cắt tóc đẹp quá!!</Typography>
-            </Box>
-          </BoxEvaluate>
-          <BoxEvaluate>
-            <Box className="user-comment">
-              <Avatar sx={{ width: 80, height: 80 }}></Avatar>
-              <Box>
-                <Typography variant="h2">Junth</Typography>
-                <Typography variant="caption">14:29:35 14/9/2024</Typography>
-              </Box>
-              <Box width={40}></Box>
-              <Box display={'flex'} alignItems={'center'} gap={2}>
-                <span style={{ fontWeight: 600 }}>5.0</span>{' '}
-                <Rating precision={0.5} name="read-only" value={5} readOnly />
-              </Box>
-            </Box>
-
-            <Box className="comment-content">
-              <Box width={80}></Box>
-              <Typography variant="body1">Cắt tóc đẹp quá!!</Typography>
-            </Box>
-          </BoxEvaluate>
-          <Box height={40}></Box>
-          <Stack spacing={2} alignItems={'center'}>
-            <Pagination count={10} showFirstButton showLastButton />
-          </Stack>
-        </Box>
-        <Box height={20}></Box>
-      </Grid>
-    </Grid>
+    )
   );
 }

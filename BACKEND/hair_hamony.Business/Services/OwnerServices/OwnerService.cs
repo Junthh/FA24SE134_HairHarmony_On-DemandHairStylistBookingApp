@@ -60,7 +60,7 @@ namespace hair_hamony.Business.Services.OwnerServices
             var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             owner.Password = passwordHashed;
             owner.Status = "Active";
-            owner.CreatedDate = DateTime.Now;
+            owner.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Owners.AddAsync(owner);
             await _context.SaveChangesAsync();
@@ -169,6 +169,15 @@ namespace hair_hamony.Business.Services.OwnerServices
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tên tài khoản hoặc mật khẩu không chính xác"
+                };
+            }
+
+            if (owner.Status == "Inactive")
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tài khoản đã bị khoá"
                 };
             }
 
