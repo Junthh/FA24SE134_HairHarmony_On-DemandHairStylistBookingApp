@@ -107,9 +107,11 @@ export default function StylistDetails() {
                 Đã hoàn thành
               </Typography>
               <Typography className="content-body" variant="body1">
-                {(stylist.bookingSlotStylists?.filter((x) => x.status === 'Booked').length /
-                  stylist.bookingSlotStylists?.length) *
-                  100}
+                {(
+                  (stylist.bookingSlotStylists?.filter((x) => x.status === 'Booked').length /
+                    stylist.bookingSlotStylists?.length) *
+                  100
+                ).toFixed(2)}
                 %
               </Typography>
             </BoxInfoStyled>
