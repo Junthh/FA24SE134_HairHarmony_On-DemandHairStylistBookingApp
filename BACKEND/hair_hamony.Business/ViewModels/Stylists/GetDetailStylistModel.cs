@@ -20,6 +20,6 @@ namespace hair_hamony.Business.ViewModels.Stylists
         public string? Password { get; set; }
         public DateTime? CreatedDate { get; set; }
         public ICollection<GetBookingSlotStylistModel>? BookingSlotStylists { get; set; } = new List<GetBookingSlotStylistModel>();
-        public ICollection<GetFeedbackModel>? Feedbacks { get; set; } = new List<GetFeedbackModel>();
+        public ICollection<GetDetailFeedbackModel>? Feedbacks { get; set; } = new List<GetDetailFeedbackModel>();
     }
 }

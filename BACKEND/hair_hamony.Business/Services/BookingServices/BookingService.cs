@@ -8,6 +8,7 @@ using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Bookings;
+using hair_hamony.Business.ViewModels.TimeSlots;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +98,16 @@ namespace hair_hamony.Business.Services.BookingServices
             foreach (var item in results)
             {
                 item.IsFeedback = item.Feedbacks != null && item.Feedbacks.Any() && item.Status == "Finished";
+                var timeSlots = new List<GetTimeSlotModel>();
+                foreach (var bookingDetail in item.BookingDetails)
+                {
+                    foreach (var bookingSlotStylist in bookingDetail.BookingSlotStylists)
+                    {
+                        timeSlots.Add(bookingSlotStylist.TimeSlot);
+                    }
+                }
+
+                item.StartTime = timeSlots.OrderBy(x => x.StartTime).FirstOrDefault().StartTime;
             }
 
             return (results, total);
@@ -247,7 +258,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i + 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
@@ -300,7 +311,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
                             var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i + 1));
+                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist

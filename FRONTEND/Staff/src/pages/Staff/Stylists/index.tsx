@@ -69,11 +69,27 @@ export default function Stylists() {
   });
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape<any>({
+    phoneNumber: Yup.string()
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
+      .required(`Vui lòng nhập số điện thoại.`),
+    fullName: Yup.string().required(`Vui lòng nhập họ tên.`),
+    username: Yup.string().required(`Vui lòng nhập username.`),
+    level: Yup.string().required(`Vui lòng nhập cấp.`),
+    experience: Yup.string().required(`Vui lòng nhập kinh nghiệm.`),
+    kpi: Yup.string().required(`Vui lòng nhập kpi.`),
+    salary: Yup.string().required(`Vui lòng nhập lương.`),
+    status: Yup.string().required(`Vui lòng nhập trạng thái.`),
+  });
   const defaultValues = {
     username: '',
     phoneNumber: '',
     fullName: '',
+    level: '',
+    experience: '',
+    kpi: '',
+    salary: '',
+    status: '',
   };
   const formUser = useForm<any>({
     defaultValues,
@@ -151,8 +167,8 @@ export default function Stylists() {
         .then((res: any) => {
           showToast('success', res.msg);
         })
-        .catch((err) => {
-          showToast('error', err.message);
+        .catch((err: any) => {
+          showToast('error', err.msg || err.message);
         })
         .finally(() => {
           dispatch(setLoading(false));
@@ -188,8 +204,8 @@ export default function Stylists() {
             handleClose();
             closeModal();
           })
-          .catch((err) => {
-            showToast('error', err.message);
+          .catch((err: any) => {
+            showToast('error', err.msg || err.message);
           })
           .finally(() => {
             dispatch(setLoading(false));
@@ -205,8 +221,8 @@ export default function Stylists() {
             handleClose();
             closeModal();
           })
-          .catch((err) => {
-            showToast('error', err.msg);
+          .catch((err: any) => {
+            showToast('error', err.msg || err.message);
           })
           .finally(() => {
             dispatch(setLoading(false));
@@ -292,7 +308,7 @@ export default function Stylists() {
                 name="status"
                 options={STATUS_USER}
                 placeholder="Chọn trạng thái"
-                label={'Trạng thái'}
+                // label={'Trạng thái'}
               ></SelectElement>
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
