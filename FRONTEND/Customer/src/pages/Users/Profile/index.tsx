@@ -36,7 +36,7 @@ export default function Profile() {
       .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
       .required(`Vui lòng nhập số điện thoại.`),
     fullName: Yup.string().required(`Vui lòng nhập họ tên.`),
-    username: Yup.string().required(`Vui lòng nhập username`),
+    // username: Yup.string().required(`Vui lòng nhập username`),
     status: Yup.string().required(`Vui lòng nhập trạng thái`),
   });
   const defaultValues = {
@@ -124,13 +124,13 @@ export default function Profile() {
           >
             Điểm thưởng: {formProfile.getValues('loyaltyPoints') || 0}
           </Typography>
-          <TextFieldElement
+          {/* <TextFieldElement
             name="username"
             control={control}
             placeholder="Nhập username"
             label={'Username'}
             disabled
-          />
+          /> */}
           <TextFieldElement
             name="fullName"
             control={control}

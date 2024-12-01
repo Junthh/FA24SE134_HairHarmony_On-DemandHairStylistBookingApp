@@ -10,11 +10,14 @@ export const usePreviousPath = () => {
 export const PreviousPathProvider = ({ children }) => {
   const location = useLocation();
   const [previousPath, setPreviousPath] = useState(null);
-
   useEffect(() => {
+    const currentPath = location.pathname;
     return () => {
-      const currentPath = location.pathname;
-      setPreviousPath(currentPath);
+      if (currentPath === '/auth/login') {
+        return;
+      } else {
+        setPreviousPath(currentPath);
+      }
     };
   }, [location]);
 

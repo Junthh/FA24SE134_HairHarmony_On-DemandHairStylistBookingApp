@@ -66,9 +66,9 @@ export const UsersRouter = {
     {
       path: USER_PATH.BOOKING,
       element: (
-        // <AuthProvider>
-        <Booking />
-        // </AuthProvider>
+        <AuthProvider>
+          <Booking />{' '}
+        </AuthProvider>
       ),
     },
     {
