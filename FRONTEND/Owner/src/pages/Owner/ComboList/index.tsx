@@ -165,6 +165,11 @@ export default function ComboList() {
       comboServices
         .delete(row.id)
         .then((res: ListEmployeeSuccess) => {
+          getCombosList({
+            size: paging.size,
+            page: paging.page,
+            name: formSearch.getValues('name'),
+          });
           showToast('success', res.msg);
           dispatch(setLoading(false));
         })
@@ -173,7 +178,7 @@ export default function ComboList() {
           dispatch(setLoading(false));
         });
     },
-    [selectedRow],
+    [selectedRow, paging.size, paging.page],
   );
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
