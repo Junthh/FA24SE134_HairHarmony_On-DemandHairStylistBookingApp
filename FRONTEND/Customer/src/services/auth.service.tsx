@@ -10,9 +10,9 @@ class AuthService {
       data: payload,
     });
   };
-  register = (payload: RegisterPayload) => {
+  register = (payload: FormData) => {
     return axios({
-      url: `${ENDPOINTS.ApiPrefix}/Customers/regist`,
+      url: `${ENDPOINTS.ApiPrefix}/Customers`,
       method: 'POST',
       data: payload,
     });

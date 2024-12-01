@@ -18,6 +18,7 @@ import { STAFF_PATH, STYLIST_PATH, USER_PATH } from 'configurations/paths/paths'
 import { showToast } from 'components/Common/Toast';
 import { objectToFormData } from '../../../utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
+import EditorElement from 'components/Form/EditorElement/EditorElement';
 const ProfileStyled = styled(Box)({
   marginTop: '40px',
   margin: '40px auto',
@@ -32,7 +33,17 @@ export default function Profile() {
   const [profile, setProfile] = useState<any>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const schemaUser = Yup.object().shape<any>({});
+  const schemaUser = Yup.object().shape<any>({
+    phoneNumber: Yup.string()
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
+      .required(`Vui lòng nhập số điện thoại.`),
+    fullName: Yup.string().required(`Vui lòng nhập họ tên.`),
+    username: Yup.string().required(`Vui lòng nhập username`),
+    status: Yup.string().required(`Vui lòng nhập trạng thái`),
+    description: Yup.string().required(`Vui lòng nhập mô tả`),
+    experience: Yup.string().required(`Vui lòng nhập kinh nghiệm`),
+    kpi: Yup.string().required(`Vui lòng nhập kpi`),
+  });
   const defaultValues = {
     id: '',
     loyaltyPoints: 0,
@@ -151,12 +162,12 @@ export default function Profile() {
             placeholder="Nhập họ và tên"
             label={'Họ và tên'}
           />
-          <TextAreaElement
+          <EditorElement
+            placeholder="Nhập mô tả bản thân"
+            label="Mô tả về bản thân"
             name="description"
             control={control}
-            placeholder="Nhập mô tả bản thân"
-            label={'Mô tả về bản thân'}
-          />
+          ></EditorElement>
           <TextFieldElement
             name="experience"
             type="number"

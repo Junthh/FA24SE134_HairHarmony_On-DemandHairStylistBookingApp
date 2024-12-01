@@ -6,7 +6,10 @@ namespace hair_hamony.Business.Services.StaffSalaryServices
 {
     public interface IStaffSalaryService
     {
-        Task<(IList<GetDetailStaffSalaryModel>, int)> GetAll(PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel, SearchStaffSalaryModel searchStaffSalaryModel);
+        Task<(IList<GetDetailStaffSalaryModel>, int)> GetAll(
+            PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel,
+            SearchStaffSalaryModel searchStaffSalaryModel,
+            string? staffName);
         Task<GetStaffSalaryModel> GetById(Guid id);
         Task<GetStaffSalaryModel> Create(CreateStaffSalaryModel requestBody);
         Task<GetStaffSalaryModel> Update(Guid id, UpdateStaffSalaryModel requestBody);

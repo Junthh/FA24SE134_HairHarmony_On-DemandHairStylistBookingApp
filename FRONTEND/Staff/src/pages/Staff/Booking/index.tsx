@@ -13,6 +13,7 @@ import {
   Avatar,
   Skeleton,
   Rating,
+  List,
 } from '@mui/material';
 import Breadscrumb from 'components/Common/Breadscrumb';
 import { ButtonPrimary } from 'pages/common/style/Button';
@@ -135,7 +136,7 @@ export default function Booking() {
   const schemaUser = Yup.object().shape({
     customerFullName: Yup.string().required('Họ và tên không được trống'),
     customerPhoneNummber: Yup.string()
-      .matches(/^0\d{9}$/, 'Số điện thoại phải bắt đầu bằng 0 và có 10 số')
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
       .required('Số điện thoại không được trống'),
   });
   const defaultValues = {
@@ -486,27 +487,40 @@ export default function Booking() {
               </Typography>
               <Box height={20}></Box>
               <Box display={'flex'} gap={1}>
-                {categories.map((item) => {
-                  return (
-                    <ButtonPrimary
-                      className={item.isActive ? 'active' : ''}
-                      severity="cancel"
-                      padding={'9px 14px'}
-                      borderradius={20}
-                      onClick={() => {
-                        setCategories((prevCate) =>
-                          prevCate.map((cate) =>
-                            cate.id === item.id
-                              ? { ...cate, isActive: true }
-                              : { ...cate, isActive: false },
-                          ),
-                        );
-                      }}
-                    >
-                      {item.name}
-                    </ButtonPrimary>
-                  );
-                })}
+                <List
+                  sx={{
+                    width: '100%',
+                    maxWidth: 'inherit',
+                    position: 'relative',
+                    overflow: 'auto',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: '10px',
+                  }}
+                >
+                  {categories.map((item) => {
+                    return (
+                      <ButtonPrimary
+                        className={item.isActive ? 'active' : ''}
+                        severity="cancel"
+                        padding={'9px 14px'}
+                        sx={{ minWidth: '180px' }}
+                        borderradius={20}
+                        onClick={() => {
+                          setCategories((prevCate) =>
+                            prevCate.map((cate) =>
+                              cate.id === item.id
+                                ? { ...cate, isActive: true }
+                                : { ...cate, isActive: false },
+                            ),
+                          );
+                        }}
+                      >
+                        {item.name}
+                      </ButtonPrimary>
+                    );
+                  })}
+                </List>
               </Box>
               <Box height={20}></Box>
 

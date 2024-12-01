@@ -310,9 +310,9 @@ export default function News() {
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Tiêu đề
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              {/* <StyledTableCell style={{ color: 'white' }} align="right">
                 Mô tả
-              </StyledTableCell>
+              </StyledTableCell> */}
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Tác giả
               </StyledTableCell>
@@ -340,7 +340,7 @@ export default function News() {
                   />{' '}
                   {row.title}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.description}</StyledTableCell>
+                {/* <StyledTableCell align="right">{row.description}</StyledTableCell> */}
                 <StyledTableCell align="right">{row.author}</StyledTableCell>
                 <StyledTableCell align="right">
                   {formatDate(row.createdDate, 'dd/MM/yyyy')}

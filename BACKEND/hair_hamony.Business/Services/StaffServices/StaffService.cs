@@ -56,11 +56,22 @@ namespace hair_hamony.Business.Services.StaffServices
                 var file = await _fileService.UploadFile(requestBody.Avatar);
                 staff.Avatar = file.Url;
             }
-            var defaultPassword = "123";
-            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(requestBody.Password);
             staff.Password = passwordHashed;
             staff.Status = "Active";
-            staff.CreatedDate = DateTime.Now;
+            staff.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            staff.Id = Guid.NewGuid();
+
+            var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
+            var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
+            await _context.StaffSalarys.AddAsync(new StaffSalary
+            {
+                CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                Month = monthCurrent,
+                Year = yearCurrent,
+                StaffId = staff.Id,
+                TotalSalary = staff.Salary
+            });
 
             await _context.Staffs.AddAsync(staff);
             await _context.SaveChangesAsync();
@@ -169,6 +180,15 @@ namespace hair_hamony.Business.Services.StaffServices
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = "Tên tài khoản hoặc mật khẩu không chính xác"
+                };
+            }
+
+            if (staff.Status == "Inactive")
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Tài khoản đã bị khoá"
                 };
             }
 

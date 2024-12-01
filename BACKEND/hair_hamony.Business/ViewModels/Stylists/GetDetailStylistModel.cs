@@ -1,4 +1,7 @@
-﻿namespace hair_hamony.Business.ViewModels.Stylists
+﻿using hair_hamony.Business.ViewModels.BookingSlotStylists;
+using hair_hamony.Business.ViewModels.Feedbacks;
+
+namespace hair_hamony.Business.ViewModels.Stylists
 {
     public class GetDetailStylistModel
     {
@@ -16,5 +19,7 @@
         public string? Avatar { get; set; }
         public string? Password { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public ICollection<GetBookingSlotStylistModel>? BookingSlotStylists { get; set; } = new List<GetBookingSlotStylistModel>();
+        public ICollection<GetDetailFeedbackModel>? Feedbacks { get; set; } = new List<GetDetailFeedbackModel>();
     }
 }

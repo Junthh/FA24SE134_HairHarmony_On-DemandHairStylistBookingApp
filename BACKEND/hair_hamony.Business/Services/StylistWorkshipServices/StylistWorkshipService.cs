@@ -3,6 +3,7 @@ using hair_hamony.Business.Common;
 using hair_hamony.Business.Commons;
 using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
+using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.StylistWorkships;
 using hair_hamony.Data.Entities;
@@ -52,8 +53,8 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                         var newStylistWorkship = new StylistWorkship
                         {
                             RegisterDate = requestBody.RegisterDate,
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                            UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             WorkshipId = workshipId,
                             StylistId = requestBody.StylistId,
                         };
@@ -150,7 +151,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
 
             var updateStylistWorkship = _mapper.Map<StylistWorkship>(await GetById(id));
             _mapper.Map(requestBody, updateStylistWorkship);
-            updateStylistWorkship.UpdatedDate = DateTime.Now;
+            updateStylistWorkship.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.StylistWorkships.Update(updateStylistWorkship);
             await _context.SaveChangesAsync();

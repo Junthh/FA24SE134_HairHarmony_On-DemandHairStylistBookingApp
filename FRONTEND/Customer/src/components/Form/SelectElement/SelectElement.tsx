@@ -32,16 +32,27 @@ interface options {
   value: any;
   label: any;
 }
-const PlaceholderStyled = styled(`div`)<{ isLabel }>(({ isLabel }) => ({
+const PlaceholderStyled = styled(`div`)<{ isLabel; error }>(({ isLabel, error }) => ({
   color: colors.placeholder,
   position: 'absolute',
-  top: isLabel === 'false' ? '62%' : '25%',
+  top:
+    isLabel === 'false' && !error
+      ? '62%'
+      : error && isLabel === 'true'
+      ? '20%'
+      : error && isLabel === 'false'
+      ? '50%'
+      : '25%',
   left: '15px',
   fontWeight: 100,
 }));
 
-const Placeholder = ({ children, isLabel }) => {
-  return <PlaceholderStyled isLabel={isLabel}>{children}</PlaceholderStyled>;
+const Placeholder = ({ children, isLabel, error }) => {
+  return (
+    <PlaceholderStyled isLabel={isLabel} error={error}>
+      {children}
+    </PlaceholderStyled>
+  );
 };
 const SelectElement: React.FunctionComponent<ISelectElementProps> = ({
   label,
@@ -102,7 +113,9 @@ const SelectElement: React.FunctionComponent<ISelectElementProps> = ({
               </Typography>
             )}
             {placeholder && isEmpty(value) && (
-              <Placeholder isLabel={isEmpty(label) ? 'true' : 'false'}>{placeholder}</Placeholder>
+              <Placeholder isLabel={isEmpty(label) ? 'true' : 'false'} error={!!error}>
+                {placeholder}
+              </Placeholder>
             )}
             <BaseSelect
               onChange={(e) => {

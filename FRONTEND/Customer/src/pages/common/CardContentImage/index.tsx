@@ -13,6 +13,7 @@ const CardContentImagesSyled = styled(Box)({
     borderRadius: 12,
     width: 280,
     height: 280,
+    objectFit: 'cover',
   },
   '& .star': {
     display: 'flex',

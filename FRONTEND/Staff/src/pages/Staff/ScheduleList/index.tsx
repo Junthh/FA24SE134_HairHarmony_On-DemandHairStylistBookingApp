@@ -49,6 +49,7 @@ import _ from 'lodash';
 import { systemConfigService } from 'services/systemConfigs.service';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import { DetailsOutlined, InfoOutlined } from '@mui/icons-material';
+import { formatDate, formatDateTime, formatTime } from 'utils/datetime';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -66,10 +67,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const STATUS_LABEL = {
-  Initialize: 'Đã tạo',
+  Initialize: 'Đã đặt lịch',
   Confirmed: 'Đã xác nhận',
   Processing: 'Bắt đầu thực hiện',
   Completed: 'Hoàn thành',
+  Finished: 'Kết thúc',
   Cancel: 'Huỷ',
 };
 
@@ -78,6 +80,7 @@ const STATUS_COLOR = {
   Confirmed: 'warning',
   Processing: 'info',
   Completed: 'default',
+  Finished: 'primary',
   Cancel: 'error',
 };
 
@@ -105,7 +108,7 @@ export default function ScheduleList() {
   });
   const [tabValue, setTabValue] = useState('');
   const [isOpenModalCancel, setIsOpenModalCancel] = useState(false);
-  const [isOpenModalCompleted, setIsOpenModalCompleted] = useState(false);
+  const [isOpenModalFinished, setIsOpenModalFinished] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLoadingButtonCompleted, setIsLoadingButtonCompleted] = useState(false);
@@ -150,6 +153,8 @@ export default function ScheduleList() {
         bookingDate: bookingDate,
         customerPhoneNumber: customerPhoneNumber,
         status,
+        sortKey: 'CreatedDate',
+        sortOrder: 'DESC',
       })
       .then((resultList: any) => {
         setPaging((prev) => ({
@@ -192,7 +197,7 @@ export default function ScheduleList() {
         showToast('success', 'Cập nhật thành công');
         setIsReloadData(!isReloadData);
         setIsOpenModalCancel(false);
-        setIsOpenModalCompleted(false);
+        setIsOpenModalFinished(false);
       })
       .catch((error) => {
         console.error(error);
@@ -238,10 +243,11 @@ export default function ScheduleList() {
           }}
         >
           <Tab value="" label="Tất cả" />
-          <Tab value="Initialize" label="Đã tạo" />
+          <Tab value="Initialize" label="Đã đặt lịch" />
           <Tab value="Confirmed" label="Đã xác nhận" />
           <Tab value="Processing" label="Bắt đầu thực hiện" />
           <Tab value="Completed" label="Hoàn thành" />
+          <Tab value="Finished" label="Kết thúc" />
           <Tab value="Cancel" label="Huỷ" />
         </Tabs>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -263,10 +269,16 @@ export default function ScheduleList() {
                 Stylist
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                Thời gian bắt đầu
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng tiền
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Trạng thái
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Ngày tạo
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Hành động
@@ -281,15 +293,17 @@ export default function ScheduleList() {
                   {id + 1}
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.customer?.fullName}</StyledTableCell>
-                <StyledTableCell align="center">{row.bookingDate}</StyledTableCell>
+                <StyledTableCell align="center">{formatDate(row.bookingDate)}</StyledTableCell>
                 <StyledTableCell align="center">{row.customer?.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="center">
                   {row.bookingDetails[0]?.bookingSlotStylists[0]?.stylist?.fullName}
                 </StyledTableCell>
+                <StyledTableCell align="center">{formatTime(row?.startTime)}</StyledTableCell>
                 <StyledTableCell align="center">{currencyFormat(row.totalPrice)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Chip label={STATUS_LABEL[row.status]} color={STATUS_COLOR[row.status]} />
                 </StyledTableCell>
+                <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Box
                     sx={{
@@ -322,13 +336,13 @@ export default function ScheduleList() {
                         Bắt đầu thực hiện
                       </Button>
                     )}
-                    {row.status === 'Processing' && (
+                    {row.status === 'Completed' && (
                       <Button
                         variant="contained"
                         color="success"
                         onClick={() => {
                           setBookingSelected(row);
-                          setIsOpenModalCompleted(true);
+                          setIsOpenModalFinished(true);
                           getSystemConfig();
 
                           let _totalPrice = 0;
@@ -349,7 +363,7 @@ export default function ScheduleList() {
                           setAmoutToPaid(_totalPrice);
                         }}
                       >
-                        Hoàn thành
+                        Kết thúc
                       </Button>
                     )}
                     {(row.status === 'Initialize' || row.status === 'Confirmed') && (
@@ -400,10 +414,10 @@ export default function ScheduleList() {
         <DialogContent>
           {bookingSelected ? (
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 Tên khách hàng
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={6}>
                 {bookingSelected.customer.fullName}
               </Grid>
               <Grid item xs={12}>
@@ -411,10 +425,11 @@ export default function ScheduleList() {
               </Grid>
               {bookingSelected.bookingDetails.map((item, index) => (
                 <React.Fragment key={index}>
-                  <Grid item xs={4}>
+                  <Grid item xs={1} />
+                  <Grid item xs={5}>
                     {item.service ? item.service.name : item.combo ? item.combo.name : ''}
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={6}>
                     {item.service
                       ? currencyFormat(item.service.price)
                       : item.combo
@@ -423,6 +438,35 @@ export default function ScheduleList() {
                   </Grid>
                 </React.Fragment>
               ))}
+              <Grid item xs={6}>
+                Tổng phí dịch vụ
+              </Grid>
+              <Grid item xs={6}>
+                {currencyFormat(
+                  bookingSelected.bookingDetails.reduce((sum, item) => sum + item.price, 0),
+                )}
+              </Grid>
+              {bookingSelected.expertFee && (
+                <>
+                  <Grid item xs={6}>
+                    Phí chuyên gia
+                  </Grid>
+                  <Grid item xs={6}>
+                    {currencyFormat(
+                      (bookingSelected.bookingDetails.reduce((sum, item) => sum + item.price, 0) *
+                        bookingSelected.expertFee) /
+                        100,
+                    )}{' '}
+                    ({bookingSelected.expertFee}%)
+                  </Grid>
+                </>
+              )}
+              <Grid item xs={6}>
+                <b>Tổng tiền</b>
+              </Grid>
+              <Grid item xs={6}>
+                <b>{currencyFormat(bookingSelected.totalPrice)}</b>
+              </Grid>
             </Grid>
           ) : null}
         </DialogContent>
@@ -461,8 +505,8 @@ export default function ScheduleList() {
       <Dialog
         fullWidth
         maxWidth="md"
-        open={isOpenModalCompleted}
-        onClose={() => setIsOpenModalCompleted(false)}
+        open={isOpenModalFinished}
+        onClose={() => setIsOpenModalFinished(false)}
       >
         <DialogTitle>Thanh toán</DialogTitle>
         <DialogContent>
@@ -587,18 +631,14 @@ export default function ScheduleList() {
                 }
                 booking.totalPrice = totalPrice;
                 booking.amoutToPaid = amoutToPaid;
-                booking.status = 'Completed';
+                booking.status = 'Finished';
                 booking.paymentMethod = formSearch.getValues('paymentType');
                 handleUpdateBooking(booking);
               }}
             >
               Thanh toán
             </LoadingButton>
-            <Button
-              color="error"
-              variant="contained"
-              onClick={() => setIsOpenModalCompleted(false)}
-            >
+            <Button color="error" variant="contained" onClick={() => setIsOpenModalFinished(false)}>
               Huỷ
             </Button>
           </Box>

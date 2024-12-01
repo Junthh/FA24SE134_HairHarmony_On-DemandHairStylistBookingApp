@@ -1,7 +1,8 @@
 import * as Yup from 'yup';
 
 export interface AuthKeys {
-  username: string;
+  phoneNumber: string;
+  fullName: string;
   password: string;
   confirmPassword: string;
 }
@@ -14,45 +15,55 @@ type AuthProps = {
 };
 
 export const authProps: AuthProps = {
-  username: { propertyLabel: 'Username', propertyName: 'username' },
+  phoneNumber: { propertyLabel: 'phoneNumber', propertyName: 'phoneNumber' },
+  fullName: { propertyLabel: 'fullName', propertyName: 'fullName' },
   password: { propertyLabel: 'Password', propertyName: 'password' },
   confirmPassword: { propertyLabel: 'Confirm Password', propertyName: 'confirmPassword' },
 };
 
 // Form model
 export const registerFormDefaultValues = {
-  [authProps.username.propertyName]: '',
+  [authProps.phoneNumber.propertyName]: '',
+  [authProps.fullName.propertyName]: '',
   [authProps.password.propertyName]: '',
   [authProps.confirmPassword.propertyName]: '',
 };
 
 export const loginFormDefaultValues = {
-  [authProps.username.propertyName]: '',
+  [authProps.phoneNumber.propertyName]: '',
   [authProps.password.propertyName]: '',
 };
 
 // Schema Validator
 export const registerSchema = () => {
   return Yup.object().shape<any>({
-    // Email
-    [authProps.username.propertyName]: Yup.string().required(`Username is required.`),
+    // phoneNumber
+    [authProps.phoneNumber.propertyName]: Yup.string()
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
+      .required(`Vui lòng nhập số điện thoại.`),
+
+    // fullName
+    [authProps.fullName.propertyName]: Yup.string().required(`Vui lòng nhập họ tên.`),
 
     // Password
-    [authProps.password.propertyName]: Yup.string().required(`Password is required.`),
+    [authProps.password.propertyName]: Yup.string().required(`Vui lòng nhập mật khẩu.`),
 
     // Confirm Password
     [authProps.confirmPassword.propertyName]: Yup.string()
-      .oneOf([Yup.ref(authProps.password.propertyName), null], 'Passwords must match')
-      .required(`Confirm password is required.`),
+      .oneOf(
+        [Yup.ref(authProps.password.propertyName), null],
+        'Mật khẩu phải phù hợp với mật khẩu đã nhập',
+      )
+      .required(`Vui lòng nhập lại mật khẩu.`),
   });
 };
 
 export const loginSchema = () => {
   return Yup.object().shape<any>({
     // Email
-    [authProps.username.propertyName]: Yup.string().required(`Username is required.`),
+    [authProps.phoneNumber.propertyName]: Yup.string().required(`Vui lòng nhập số điện thoại.`),
 
     // Password
-    [authProps.password.propertyName]: Yup.string().required(`Password is required.`),
+    [authProps.password.propertyName]: Yup.string().required(`Vui lòng nhập mật khẩu.`),
   });
 };
