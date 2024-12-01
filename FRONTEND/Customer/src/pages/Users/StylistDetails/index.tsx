@@ -15,13 +15,14 @@ import DOMPurify from 'dompurify';
 import { formatDate, formatDateTime } from 'utils/datetime';
 
 const BoxImageLeft = styled(Box)({
-  marginTop: '40px',
+  marginTop: '0px',
   width: 350,
   height: 380,
   '& img': {
     width: '100%',
     height: '100%',
     borderRadius: 24,
+    objectFit: 'cover',
   },
 });
 const BoxInfoStyled = styled(Box)({
@@ -79,12 +80,12 @@ export default function StylistDetails() {
   return (
     stylist && (
       <Grid container spacing={2} paddingLeft={10} marginTop={15} marginBottom={10}>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <BoxImageLeft>
             <img src={stylist.avatar} alt="" />
           </BoxImageLeft>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={8}>
           <Typography variant="h3" fontWeight={700}>
             {stylist.fullName} &nbsp;
             <span style={{ fontSize: '14px', fontWeight: 500, color: '#5C4ACE' }}>
@@ -174,7 +175,10 @@ export default function StylistDetails() {
               {stylist.feedbacks?.map((feedback, index) => (
                 <React.Fragment key={index}>
                   <Box className="user-comment">
-                    <Avatar sx={{ width: 80, height: 80 }} src={feedback?.booking.customer?.avatar} />
+                    <Avatar
+                      sx={{ width: 80, height: 80 }}
+                      src={feedback?.booking.customer?.avatar}
+                    />
                     <Box>
                       <Typography variant="h2">{feedback?.booking.customer?.name}</Typography>
                       <Typography variant="caption">
