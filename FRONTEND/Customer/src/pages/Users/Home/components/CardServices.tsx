@@ -109,7 +109,7 @@ export default function CardServices({
           <Grid item xs={3} key={index}>
             <BoxCardService type="services">
               <Box className="content">
-                <Typography fontWeight={'bold'} variant="h4">
+                <Typography whiteSpace={'nowrap'} fontWeight={'bold'} variant="h4">
                   {item.name}
                 </Typography>
               </Box>
