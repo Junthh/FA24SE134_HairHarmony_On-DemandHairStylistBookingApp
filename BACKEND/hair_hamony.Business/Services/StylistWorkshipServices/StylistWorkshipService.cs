@@ -109,6 +109,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
             var query = _context.StylistWorkships
                 .Include(stylistWorkship => stylistWorkship.Workship)
                 .Include(stylistWorkship => stylistWorkship.Stylist)
+                .Include(stylistWorkship => stylistWorkship.Timekeeping)
                 .AsQueryable();
 
             if (startDate != null && endDate != null)
