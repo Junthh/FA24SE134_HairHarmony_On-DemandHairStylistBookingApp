@@ -55,7 +55,7 @@ namespace hair_hamony.Business.Services.BookingServices
             PagingParam<BookingEnum.BookingSort> paginationModel,
             SearchBookingModel searchBookingModel,
             string? customerPhoneNumber,
-            Guid? stylistId)
+            Guid? stylistId, DateOnly? startDate, DateOnly? endDate)
         {
             var query = _context.Bookings
                 .Include(booking => booking.Customer)
@@ -86,6 +86,11 @@ namespace hair_hamony.Business.Services.BookingServices
                             bookingSlotStylist.Stylist.Id == stylistId)
                         )
                     );
+            }
+
+            if (startDate != null && endDate != null)
+            {
+                query = query.Where(booking => booking.BookingDate >= startDate && booking.BookingDate <= endDate);
             }
 
             query = query.GetWithSearch(searchBookingModel);
