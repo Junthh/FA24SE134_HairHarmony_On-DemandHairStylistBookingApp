@@ -7,6 +7,7 @@ using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
 using hair_hamony.Business.Services.FeedbackServices;
 using hair_hamony.Business.Services.File;
+using hair_hamony.Business.Services.KpiServices;
 using hair_hamony.Business.Services.MomoServices;
 using hair_hamony.Business.Services.NewsServices;
 using hair_hamony.Business.Services.OwnerServices;
@@ -15,10 +16,12 @@ using hair_hamony.Business.Services.PaymentServices;
 using hair_hamony.Business.Services.ServiceServices;
 using hair_hamony.Business.Services.StaffSalaryServices;
 using hair_hamony.Business.Services.StaffServices;
+using hair_hamony.Business.Services.StylistSalaryDetailServices;
 using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Services.StylistServices;
 using hair_hamony.Business.Services.StylistWorkshipServices;
 using hair_hamony.Business.Services.SystemConfigServices;
+using hair_hamony.Business.Services.TimekeepingServices;
 using hair_hamony.Business.Services.TimeSlotServices;
 using hair_hamony.Business.Services.TransactionServices;
 using hair_hamony.Business.Services.WorkshipServices;
@@ -58,6 +61,9 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IStaffService, StaffService>();
             services.AddScoped<IStaffSalaryService, StaffSalaryService>();
             services.AddScoped<IMomoService, MomoService>();
+            services.AddScoped<IKpiService, KpiService>();
+            services.AddScoped<IStylistSalaryDetailService, StylistSalaryDetailService>();
+            services.AddScoped<ITimekeepingService, TimekeepingService>();
         }
     }
 }

@@ -5,6 +5,8 @@
         public DateOnly? RegisterDate { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public bool? IsTimekeeping { get; set; }
+        public Guid? TimekeepingId { get; set; }
         public Guid? WorkshipId { get; set; }
         public Guid? StylistId { get; set; }
     }

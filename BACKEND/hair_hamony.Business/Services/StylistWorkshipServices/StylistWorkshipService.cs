@@ -50,6 +50,23 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                                     $"đã được đăng ký, vui lòng chọn ca làm việc khác"
                             };
                         }
+                        var timeKeepingId = Guid.NewGuid();
+
+                        var monthRegister = requestBody.RegisterDate.Value.Month;
+                        var yearRegister = requestBody.RegisterDate.Value.Year;
+                        var timekeeping = _context.Timekeepings.FirstOrDefault(x => x.Month == monthRegister && x.Year == yearRegister);
+                        if (timekeeping == null)
+                        {
+                            _context.Timekeepings.Add(new Timekeeping
+                            {
+                                Id = timeKeepingId,
+                                CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                                IsTimekeepping = false,
+                                Month = monthRegister,
+                                Year = yearRegister,
+                            });
+                        }
+
                         var newStylistWorkship = new StylistWorkship
                         {
                             RegisterDate = requestBody.RegisterDate,
@@ -57,6 +74,8 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
                             UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             WorkshipId = workshipId,
                             StylistId = requestBody.StylistId,
+                            IsTimekeeping = false,
+                            TimekeepingId = timeKeepingId,
                         };
                         _context.StylistWorkships.Add(newStylistWorkship);
                         stylistWorkships.Add(newStylistWorkship);
