@@ -10,7 +10,7 @@ namespace hair_hamony.Business.Services.BookingServices
             PagingParam<BookingEnum.BookingSort> paginationModel,
             SearchBookingModel searchBookingModel,
             string? customerPhoneNumber,
-            Guid? stylistId);
+            Guid? stylistId, DateOnly? startDate, DateOnly? endDate);
         Task<GetBookingModel> GetById(Guid id);
         Task<GetBookingModel> Create(CreateBookingModel requestBody);
         Task<GetBookingModel> Update(Guid id, UpdateBookingModel requestBody);
