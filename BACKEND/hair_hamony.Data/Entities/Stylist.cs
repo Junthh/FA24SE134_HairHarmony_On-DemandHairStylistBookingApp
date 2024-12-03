@@ -15,8 +15,6 @@ public partial class Stylist
 
     public int? Experience { get; set; }
 
-    public int? Kpi { get; set; }
-
     public double? Salary { get; set; }
 
     public string? Username { get; set; }

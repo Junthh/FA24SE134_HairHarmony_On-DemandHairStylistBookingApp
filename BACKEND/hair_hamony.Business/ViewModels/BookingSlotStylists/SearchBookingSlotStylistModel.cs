@@ -6,6 +6,7 @@
         public DateOnly? BookingDate { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public Guid? KpiId { get; set; }
         public Guid? BookingSlotStylistDetailId { get; set; }
         public Guid? TimeSlotId { get; set; }
         public Guid? StylistId { get; set; }

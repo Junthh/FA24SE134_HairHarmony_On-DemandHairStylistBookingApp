@@ -32,6 +32,9 @@ public static class AutoMapperConfig
             mc.ConfigOwner();
             mc.ConfigStaff();
             mc.ConfigStaffSalary();
+            mc.ConfigKpi();
+            mc.ConfigStylistSalaryDetail();
+            mc.ConfigTimekeeping();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();
