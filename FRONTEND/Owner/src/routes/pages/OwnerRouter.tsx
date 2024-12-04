@@ -24,6 +24,7 @@ const TransactionList = lazy(() => import('pages/Owner/TransactionList'));
 const ComboList = lazy(() => import('pages/Owner/ComboList'));
 const CategoriesList = lazy(() => import('pages/Owner/CategoriesList'));
 const CustomerList = lazy(() => import('pages/Owner/CustomerList'));
+const KpiList = lazy(() => import('pages/Owner/KpiList'));
 
 //
 //
@@ -105,6 +106,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.STAFF_SALARY}`,
       element: <StaffSalary />,
+    },
+    {
+      path: `${OWNER_PATH.KPI_LIST}`,
+      element: <KpiList />,
     },
   ],
 };

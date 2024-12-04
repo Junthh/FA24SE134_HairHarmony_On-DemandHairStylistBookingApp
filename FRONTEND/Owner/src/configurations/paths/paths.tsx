@@ -12,6 +12,7 @@ import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import PixIcon from '@mui/icons-material/Pix';
 import CategoryIcon from '@mui/icons-material/Category';
+import NetworkPingIcon from '@mui/icons-material/NetworkPing';
 //
 export enum OWNER_PATH {
   EMPLOYEE_WORK_SCHEDULE = '/employee-work-schedule',
@@ -30,6 +31,7 @@ export enum OWNER_PATH {
   APPOINTMENT_MANAGEMENT = '/appointment-management',
   FEEDBACK = '/feed-back',
   TRANSACTION = '/transaction',
+  KPI_LIST = '/kpis',
 }
 
 export const OWNER_PATH_SIDEBAR = [
@@ -82,6 +84,11 @@ export const OWNER_PATH_SIDEBAR = [
     title: 'Combo',
     path: OWNER_PATH.COMBO,
     icon: <PixIcon />,
+  },
+  {
+    title: 'KPI',
+    path: OWNER_PATH.KPI_LIST,
+    icon: <NetworkPingIcon />,
   },
   // {
   //   title: 'Khuyến mãi',
