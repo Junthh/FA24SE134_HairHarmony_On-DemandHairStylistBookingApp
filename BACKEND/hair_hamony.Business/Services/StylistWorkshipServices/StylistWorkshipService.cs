@@ -179,5 +179,78 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
 
             return _mapper.Map<GetStylistWorkshipModel>(updateStylistWorkship);
         }
+
+        public IList<GetStylistWorkshipByMonthModel> GetByMonthAndYear(int month, int year)
+        {
+            var results = new List<GetStylistWorkshipByMonthModel>();
+            var firstDayOfMonth = new DateTime(year, month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+
+            for (int i = 0; i < lastDayOfMonth.Day; i++)
+            {
+                var currentDate = new DateOnly(year, month, i + 1);
+                var stylistWorkshipByMonth = new GetStylistWorkshipByMonthModel();
+                stylistWorkshipByMonth.Date = currentDate;
+
+                var stylists = _context.Stylists.Where(x => x.Status == "Active").OrderBy(x => x.FullName).ToList();
+                var workships = _context.Workships.OrderBy(x => x.StartTime).ToList();
+
+                for (int j = 0; j < stylists.Count; j++)
+                {
+                    var workShipModels = new List<GetStylistWorkshipByMonthModel.WorkShipModel>();
+                    for (int k = 0; k < workships.Count; k++)
+                    {
+                        var stylistWorkship = _context.StylistWorkships
+                            .FirstOrDefault(x => x.WorkshipId == workships[k].Id && x.StylistId == stylists[j].Id && x.RegisterDate == currentDate);
+
+                        workShipModels.Add(new GetStylistWorkshipByMonthModel.WorkShipModel
+                        {
+                            Time = workships[k].StartTime + "-" + workships[k].EndTime,
+                            IsRegister = stylistWorkship != null ? true : false,
+                        });
+                    }
+
+                    stylistWorkshipByMonth.Stylists.Add(new GetStylistWorkshipByMonthModel.StylistModel
+                    {
+                        Id = stylists[j].Id,
+                        FullName = stylists[j].FullName,
+                        Username = stylists[j].Username,
+                        Workships = workShipModels,
+                    });
+                }
+
+                results.Add(stylistWorkshipByMonth);
+
+
+                //var stylistWorkshipByMonth = new GetStylistWorkshipByMonthModel();
+                //stylistWorkshipByMonth.Date = currentDate;
+
+                //var stylistWorkships = _context.StylistWorkships.Where(x => x.RegisterDate == currentDate).ToList();
+
+                //for (int j = 0; j < stylistWorkships.Count; j++)
+                //{
+                //    var stylist = _context.Stylists.FirstOrDefault(x => x.Id == stylistWorkships[j].StylistId);
+                //    var workships = _context.Workships.Where(x => x.Id == stylistWorkships[j].WorkshipId).ToList();
+                //    var workshipModel = new List<GetStylistWorkshipByMonthModel.WorkShipModel>();
+                //    for (int k = 0; k < workships.Count; k++)
+                //    {
+                //        workshipModel.Add(new GetStylistWorkshipByMonthModel.WorkShipModel
+                //        {
+                //            Time = workships[k].StartTime + "-" + workships[k].EndTime,
+                //            IsRegister = true,
+                //        });
+                //    }
+                //    stylistWorkshipByMonth.Stylists.Add(new GetStylistWorkshipByMonthModel.StylistModel
+                //    {
+                //        Id = stylist.Id,
+                //        FullName = stylist.FullName,
+                //        Username = stylist.Username,
+                //        Workships = workshipModel
+                //    });
+                //}
+            }
+
+            return results;
+        }
     }
 }
