@@ -13,7 +13,9 @@ const AppointmentManagement = lazy(() => import('pages/Owner/AppointmentManageme
 const Dashboard = lazy(() => import('pages/Owner/Dashboard'));
 const EmployeeStaffList = lazy(() => import('pages/Owner/EmployeeStaffList'));
 const EmployeeStylistList = lazy(() => import('pages/Owner/EmployeeStylistList'));
-const EmployeeSalary = lazy(() => import('pages/Owner/EmployeeSalary'));
+// const EmployeeSalary = lazy(() => import('pages/Owner/EmployeeSalary'));
+const EmployeeSalary = lazy(() => import('pages/Owner/SalaryStylistV2'));
+
 const Feedback = lazy(() => import('pages/Owner/Feedback'));
 const News = lazy(() => import('pages/Owner/News'));
 const PromotionList = lazy(() => import('pages/Owner/PromotionList'));
