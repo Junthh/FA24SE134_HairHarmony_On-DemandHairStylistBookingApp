@@ -196,7 +196,7 @@ export default function ScheduleList() {
       <BoxHeaderSearch>
         <Box className="search-left">
           <FormContainer formContext={formSearch} onSuccess={handleFilters}>
-            <Box width={'100%'} display={'flex'} gap={2}>
+            <Box width={'100%'} display={'flex'} gap={2} alignItems={'flex-end'}>
               <TextFieldElement
                 name="customerPhoneNumber"
                 label="Số điện thoại"
@@ -208,7 +208,12 @@ export default function ScheduleList() {
               />
               <DatePickerElement name="startDate" label="Ngày bắt đầu" control={control} />
               <DatePickerElement name="endDate" label="Ngày kết thúc" control={control} />
-              <ButtonPrimary type="submit" severity="primary" padding={'7px 14px'}>
+              <ButtonPrimary
+                sx={{ height: 40 }}
+                type="submit"
+                severity="primary"
+                padding={'7px 14px'}
+              >
                 <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
               </ButtonPrimary>
             </Box>
