@@ -25,6 +25,22 @@ class StylistSalaryServices {
       } as DataEmployeeError;
     }
   }
+  async listStylistWorkship(params = {}) {
+    try {
+      const resData: ListEmployeeSuccess = await axios.get(
+        `${ENDPOINTS.ApiPrefix}/StylistWorkships/MonthAndYear`,
+        {
+          params,
+        },
+      );
+      return resData;
+    } catch (error) {
+      return {
+        success: false,
+        errors: error.errors || errorDefault,
+      } as DataEmployeeError;
+    }
+  }
 
   async create(data: EmployeeForm) {
     try {
