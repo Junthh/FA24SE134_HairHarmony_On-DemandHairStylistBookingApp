@@ -50,6 +50,31 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for get all stylistWorkship for all stylist by month and year
+        /// </summary>
+        /// <param name="month">A month wanna search</param>
+        /// <param name="year">A year wanna search</param>
+        /// <returns>List of stylistWorkship</returns>
+        /// <response code="200">Returns the list of stylistWorkship</response>
+        [HttpGet("MonthAndYear")]
+        [ProducesResponseType(typeof(ModelsResponse<GetStylistWorkshipByMonthModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public IActionResult GetByMonthAndYear([FromQuery] int month, [FromQuery] int year)
+        {
+            var stylistWorkships = _stylistWorkshipService.GetByMonthAndYear(month, year);
+
+            return Ok(new ModelsResponse<GetStylistWorkshipByMonthModel>(
+                    paging: new PagingResponse()
+                    {
+                        Page = 1,
+                        Size = stylistWorkships.Count,
+                        Total = stylistWorkships.Count
+                    },
+                    data: stylistWorkships
+                ));
+        }
+
+        /// <summary>
         /// Endpoint for get stylistWorkship by Id
         /// </summary>
         /// <param name="id">Id of stylistWorkship</param>
