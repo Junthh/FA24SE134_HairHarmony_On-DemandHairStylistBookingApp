@@ -119,26 +119,33 @@ export default function ScheduleList() {
 
   useEffect(() => {
     if (credentialInfo.Id) {
-      formSearch.setValue('bookingDate', Date.now());
+      formSearch.setValue('startDate', Date.now());
+      formSearch.setValue('endDate', Date.now());
       getBookingHistoryList({
         size: paging.size,
         page: paging.page,
         status: tabValue,
         stylistId: credentialInfo.Id,
-        bookingDate: moment(Date.now()).format('YYYY-MM-DD'),
+        startDate:
+          moment(formSearch.getValues('startDate')).format('YYYY-MM-DD') ??
+          moment(Date.now()).format('YYYY-MM-DD'),
+        endDate:
+          moment(formSearch.getValues('endDate')).format('YYYY-MM-DD') ??
+          moment(Date.now()).format('YYYY-MM-DD'),
       });
     }
   }, [paging.size, paging.page, tabValue, isReloadData, credentialInfo.Id]);
 
   const getBookingHistoryList = useCallback((props) => {
     dispatch(setLoading(true));
-    const { size, page, bookingDate, customerPhoneNumber, status, stylistId } = props;
+    const { size, page, startDate, endDate, customerPhoneNumber, status, stylistId } = props;
     scheduleListServices
       .list({
         pageSize: size,
         pageIndex: page + 1,
         stylistId,
-        bookingDate: bookingDate,
+        startDate,
+        endDate,
         customerPhoneNumber: customerPhoneNumber,
         status,
         sortKey: 'CreatedDate',
@@ -192,13 +199,15 @@ export default function ScheduleList() {
             <Box width={'100%'} display={'flex'} gap={2}>
               <TextFieldElement
                 name="customerPhoneNumber"
+                label="Số điện thoại"
                 control={control}
                 placeholder="Số điện thoại"
                 InputProps={{
                   startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
                 }}
               />
-              <DatePickerElement name="bookingDate" label="" control={control} />
+              <DatePickerElement name="startDate" label="Ngày bắt đầu" control={control} />
+              <DatePickerElement name="endDate" label="Ngày kết thúc" control={control} />
               <ButtonPrimary type="submit" severity="primary" padding={'7px 14px'}>
                 <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
               </ButtonPrimary>
