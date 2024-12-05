@@ -126,10 +126,6 @@ public partial class HairHamonyContext : DbContext
                 .HasForeignKey(d => d.BookingDetailId)
                 .HasConstraintName("FK__BookingSl__Booki__160F4887");
 
-            entity.HasOne(d => d.Kpi).WithMany(p => p.BookingSlotStylists)
-                .HasForeignKey(d => d.KpiId)
-                .HasConstraintName("FK__BookingSl__KpiId__15DA3E5D");
-
             entity.HasOne(d => d.Stylist).WithMany(p => p.BookingSlotStylists)
                 .HasForeignKey(d => d.StylistId)
                 .HasConstraintName("FK_BookingSlotStylists_Stylists");
