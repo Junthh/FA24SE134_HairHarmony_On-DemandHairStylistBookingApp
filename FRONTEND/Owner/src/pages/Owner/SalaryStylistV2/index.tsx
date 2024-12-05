@@ -40,9 +40,9 @@ const generateDynamicColumnsAndGrouping = (data) => {
         width: 150,
         renderCell: (params: GridRenderCellParams) => {
           if (params.value === 'Yes') {
-            return 'Yes';
+            return '/';
           } else {
-            return '/'; // handle register
+            return ''; // handle register
             // (
             //   <Button variant="contained" color="primary" onClick={() => handleRegister(params)}>
             //     Register
