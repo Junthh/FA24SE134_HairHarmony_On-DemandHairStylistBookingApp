@@ -20,6 +20,8 @@ import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement'
 import DatePickerElement from 'components/Form/DatepickerElement';
 import { ButtonPrimary } from 'pages/common/style/Button';
 import { ICONS } from 'configurations/icons';
+import { timekeepingServices } from 'services/timekeeping.service';
+import { showToast } from 'components/Common/Toast';
 
 const generateDynamicColumnsAndGrouping = (data) => {
   const uniqueDates = Array.from(new Set(data.map((entry) => entry.date)));
@@ -69,6 +71,7 @@ const generateDynamicColumnsAndGrouping = (data) => {
 
 export default function ScheduleTableGroup() {
   const [rows, setRows] = useState<any[]>([]);
+  const [timekeeping, setTimekeeping] = useState<any>();
   const [columns, setColumns] = useState<GridColDef[]>([]);
   const [columnGroupingModel, setColumnGroupingModel] = useState<GridColumnGroupingModel>([]);
   const dispatch = useDispatch();
@@ -88,19 +91,27 @@ export default function ScheduleTableGroup() {
       month: String(Number(moment().get('M').toString()) + 1),
       year: moment().get('years').toString(),
     });
+    handleGetTimekeeping({
+      month: String(Number(moment().get('M').toString()) + 1),
+      year: moment().get('years').toString(),
+    });
   }, [dispatch]);
+
+  const handleGetTimekeeping = async ({
+    month = String(Number(moment().get('M').toString()) + 1),
+    year = moment().get('years').toString(),
+  }) => {
+    const res: any = await timekeepingServices.list({ month, year });
+
+    setTimekeeping(res.data[0]);
+  };
 
   const handleGetListStylistWorkship = async ({
     month = String(Number(moment().get('M').toString()) + 1),
     year = moment().get('years').toString(),
   }) => {
-    console.log({
-      month,
-      year,
-    });
     dispatch(setLoading(true));
     const res: any = await stylistSalaryServices.listStylistWorkship({ month, year });
-    console.log(res);
     const { columns, columnGroupingModel } = generateDynamicColumnsAndGrouping(res.data);
 
     const rows: any[] = [];
@@ -142,10 +153,30 @@ export default function ScheduleTableGroup() {
           month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
           year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
+
+        handleGetTimekeeping({
+          month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+          year: moment(formSearch.getValues('monthYear')).year().toString(),
+        });
       }
     }),
     [],
   );
+
+  const handleClickTimekeeping = () => {
+    const updateTimekeeping = timekeeping;
+    updateTimekeeping.isTimekeepping = true;
+    timekeeping
+      .update(updateTimekeeping.id, updateTimekeeping)
+      .then(() => {
+        showToast('success', 'Chấm công thành công');
+        dispatch(setLoading(false));
+      })
+      .catch((err) => {
+        showToast('error', err.message);
+        dispatch(setLoading(false));
+      });
+  };
 
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
@@ -164,7 +195,17 @@ export default function ScheduleTableGroup() {
             </ButtonPrimary>
             <Box width={'50%'}></Box>
           </Box>
-          <Box className="search-right"></Box>
+          <Box className="search-right">
+            {!timekeeping?.isTimekeepping && (
+              <ButtonPrimary
+                severity="primary"
+                padding={'7px 14px'}
+                onClick={handleClickTimekeeping}
+              >
+                Chốt chấm công
+              </ButtonPrimary>
+            )}
+          </Box>
         </BoxHeaderSearch>
       </FormContainer>
       <Box height={40}></Box>
