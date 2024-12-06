@@ -129,7 +129,7 @@ namespace hair_hamony.Business.Services.StylistServices
                 };
             }
 
-            var stylist = _mapper.Map<Stylist>(await GetById(id));
+            var stylist = _context.Stylists.AsNoTracking().FirstOrDefault(x => x.Id == requestBody.Id);
             if (stylist.Username != requestBody.Username)
             {
                 var isExisted = await IsUsernameExisted(requestBody.Username);
