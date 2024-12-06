@@ -209,6 +209,7 @@ export default function Appointment() {
           closeModalConfirmCancel();
         }}
         width="100%"
+        maxWidth="sm"
         title={'Bạn có chắc muốn hủy đặt lịch ?'}
         content={
           <Box display={'flex'} justifyContent={'flex-end'} padding={'9px 20px'}>
@@ -233,11 +234,12 @@ export default function Appointment() {
       })
       .then((res) => {
         getListBookingHistory({ size: paging.size, page: paging.page });
-        selectedRow(null);
+        setSelectedRow(null);
         closeModalConfirmCancel();
         showToast('success', 'Hủy đặt lịch thành công!');
       })
       .catch((err) => {
+        console.log(err)
         showToast('error', 'Hủy đặt lịch thất bại!');
       })
       .finally(() => {
