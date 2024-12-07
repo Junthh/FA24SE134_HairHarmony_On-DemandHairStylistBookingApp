@@ -80,7 +80,15 @@ export default function Salary() {
   const getSalaryList = useCallback(({ size, page, stylistId = '', month = '', year = '' }) => {
     dispatch(setLoading(true));
     stylistSalaryServices
-      .list({ pageSize: size, pageIndex: page + 1, stylistId, month, year })
+      .list({
+        pageSize: size,
+        pageIndex: page + 1,
+        stylistId,
+        month,
+        year,
+        sortKey: 'CreatedDate',
+        sortOrder: 'DESC',
+      })
       .then((resultList: any) => {
         setPaging((prev) => ({
           ...prev,
@@ -176,7 +184,7 @@ export default function Salary() {
                         {currencyFormat(row.commission)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {formatDate(row.createdDate, 'dd/MM/yyyy')}
+                        {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
