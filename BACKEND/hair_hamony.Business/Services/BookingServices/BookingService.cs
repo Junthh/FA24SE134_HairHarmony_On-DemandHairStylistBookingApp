@@ -545,5 +545,39 @@ namespace hair_hamony.Business.Services.BookingServices
                 throw;
             }
         }
+
+        public GetTotalRevenueByMonthModel GetTotalRevenueByMonth(int year, int month)
+        {
+            var lastDayOfMonth = new DateTime(year, month, 1).AddMonths(1).AddDays(-1).Day;
+
+            var totalRevenueByMonth = _context.Bookings.Where(booking =>
+                booking.BookingDate >= DateOnly.FromDateTime(new DateTime(year, month, 1))
+                && booking.BookingDate <= DateOnly.FromDateTime(new DateTime(year, month, lastDayOfMonth))
+                && booking.Status == "Finished"
+            ).Sum(x => x.TotalPrice);
+
+            var result = new GetTotalRevenueByMonthModel();
+
+            result.Month = month;
+            result.Year = year;
+            result.TotalRevenue = totalRevenueByMonth.Value;
+
+            for (int i = 0; i < lastDayOfMonth; i++)
+            {
+                var totalRevenueByDay = _context.Bookings
+                    .Where(x => 
+                        x.BookingDate == DateOnly.FromDateTime(new DateTime(year, month, i + 1))
+                        && x.Status == "Finished"
+                    )
+                    .Sum(x => x.TotalPrice);
+                result.TotalRevenueByDay.Add(new GetTotalRevenueByMonthModel.GetTotalRevenueByDayModel
+                {
+                    Day = i + 1,
+                    TotalRevenue = totalRevenueByDay.Value
+                });
+            }
+
+            return result;
+        }
     }
 }

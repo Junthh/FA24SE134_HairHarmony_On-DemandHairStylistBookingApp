@@ -16,5 +16,6 @@ namespace hair_hamony.Business.Services.BookingServices
         Task<GetBookingModel> Update(Guid id, UpdateBookingModel requestBody);
         Task Delete(Guid id);
         Task<GetBookingModel> Init(CreateInitBookingModel requestBody);
+        GetTotalRevenueByMonthModel GetTotalRevenueByMonth(int year, int month);
     }
 }
