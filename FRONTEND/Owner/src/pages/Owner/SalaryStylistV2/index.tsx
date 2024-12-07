@@ -150,12 +150,12 @@ export default function ScheduleTableGroup() {
     handleSubmitSearch((data: any) => {
       if (data) {
         handleGetListStylistWorkship({
-          month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+          month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
           year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
 
         handleGetTimekeeping({
-          month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+          month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
           year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
       }

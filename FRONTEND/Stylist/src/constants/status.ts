@@ -104,4 +104,3 @@ export const MAP_STATUS_BOOKING = {
     color: STATUS_COLOR.INITIALIZE,
   },
 };
-

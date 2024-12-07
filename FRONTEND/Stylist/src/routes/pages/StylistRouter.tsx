@@ -11,6 +11,7 @@ const TimeKeeping = lazy(() => import('pages/Stylist/Timekeeping'));
 const RegisterWorkSchedule = lazy(() => import('pages/Stylist/RegisterWorkSchedule'));
 const ScheduleList = lazy(() => import('pages/Stylist/ScheduleList'));
 const Profile = lazy(() => import('pages/Stylist/Profile'));
+const Salary = lazy(() => import('pages/Stylist/Salary'));
 const ChangePassword = lazy(() => import('pages/Stylist/ChangePassword'));
 
 const Feedback = lazy(() => import('pages/Stylist/Feedback'));
@@ -35,6 +36,14 @@ export const StylistRouter = {
       element: (
         <AuthProvider>
           <Profile />
+        </AuthProvider>
+      ),
+    },
+    {
+      path: `${STYLIST_PATH.SALARY}/:id`,
+      element: (
+        <AuthProvider>
+          <Salary />
         </AuthProvider>
       ),
     },

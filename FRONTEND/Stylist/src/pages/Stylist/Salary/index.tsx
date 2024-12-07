@@ -22,16 +22,13 @@ import { FormContainer } from 'components/Form/FormContainer';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { ICONS } from 'configurations/icons';
-import { STATUS_USER } from 'constants/status';
 import useModal from 'hooks/useModal';
-import { ListEmployeeSuccess } from 'models/EmployeeResponse.model';
 import PopoverContent from 'pages/common/PopoverContent';
 import { ButtonPrimary } from 'pages/common/style/Button';
-import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectRoles, setLoading } from 'redux/Reducer';
+import { selectCredentialInfo, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
@@ -40,11 +37,14 @@ import { currencyFormat } from 'utils/helper';
 import DatePickerElement from 'components/Form/DatepickerElement';
 import moment from 'moment';
 import { current } from '@reduxjs/toolkit';
-export default function EmployeeSalary() {
+import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+export default function Salary() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
-  const roles = useSelector(selectRoles);
   const [anchorEl, setAnchorEl] = useState(null);
+  const credentialInfo = useSelector(selectCredentialInfo);
+  const [stylistSalaryDetails, setStylistSalaryDetails] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
   const [paging, setPaging] = useState({
@@ -66,42 +66,22 @@ export default function EmployeeSalary() {
   });
   const { control: controlSearch, handleSubmit: handleSubmitSearch } = formSearch;
 
-  const schemaUser = Yup.object().shape<any>({});
-  const defaultValues = {
-    totalSalary: '',
-    email: '',
-    phoneNumber: '',
-    fullName: '',
-    roleId: '',
-  };
-  const formUser = useForm<any>({
-    defaultValues,
-    mode: 'onChange',
-    resolver: yupResolver(schemaUser),
-  });
-  const {
-    control,
-    watch,
-    setValue,
-    getValues,
-    formState: { errors },
-    handleSubmit,
-  } = formUser;
-
   useEffect(() => {
-    getSalaryList({
-      size: paging.size,
-      page: paging.page,
-      month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
-      year: moment(formSearch.getValues('monthYear')).year().toString(),
-      stylistName: formSearch.getValues('stylistName'),
-    });
-  }, [paging.size, paging.page]);
-  const getSalaryList = useCallback(({ size, page, stylistName = '', month = '', year = '' }) => {
+    if (credentialInfo.Id) {
+      getSalaryList({
+        size: paging.size,
+        page: paging.page,
+        month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
+        year: moment(formSearch.getValues('monthYear')).year().toString(),
+        stylistId: credentialInfo.Id,
+      });
+    }
+  }, [paging.size, paging.page, credentialInfo.Id]);
+  const getSalaryList = useCallback(({ size, page, stylistId = '', month = '', year = '' }) => {
     dispatch(setLoading(true));
     stylistSalaryServices
-      .list({ pageSize: size, pageIndex: page + 1, stylistName, month, year })
-      .then((resultList: ListEmployeeSuccess) => {
+      .list({ pageSize: size, pageIndex: page + 1, stylistId, month, year })
+      .then((resultList: any) => {
         setPaging((prev) => ({
           ...prev,
           total: resultList.paging.total,
@@ -116,7 +96,7 @@ export default function EmployeeSalary() {
       if (data) {
         getSalaryList({
           ...paging,
-          stylistName: data.stylistName,
+          stylistId: credentialInfo.Id,
           month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
           year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
@@ -136,34 +116,9 @@ export default function EmployeeSalary() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
-      formUser.reset(row);
       openModal();
     },
     [selectedRow],
-  );
-  const handleDelete = useCallback(
-    (row) => {
-      dispatch(setLoading(true));
-      setAnchorEl(null);
-      stylistSalaryServices
-        .delete(row.id)
-        .then((res: ListEmployeeSuccess) => {
-          showToast('success', res.msg);
-          dispatch(setLoading(false));
-          getSalaryList({
-            size: paging.size,
-            page: paging.page,
-            month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
-            year: moment(formSearch.getValues('monthYear')).year().toString(),
-            stylistName: formSearch.getValues('stylistName'),
-          });
-        })
-        .catch((err) => {
-          showToast('error', err.message);
-          dispatch(setLoading(false));
-        });
-    },
-    [selectedRow, paging.size, paging.page],
   );
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
@@ -178,54 +133,19 @@ export default function EmployeeSalary() {
     setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
 
-  const handleSave = useCallback(
-    handleSubmit((data: any) => {
-      if (selectedRow) {
-        dispatch(setLoading(true));
-        stylistSalaryServices
-          .update(data.id, data)
-          .then((res) => {
-            showToast('success', res.msg);
-            const { size, page } = paging;
-            getSalaryList({
-              size,
-              page,
-              stylistName: formSearch.getValues('stylistName'),
-              month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
-              year: moment(formSearch.getValues('monthYear')).year().toString(),
-            });
-            handleClose();
-            closeModal();
-          })
-          .catch((err) => {
-            showToast('error', err.message);
-            dispatch(setLoading(false));
-          });
-      } else {
-        dispatch(setLoading(true));
-        stylistSalaryServices
-          .create(data)
-          .then((res) => {
-            showToast('success', res.msg);
-            const { size, page } = paging;
-            getSalaryList({
-              size,
-              page,
-              stylistName: formSearch.getValues('stylistName'),
-              month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
-              year: moment(formSearch.getValues('monthYear')).year().toString(),
-            });
-            handleClose();
-            closeModal();
-          })
-          .catch((err) => {
-            showToast('error', err.message);
-            dispatch(setLoading(false));
-          });
-      }
-    }),
-    [selectedRow, paging],
-  );
+  const handleViewDetails = async ($event, row) => {
+    try {
+      dispatch(setLoading(true));
+      const res = await stylistSalaryServices.findById({
+        stylistSalaryId: row.id,
+      });
+      setStylistSalaryDetails(res.data);
+      openModal();
+    } catch (error) {
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
   const renderDialog = useMemo(() => {
     return (
       <Dialog
@@ -234,75 +154,36 @@ export default function EmployeeSalary() {
           closeModal();
         }}
         width="100%"
-        title={selectedRow ? 'Edit' : 'Create'}
+        title={'Chi tiết lương'}
         content={
-          <FormContainer formContext={formUser}>
-            <Box
-              display={'flex'}
-              justifyContent={'center'}
-              flexDirection={'column'}
-              gap={2}
-              padding={'0 20px 20px 20px'}
-              width={'550px'}
-            >
-              <TextFieldElement
-                name="fullName"
-                control={control}
-                placeholder="Nhập Họ và tên"
-                label={'Họ và tên'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="email"
-                control={control}
-                type="email"
-                placeholder="Nhập Email"
-                label={'Email'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="phoneNumber"
-                control={control}
-                type="number"
-                placeholder="Nhập số điện thoại"
-                label={'Số điện thoại'}
-                //   onKeyUp={handleKeyup}
-              />
-              <SelectElement
-                control={control}
-                name="roleId"
-                options={
-                  roles &&
-                  Object.keys(roles).map((id) => ({
-                    value: id,
-                    label: roles[id].name,
-                  }))
-                }
-                placeholder="Chọn role"
-                label={'Roles'}
-              ></SelectElement>
-              <TextFieldElement
-                name="totalSalary"
-                control={control}
-                placeholder="Nhập totalSalary"
-                label={'Tổng lương'}
-                disabled={!!selectedRow?.totalSalary}
-                //   onKeyUp={handleKeyup}
-              />
-              <SelectElement
-                control={control}
-                name="status"
-                options={STATUS_USER}
-                placeholder="Chọn trạng thái"
-                label={'Trạng thái'}
-              ></SelectElement>
-              <Box display={'flex'} justifyContent={'flex-end'}>
-                <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
-                  Lưu
-                </ButtonPrimary>
-              </Box>
-            </Box>
-          </FormContainer>
+          <Box padding={2}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead style={{ background: '#2D3748' }}>
+                  <TableRow>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Hoa hồng
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Ngày nhận hoa hồng
+                    </StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {stylistSalaryDetails.map((row, index) => (
+                    <StyledTableRow key={index}>
+                      <StyledTableCell align="center">
+                        {currencyFormat(row.commission)}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {formatDate(row.createdDate, 'dd/MM/yyyy')}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         }
       ></Dialog>
     );
@@ -312,15 +193,6 @@ export default function EmployeeSalary() {
       <FormContainer formContext={formSearch}>
         <BoxHeaderSearch>
           <Box className="search-left">
-            <TextFieldElement
-              name="stylistName"
-              control={controlSearch}
-              placeholder="Tìm theo tên stylist"
-              InputProps={{
-                startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
-              }}
-              //   onKeyUp={handleKeyup}
-            />
             <DatePickerElement
               name="monthYear"
               control={controlSearch}
@@ -397,6 +269,23 @@ export default function EmployeeSalary() {
                   {currencyFormat(row.stylist.salary)}
                 </StyledTableCell>
                 <StyledTableCell align="center">{currencyFormat(row.totalSalary)}</StyledTableCell>
+                <StyledTableCell
+                  style={{
+                    color: 'white',
+                    position: 'sticky',
+                    right: 0,
+                    zIndex: 1,
+                  }}
+                  align="right"
+                >
+                  <IconButton
+                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                      handleViewDetails(event, row)
+                    }
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
@@ -415,7 +304,7 @@ export default function EmployeeSalary() {
           showLastButton
         />
       </Stack>
-      <Popover
+      {/* <Popover
         id={id}
         open={open}
         anchorEl={anchorEl}
@@ -433,27 +322,16 @@ export default function EmployeeSalary() {
           <Box
             className="content"
             onClick={() => {
-              handleEdit(selectedRow);
+              handleViewDetails(selectedRow);
             }}
           >
             <EditIcon />
             <Typography variant="body2" fontWeight={500}>
-              Edit user
-            </Typography>
-          </Box>
-          <Box
-            className="content"
-            onClick={() => {
-              handleDelete(selectedRow);
-            }}
-          >
-            <DeleteIcon />
-            <Typography variant="body2" fontWeight={500}>
-              Delete user
+              Chi tiết
             </Typography>
           </Box>
         </PopoverContent>
-      </Popover>
+      </Popover> */}
       {renderDialog}
     </Box>
   );

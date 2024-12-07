@@ -35,11 +35,11 @@ export enum OWNER_PATH {
 }
 
 export const OWNER_PATH_SIDEBAR = [
-  // {
-  //   title: 'Thống kê doanh thu',
-  //   path: OWNER_PATH.DASHBOARD,
-  //   icon: <DashboardIcon />,
-  // },
+  {
+    title: 'Thống kê',
+    path: OWNER_PATH.DASHBOARD,
+    icon: <DashboardIcon />,
+  },
   {
     title: 'Danh sách nhân viên',
     path: OWNER_PATH.EMPLOYEE_STAFF_LIST,
