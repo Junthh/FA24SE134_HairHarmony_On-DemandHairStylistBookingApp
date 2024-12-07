@@ -401,7 +401,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
 
                 // tăng số lượng booking cho stylist khi hoàn thành booking
-                if (requestBody.Status == "Completed")
+                if (requestBody.Status == "Finished")
                 {
                     var stylistIds = from bookingDetail in _context.BookingDetails
                                      join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
