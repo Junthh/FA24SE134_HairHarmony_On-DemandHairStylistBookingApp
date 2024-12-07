@@ -461,7 +461,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             kpi.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
                             && kpi.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
                         );
-                        var newCommission = totalBooking > kpi.Value ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        var newCommission = totalBooking > kpi.Value ? stylist.Salary * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -486,7 +486,7 @@ namespace hair_hamony.Business.Services.BookingServices
 
                     var vndToPoints = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "VND_TO_POINTS")!.Value;
 
-                    customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
+                   // customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
 
                     if (requestBody.LoyaltyPoints != null)
                     {
