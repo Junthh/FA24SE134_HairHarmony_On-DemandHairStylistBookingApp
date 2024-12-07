@@ -237,18 +237,16 @@ export default function Feedback() {
                       <BoxDot />5 sao
                     </Typography>
                     <Typography variant="body2" color={colors.grey2}>
-                      {(feedbacks.filter((feedback) => feedback.rating === 5).length /
-                        feedbacks.length) *
-                        100}
+                      {feedbacks.filter((feedback) => feedback.rating === 5).length /
+                        feedbacks.length || 0 * 100}
                       %
                     </Typography>
                   </Box>
                   <LinearProgress
                     variant="determinate"
                     value={
-                      (feedbacks.filter((feedback) => feedback.rating === 5).length /
-                        feedbacks.length) *
-                      100
+                      feedbacks.filter((feedback) => feedback.rating === 5).length /
+                        feedbacks.length || 0 * 100
                     }
                   />
                 </Box>
@@ -259,18 +257,16 @@ export default function Feedback() {
                       <BoxDot />4 sao
                     </Typography>
                     <Typography variant="body2" color={colors.grey2}>
-                      {(feedbacks.filter((feedback) => feedback.rating === 4).length /
-                        feedbacks.length) *
-                        100}
+                      {feedbacks.filter((feedback) => feedback.rating === 4).length /
+                        feedbacks.length || 0 * 100}
                       %
                     </Typography>
                   </Box>
                   <LinearProgress
                     variant="determinate"
                     value={
-                      (feedbacks.filter((feedback) => feedback.rating === 4).length /
-                        feedbacks.length) *
-                      100
+                      feedbacks.filter((feedback) => feedback.rating === 4).length /
+                        feedbacks.length || 0 * 100
                     }
                   />
                 </Box>
@@ -281,18 +277,16 @@ export default function Feedback() {
                       <BoxDot />3 sao
                     </Typography>
                     <Typography variant="body2" color={colors.grey2}>
-                      {(feedbacks.filter((feedback) => feedback.rating === 3).length /
-                        feedbacks.length) *
-                        100}
+                      {feedbacks.filter((feedback) => feedback.rating === 3).length /
+                        feedbacks.length || 0 * 100}
                       %
                     </Typography>
                   </Box>
                   <LinearProgress
                     variant="determinate"
                     value={
-                      (feedbacks.filter((feedback) => feedback.rating === 3).length /
-                        feedbacks.length) *
-                      100
+                      feedbacks.filter((feedback) => feedback.rating === 3).length /
+                        feedbacks.length || 0 * 100
                     }
                   />
                 </Box>
@@ -303,18 +297,16 @@ export default function Feedback() {
                       <BoxDot />2 sao
                     </Typography>
                     <Typography variant="body2" color={colors.grey2}>
-                      {(feedbacks.filter((feedback) => feedback.rating === 2).length /
-                        feedbacks.length) *
-                        100}
+                      {feedbacks.filter((feedback) => feedback.rating === 2).length /
+                        feedbacks.length || 0 * 100}
                       %
                     </Typography>
                   </Box>
                   <LinearProgress
                     variant="determinate"
                     value={
-                      (feedbacks.filter((feedback) => feedback.rating === 2).length /
-                        feedbacks.length) *
-                      100
+                      feedbacks.filter((feedback) => feedback.rating === 2).length /
+                        feedbacks.length || 0 * 100
                     }
                   />
                 </Box>
@@ -325,18 +317,16 @@ export default function Feedback() {
                       <BoxDot />1 sao
                     </Typography>
                     <Typography variant="body2" color={colors.grey2}>
-                      {(feedbacks.filter((feedback) => feedback.rating === 1).length /
-                        feedbacks.length) *
-                        100}
+                      {feedbacks.filter((feedback) => feedback.rating === 1).length /
+                        feedbacks.length || 0 * 100}
                       %
                     </Typography>
                   </Box>
                   <LinearProgress
                     variant="determinate"
                     value={
-                      (feedbacks.filter((feedback) => feedback.rating === 1).length /
-                        feedbacks.length) *
-                      100
+                      feedbacks.filter((feedback) => feedback.rating === 1).length /
+                        feedbacks.length || 0 * 100
                     }
                   />
                 </Box>

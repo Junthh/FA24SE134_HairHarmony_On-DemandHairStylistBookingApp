@@ -400,13 +400,13 @@ export default function RegisterWorkSchedule() {
                     <StyledTableCell style={{ color: 'white' }} align="left">
                       Ngày đăng ký
                     </StyledTableCell>
-                    <StyledTableCell style={{ color: 'white' }} align="right">
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Ca làm
                     </StyledTableCell>
-                    <StyledTableCell style={{ color: 'white' }} align="right">
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày tạo
                     </StyledTableCell>
-                    <StyledTableCell style={{ color: 'white' }} align="right">
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày cập nhật
                     </StyledTableCell>
                     <StyledTableCell
@@ -427,14 +427,14 @@ export default function RegisterWorkSchedule() {
                       <StyledTableCell align="left">
                         {formatDate(row.registerDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
-                      <StyledTableCell align="right">
+                      <StyledTableCell align="center">
                         {workships[row.workshipId]?.startTime} -{' '}
                         {workships[row.workshipId]?.endTime}
                       </StyledTableCell>
-                      <StyledTableCell align="right">
+                      <StyledTableCell align="center">
                         {formatDate(row.createdDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
-                      <StyledTableCell align="right">
+                      <StyledTableCell align="center">
                         {formatDate(row.updatedDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
                       <StyledTableCell
@@ -444,7 +444,7 @@ export default function RegisterWorkSchedule() {
                           right: 0,
                           zIndex: 1,
                         }}
-                        align="right"
+                        align="center"
                       >
                         {!row.isTimekeeping ? (
                           <IconButton
