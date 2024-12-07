@@ -441,9 +441,24 @@ export default function Booking() {
                         {value.duration} /phút <CircleIcon sx={{ paddingTop: '12px', width: 10 }} />{' '}
                         {value.description}
                       </Typography>
-                      <Typography variant="body1" fontWeight={600}>
+                      {value.discount && (
+                        <>
+                          <span
+                            // variant="body1"
+                            // fontWeight={600}
+                            style={{ textDecoration: 'line-through' }}
+                          >
+                            {currencyFormat(value.price + value.discount)}
+                          </span>
+                          /
+                        </>
+                      )}
+                      <span
+                        style={{ fontWeight: 'bold' }}
+                        // variant="body1" fontWeight={600}
+                      >
                         {currencyFormat(value.price)}
-                      </Typography>
+                      </span>
                     </Box>
                     <FormControlLabel
                       control={
