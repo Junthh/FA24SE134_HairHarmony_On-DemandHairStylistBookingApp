@@ -54,6 +54,23 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for get revenue of booking by month
+        /// </summary>
+        /// <returns>Renenue of booking by month</returns>
+        /// <response code="200">Returns revenue of booking by month</response>
+        [HttpGet("TotalRevenueByMonth")]
+        [ProducesResponseType(typeof(BaseResponse<GetTotalRevenueByMonthModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public IActionResult GetTotalRevenueByMonth(
+            [FromQuery] int year, [FromQuery] int month
+        )
+        {
+            var result = _bookingService.GetTotalRevenueByMonth(year, month);
+
+            return Ok(new BaseResponse<GetTotalRevenueByMonthModel>(data: result));
+        }
+
+        /// <summary>
         /// Endpoint for get booking by Id
         /// </summary>
         /// <param name="id">Id of booking</param>
