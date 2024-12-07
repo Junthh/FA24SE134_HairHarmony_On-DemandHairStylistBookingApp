@@ -165,6 +165,7 @@ export default function Appointment() {
           closeModal();
         }}
         width="100%"
+        maxWidth={'sm'}
         title={'Đánh giá'}
         content={
           <FormContainer formContext={formFeedback}>
@@ -174,7 +175,6 @@ export default function Appointment() {
               flexDirection={'column'}
               gap={2}
               padding={'0 20px 20px 20px'}
-              width={'550px'}
             >
               <RatingElement
                 name="rating"
@@ -239,7 +239,7 @@ export default function Appointment() {
         showToast('success', 'Hủy đặt lịch thành công!');
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         showToast('error', 'Hủy đặt lịch thất bại!');
       })
       .finally(() => {
