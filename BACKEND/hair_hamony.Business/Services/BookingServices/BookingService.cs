@@ -493,6 +493,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     {
                         customerLoyaltyPoints -= requestBody.LoyaltyPoints;
                     }
+                    customer.LoyaltyPoints = customerLoyaltyPoints;
 
                     _context.Customers.Update(customer);
 
