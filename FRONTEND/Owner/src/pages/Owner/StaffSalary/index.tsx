@@ -80,7 +80,7 @@ export default function StaffSalary() {
     getSalaryList({
       size: paging.size,
       page: paging.page,
-      month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+      month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
       year: moment(formSearch.getValues('monthYear')).year().toString(),
       staffName: formSearch.getValues('staffName'),
     });
@@ -105,7 +105,7 @@ export default function StaffSalary() {
         getSalaryList({
           ...paging,
           staffName: data.staffName,
-          month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+          month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
           year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
       }

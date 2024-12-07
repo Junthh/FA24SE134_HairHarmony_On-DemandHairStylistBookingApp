@@ -157,7 +157,13 @@ function Owner() {
         </InfoAccountStyled>
       </HeaderStyled>
       <MainContainerStyled>
-        <Typography paddingTop={3} paddingBottom={3} paddingLeft={5} variant="h4" fontWeight={400}>
+        <Typography
+          paddingTop={3}
+          paddingBottom={3}
+          variant="h4"
+          fontWeight={700}
+          textTransform={'uppercase'}
+        >
           {tabName}
         </Typography>
         <Divider variant="fullWidth"></Divider>
