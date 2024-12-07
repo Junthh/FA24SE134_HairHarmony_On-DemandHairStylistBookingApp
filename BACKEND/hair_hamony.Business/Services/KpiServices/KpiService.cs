@@ -26,6 +26,7 @@ namespace hair_hamony.Business.Services.KpiServices
         {
             var kpi = _mapper.Map<Kpi>(requestBody);
             kpi.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            kpi.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             await _context.Kpis.AddAsync(kpi);
             await _context.SaveChangesAsync();
@@ -76,6 +77,7 @@ namespace hair_hamony.Business.Services.KpiServices
             }
             var kpi = _mapper.Map<Kpi>(await GetById(id));
             _mapper.Map(requestBody, kpi);
+            kpi.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
             _context.Kpis.Update(kpi);
             await _context.SaveChangesAsync();
