@@ -416,7 +416,7 @@ function Row(props) {
                       <TableCell align="center">
                         {bookingDetail.service
                           ? bookingDetail.service.name
-                          : bookingDetail.combo.totalPrice}
+                          : bookingDetail.combo.name}
                       </TableCell>
                       <TableCell align="center">{bookingDetail.duration}</TableCell>
                     </TableRow>
