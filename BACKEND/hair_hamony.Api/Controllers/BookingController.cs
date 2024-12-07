@@ -76,6 +76,21 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for count booking with each status
+        /// </summary>
+        /// <returns>Count booking with each status</returns>
+        /// <response code="200">Returns count booking with each status</response>
+        [HttpGet("CountByStatus")]
+        [ProducesResponseType(typeof(BaseResponse<GetBookingByStatusModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public IActionResult GetTotalBookingByStatus()
+        {
+            var result = _bookingService.GetTotalBookingByStatus();
+
+            return Ok(new BaseResponse<GetBookingByStatusModel>(data: result));
+        }
+
+        /// <summary>
         /// Endpoint for get booking by Id
         /// </summary>
         /// <param name="id">Id of booking</param>

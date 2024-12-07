@@ -461,7 +461,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             kpi.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
                             && kpi.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
                         );
-                        var newCommission = totalBooking > kpi.Value ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        var newCommission = totalBooking > kpi.Value ? stylist.Salary * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -486,7 +486,7 @@ namespace hair_hamony.Business.Services.BookingServices
 
                     var vndToPoints = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "VND_TO_POINTS")!.Value;
 
-                    customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
+                   // customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
 
                     if (requestBody.LoyaltyPoints != null)
                     {
@@ -565,7 +565,7 @@ namespace hair_hamony.Business.Services.BookingServices
             for (int i = 0; i < lastDayOfMonth; i++)
             {
                 var totalRevenueByDay = _context.Bookings
-                    .Where(x => 
+                    .Where(x =>
                         x.BookingDate == DateOnly.FromDateTime(new DateTime(year, month, i + 1))
                         && x.Status == "Finished"
                     )
@@ -578,6 +578,20 @@ namespace hair_hamony.Business.Services.BookingServices
             }
 
             return result;
+        }
+
+        public GetBookingByStatusModel GetTotalBookingByStatus()
+        {
+            var bookings = _context.Bookings.ToList();
+            return new GetBookingByStatusModel
+            {
+                Cancel = bookings.Where(booking => booking.Status == "Cancel").Count(),
+                Initialize = bookings.Where(booking => booking.Status == "Initialize").Count(),
+                Confirmed = bookings.Where(booking => booking.Status == "Confirmed").Count(),
+                Processing = bookings.Where(booking => booking.Status == "Processing").Count(),
+                Completed = bookings.Where(booking => booking.Status == "Completed").Count(),
+                Finished = bookings.Where(booking => booking.Status == "Finished").Count(),
+            };
         }
     }
 }
