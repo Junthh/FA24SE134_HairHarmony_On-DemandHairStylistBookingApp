@@ -67,9 +67,12 @@ export default function Appointment() {
   const [bookingDetail, setBookingDetail] = useState([]);
   const dispatch = useDispatch();
 
-  const schemaFeedback = Yup.object().shape<any>({});
+  const schemaFeedback = Yup.object().shape<any>({
+    rating: Yup.number().required('Không được trống'),
+    description: Yup.string().required('Đánh giá không được trống'),
+  });
   const defaultValues = {
-    rating: 0,
+    rating: null,
     description: '',
     bookingId: '',
     stylistId: '',
