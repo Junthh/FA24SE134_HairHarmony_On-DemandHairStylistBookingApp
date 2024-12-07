@@ -65,6 +65,10 @@ namespace hair_hamony.Business.Services.StylistServices
 
             var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
             var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
+            var kpi = _context.Kpis.FirstOrDefault(x =>
+                                x.StartDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                                && x.EndDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                            );
             await _context.StylistSalarys.AddAsync(new StylistSalary
             {
                 CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
@@ -73,7 +77,8 @@ namespace hair_hamony.Business.Services.StylistServices
                 StylistId = stylist.Id,
                 TotalBooking = 0,
                 TotalCommission = 0,
-                TotalSalary = stylist.Salary
+                TotalSalary = stylist.Salary,
+                Kpi = kpi.Value + stylist.Kpi,
             });
 
             await _context.Stylists.AddAsync(stylist);

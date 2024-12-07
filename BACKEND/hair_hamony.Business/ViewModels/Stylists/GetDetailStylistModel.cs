@@ -17,6 +17,7 @@ namespace hair_hamony.Business.ViewModels.Stylists
         public string? Status { get; set; }
         public string? Avatar { get; set; }
         public string? Password { get; set; }
+        public int? Kpi { get; set; }
         public DateTime? CreatedDate { get; set; }
         public ICollection<GetBookingSlotStylistModel>? BookingSlotStylists { get; set; } = new List<GetBookingSlotStylistModel>();
         public ICollection<GetDetailFeedbackModel>? Feedbacks { get; set; } = new List<GetDetailFeedbackModel>();
