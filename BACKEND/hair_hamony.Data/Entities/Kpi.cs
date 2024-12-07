@@ -18,6 +18,4 @@ public partial class Kpi
     public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
-
-    public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
 }

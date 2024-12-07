@@ -40,6 +40,7 @@ import AvatarUpload from 'components/Form/AvatarUpload';
 import SelectMultiElement from 'components/Form/SelectMultiElement';
 import { kpiServices } from 'services/kpi.service';
 import DatePickerElement from 'components/Form/DatepickerElement';
+import moment from 'moment';
 
 export default function KpiList() {
   const dispatch = useDispatch();
@@ -187,6 +188,8 @@ export default function KpiList() {
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       const id = data.id;
+      data.startDate = moment(data.startDate).format('YYYY-MM-DD');
+      data.endDate = moment(data.endDate).format('YYYY-MM-DD');
       if (selectedRow) {
         dispatch(setLoading(true));
         kpiServices
@@ -335,9 +338,6 @@ export default function KpiList() {
               <StyledTableCell style={{ color: 'white' }} align="right">
                 Ngày tạo
               </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Ngày cập nhật
-              </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
             </TableRow>
           </TableHead>
@@ -357,10 +357,7 @@ export default function KpiList() {
                   {formatDate(row.endDate, 'dd/MM/yyyy')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
-                  {formatDate(row.createdDate, 'dd/MM/yyyy')}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {formatDate(row.updatedDate, 'dd/MM/yyyy')}
+                  {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   <IconButton
