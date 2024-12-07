@@ -275,6 +275,9 @@ export default function ScheduleList() {
                 Tổng tiền
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                Số tiền thanh toán
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Trạng thái
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -300,6 +303,7 @@ export default function ScheduleList() {
                 </StyledTableCell>
                 <StyledTableCell align="center">{formatTime(row?.startTime)}</StyledTableCell>
                 <StyledTableCell align="center">{currencyFormat(row.totalPrice)}</StyledTableCell>
+                <StyledTableCell align="center">{currencyFormat(row.amoutToPaid)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Chip label={STATUS_LABEL[row.status]} color={STATUS_COLOR[row.status]} />
                 </StyledTableCell>
@@ -627,7 +631,7 @@ export default function ScheduleList() {
               onClick={() => {
                 const booking = bookingSelected;
                 if (formSearch.getValues('loyaltyPoints')) {
-                  booking.loyaltyPoints = formSearch.getValues('loyaltyPoints');
+                  booking.loyaltyPoints = Number(formSearch.getValues('loyaltyPoints'));
                 }
                 booking.totalPrice = totalPrice;
                 booking.amoutToPaid = amoutToPaid;
