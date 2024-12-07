@@ -27,8 +27,6 @@ public partial class BookingSlotStylist
 
     public virtual BookingDetail? BookingDetail { get; set; }
 
-    public virtual Kpi? Kpi { get; set; }
-
     public virtual Stylist? Stylist { get; set; }
 
     public virtual StylistWorkship? StylistWorkship { get; set; }

@@ -11,13 +11,11 @@ public partial class Kpi
 
     public int? Value { get; set; }
 
-    public DateTime? StartDate { get; set; }
+    public DateOnly? StartDate { get; set; }
 
-    public DateTime? EndDate { get; set; }
+    public DateOnly? EndDate { get; set; }
 
     public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
-
-    public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
 }

@@ -8,15 +8,12 @@ import {
   ListEmployeeSuccess,
 } from 'models/EmployeeResponse.model';
 
-class StylistSalaryServices {
+class KpiServices {
   async list(params = {}) {
     try {
-      const resData: ListEmployeeSuccess = await axios.get(
-        `${ENDPOINTS.ApiPrefix}/StylistSalarys`,
-        {
-          params,
-        },
-      );
+      const resData: ListEmployeeSuccess = await axios.get(`${ENDPOINTS.ApiPrefix}/Kpis`, {
+        params,
+      });
       return resData;
     } catch (error) {
       return {
@@ -25,29 +22,9 @@ class StylistSalaryServices {
       } as DataEmployeeError;
     }
   }
-  async listStylistWorkship(params = {}) {
-    try {
-      const resData: ListEmployeeSuccess = await axios.get(
-        `${ENDPOINTS.ApiPrefix}/StylistWorkships/MonthAndYear`,
-        {
-          params,
-        },
-      );
-      return resData;
-    } catch (error) {
-      return {
-        success: false,
-        errors: error.errors || errorDefault,
-      } as DataEmployeeError;
-    }
-  }
-
   async create(data: EmployeeForm) {
     try {
-      const resData: DataEmployeeSuccess = await axios.post(
-        `${ENDPOINTS.ApiPrefix}/StylistSalarys`,
-        data,
-      );
+      const resData: DataEmployeeSuccess = await axios.post(`${ENDPOINTS.ApiPrefix}/Kpis`, data);
       return resData;
     } catch (error) {
       throw error;
@@ -57,7 +34,7 @@ class StylistSalaryServices {
   async update(id: string, data: EmployeeForm) {
     try {
       const resData: DataEmployeeSuccess = await axios.put(
-        `${ENDPOINTS.ApiPrefix}/StylistSalarys/${id}`,
+        `${ENDPOINTS.ApiPrefix}/Kpis/${id}`,
         data,
       );
       return resData;
@@ -69,9 +46,7 @@ class StylistSalaryServices {
 
   async delete(id: string) {
     try {
-      const resData: ListEmployeeSuccess = await axios.delete(
-        `${ENDPOINTS.ApiPrefix}/StylistSalarys/${id}`,
-      );
+      const resData: ListEmployeeSuccess = await axios.delete(`${ENDPOINTS.ApiPrefix}/Kpis/${id}`);
       return resData;
     } catch (error) {
       throw error;
@@ -79,4 +54,4 @@ class StylistSalaryServices {
   }
 }
 
-export const stylistSalaryServices = new StylistSalaryServices();
+export const kpiServices = new KpiServices();

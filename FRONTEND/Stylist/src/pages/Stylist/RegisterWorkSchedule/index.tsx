@@ -447,13 +447,15 @@ export default function RegisterWorkSchedule() {
                         }}
                         align="right"
                       >
-                        <IconButton
-                          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                            handleClick(event, row)
-                          }
-                        >
-                          <ICONS.IconThreeDot />
-                        </IconButton>
+                        {!row.isTimekeeping ? (
+                          <IconButton
+                            onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                              handleClick(event, row)
+                            }
+                          >
+                            <ICONS.IconThreeDot />
+                          </IconButton>
+                        ) : null}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}

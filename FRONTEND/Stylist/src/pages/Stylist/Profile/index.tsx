@@ -42,7 +42,6 @@ export default function Profile() {
     status: Yup.string().required(`Vui lòng nhập trạng thái`),
     description: Yup.string().required(`Vui lòng nhập mô tả`),
     experience: Yup.string().required(`Vui lòng nhập kinh nghiệm`),
-    kpi: Yup.string().required(`Vui lòng nhập kpi`),
   });
   const defaultValues = {
     id: '',
@@ -52,6 +51,7 @@ export default function Profile() {
     phoneNumber: '',
     status: '',
     avatar: '',
+    rating: '',
   };
   const formProfile = useForm<any>({
     defaultValues,
@@ -93,7 +93,6 @@ export default function Profile() {
         salary: data?.salary || 0,
         experience: data?.experience || 0,
         expertFee: data?.expertFee || 0,
-        kpi: data?.kpi || 0,
         rating: data?.rating || 0,
       });
       try {
@@ -174,13 +173,6 @@ export default function Profile() {
             control={control}
             placeholder="Nhập số năm kinh nghiệm"
             label={'Số năm kinh nghiệm'}
-          />
-          <TextFieldElement
-            name="kpi"
-            type="number"
-            control={control}
-            label={'KPI của tháng'}
-            disabled
           />
           <TextFieldElement
             name="phoneNumber"

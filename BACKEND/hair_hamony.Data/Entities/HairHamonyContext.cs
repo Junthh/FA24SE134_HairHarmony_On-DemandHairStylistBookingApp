@@ -126,10 +126,6 @@ public partial class HairHamonyContext : DbContext
                 .HasForeignKey(d => d.BookingDetailId)
                 .HasConstraintName("FK__BookingSl__Booki__160F4887");
 
-            entity.HasOne(d => d.Kpi).WithMany(p => p.BookingSlotStylists)
-                .HasForeignKey(d => d.KpiId)
-                .HasConstraintName("FK__BookingSl__KpiId__15DA3E5D");
-
             entity.HasOne(d => d.Stylist).WithMany(p => p.BookingSlotStylists)
                 .HasForeignKey(d => d.StylistId)
                 .HasConstraintName("FK_BookingSlotStylists_Stylists");
@@ -224,9 +220,7 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
-            entity.Property(e => e.StartDate).HasColumnType("datetime");
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
         });
 

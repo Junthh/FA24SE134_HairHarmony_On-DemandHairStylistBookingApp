@@ -13,7 +13,9 @@ const AppointmentManagement = lazy(() => import('pages/Owner/AppointmentManageme
 const Dashboard = lazy(() => import('pages/Owner/Dashboard'));
 const EmployeeStaffList = lazy(() => import('pages/Owner/EmployeeStaffList'));
 const EmployeeStylistList = lazy(() => import('pages/Owner/EmployeeStylistList'));
-const EmployeeSalary = lazy(() => import('pages/Owner/EmployeeSalary'));
+// const EmployeeSalary = lazy(() => import('pages/Owner/EmployeeSalary'));
+const EmployeeSalary = lazy(() => import('pages/Owner/SalaryStylistV2'));
+
 const Feedback = lazy(() => import('pages/Owner/Feedback'));
 const News = lazy(() => import('pages/Owner/News'));
 const PromotionList = lazy(() => import('pages/Owner/PromotionList'));
@@ -22,6 +24,7 @@ const TransactionList = lazy(() => import('pages/Owner/TransactionList'));
 const ComboList = lazy(() => import('pages/Owner/ComboList'));
 const CategoriesList = lazy(() => import('pages/Owner/CategoriesList'));
 const CustomerList = lazy(() => import('pages/Owner/CustomerList'));
+const KpiList = lazy(() => import('pages/Owner/KpiList'));
 
 //
 //
@@ -103,6 +106,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.STAFF_SALARY}`,
       element: <StaffSalary />,
+    },
+    {
+      path: `${OWNER_PATH.KPI_LIST}`,
+      element: <KpiList />,
     },
   ],
 };

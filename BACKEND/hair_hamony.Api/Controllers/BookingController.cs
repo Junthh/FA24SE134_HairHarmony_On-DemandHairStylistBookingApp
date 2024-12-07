@@ -23,6 +23,8 @@ namespace home_travel.API.Controllers
         /// <param name="paginationModel">An object contains paging criteria</param>
         /// <param name="customerPhoneNumber">An phone number of customer</param>
         /// <param name="stylistId">An id of stylist</param>
+        /// <param name="startDate">An start date wanna search with date booking</param>
+        /// <param name="endDate">An end date wanna search with date booking</param>
         /// <returns>List of booking</returns>
         /// <response code="200">Returns the list of booking</response>
         [HttpGet]
@@ -32,14 +34,17 @@ namespace home_travel.API.Controllers
             [FromQuery] PagingParam<BookingEnum.BookingSort> paginationModel,
             [FromQuery] SearchBookingModel searchBookingModel,
             [FromQuery] string? customerPhoneNumber,
-            [FromQuery] Guid? stylistId
+            [FromQuery] Guid? stylistId,
+            [FromQuery] DateOnly? startDate,
+            [FromQuery] DateOnly? endDate
         )
         {
             var (bookings, total) = await _bookingService.GetAll(
                 paginationModel,
                 searchBookingModel,
                 customerPhoneNumber,
-                stylistId
+                stylistId,
+                startDate, endDate
             );
 
             return Ok(new ModelsResponse<GetDetailBookingModel>(

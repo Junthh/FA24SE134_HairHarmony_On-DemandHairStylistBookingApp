@@ -1,10 +1,11 @@
 import styled from '@emotion/styled';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { InfoOutlined } from '@mui/icons-material';
+import { InfoOutlined, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import {
   Box,
   Button,
   Chip,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
@@ -23,6 +24,7 @@ import {
   TablePagination,
   TableRow,
   Tabs,
+  Typography,
 } from '@mui/material';
 import { showToast } from 'components/Common/Toast';
 import DatePickerElement from 'components/Form/DatepickerElement';
@@ -103,6 +105,7 @@ export default function ScheduleList() {
   const [isReloadData, setIsReloadData] = useState(false);
   const [bookingSelected, setBookingSelected] = useState<any>();
   const [isLoadingButton, setIsLoadingButton] = useState(false);
+  const [isOpenCollapse, setIsOpenCollapse] = useState(false);
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
@@ -118,27 +121,37 @@ export default function ScheduleList() {
   };
 
   useEffect(() => {
+    formSearch.setValue('startDate', Date.now());
+    formSearch.setValue('endDate', Date.now());
+  }, []);
+
+  useEffect(() => {
     if (credentialInfo.Id) {
-      formSearch.setValue('bookingDate', Date.now());
       getBookingHistoryList({
         size: paging.size,
         page: paging.page,
         status: tabValue,
         stylistId: credentialInfo.Id,
-        bookingDate: moment(Date.now()).format('YYYY-MM-DD'),
+        startDate:
+          moment(formSearch.getValues('startDate')).format('YYYY-MM-DD') ??
+          moment(Date.now()).format('YYYY-MM-DD'),
+        endDate:
+          moment(formSearch.getValues('endDate')).format('YYYY-MM-DD') ??
+          moment(Date.now()).format('YYYY-MM-DD'),
       });
     }
   }, [paging.size, paging.page, tabValue, isReloadData, credentialInfo.Id]);
 
   const getBookingHistoryList = useCallback((props) => {
     dispatch(setLoading(true));
-    const { size, page, bookingDate, customerPhoneNumber, status, stylistId } = props;
+    const { size, page, startDate, endDate, customerPhoneNumber, status, stylistId } = props;
     scheduleListServices
       .list({
         pageSize: size,
         pageIndex: page + 1,
         stylistId,
-        bookingDate: bookingDate,
+        startDate,
+        endDate,
         customerPhoneNumber: customerPhoneNumber,
         status,
         sortKey: 'CreatedDate',
@@ -159,11 +172,15 @@ export default function ScheduleList() {
     getBookingHistoryList({
       size: 10,
       page: 0,
-      bookingDate: value.bookingDate
-        ? moment(value.bookingDate).format('YYYY-MM-DD')
-        : value.bookingDate,
+      startDate:
+        moment(formSearch.getValues('startDate')).format('YYYY-MM-DD') ??
+        moment(Date.now()).format('YYYY-MM-DD'),
+      endDate:
+        moment(formSearch.getValues('endDate')).format('YYYY-MM-DD') ??
+        moment(Date.now()).format('YYYY-MM-DD'),
       customerPhoneNumber: value.customerPhoneNumber,
       status: tabValue,
+      stylistId: credentialInfo.Id,
     });
   };
 
@@ -189,17 +206,24 @@ export default function ScheduleList() {
       <BoxHeaderSearch>
         <Box className="search-left">
           <FormContainer formContext={formSearch} onSuccess={handleFilters}>
-            <Box width={'100%'} display={'flex'} gap={2}>
+            <Box width={'100%'} display={'flex'} gap={2} alignItems={'flex-end'}>
               <TextFieldElement
                 name="customerPhoneNumber"
+                label="Số điện thoại"
                 control={control}
                 placeholder="Số điện thoại"
                 InputProps={{
                   startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
                 }}
               />
-              <DatePickerElement name="bookingDate" label="" control={control} />
-              <ButtonPrimary type="submit" severity="primary" padding={'7px 14px'}>
+              <DatePickerElement name="startDate" label="Ngày bắt đầu" control={control} />
+              <DatePickerElement name="endDate" label="Ngày kết thúc" control={control} />
+              <ButtonPrimary
+                sx={{ height: 40 }}
+                type="submit"
+                severity="primary"
+                padding={'7px 14px'}
+              >
                 <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
               </ButtonPrimary>
             </Box>
@@ -209,14 +233,7 @@ export default function ScheduleList() {
       </BoxHeaderSearch>
       <Box height={40}></Box>
       <TableContainer component={Paper}>
-        <Tabs
-          textColor="inherit"
-          value={tabValue}
-          onChange={(_, value) => {
-            formSearch.reset();
-            setTabValue(value);
-          }}
-        >
+        <Tabs textColor="inherit" value={tabValue} onChange={(_, value) => setTabValue(value)}>
           <Tab value="" label="Tất cả" />
           <Tab value="Initialize" label="Đã đặt lịch" />
           <Tab value="Confirmed" label="Đã xác nhận" />
@@ -228,6 +245,7 @@ export default function ScheduleList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
+              <StyledTableCell />
               <StyledTableCell style={{ color: 'white' }} align="left">
                 STT
               </StyledTableCell>
@@ -247,9 +265,6 @@ export default function ScheduleList() {
                 Thời gian bắt đầu
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Tổng tiền
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
                 Trạng thái
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -258,61 +273,12 @@ export default function ScheduleList() {
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Hành động
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
+              {/* <StyledTableCell style={{ color: 'white' }} align="center" /> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, id) => (
-              <StyledTableRow key={id}>
-                <StyledTableCell component="th" scope="row">
-                  {id + 1}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.customer?.fullName}</StyledTableCell>
-                <StyledTableCell align="center">{formatDate(row?.bookingDate)}</StyledTableCell>
-                <StyledTableCell align="center">{row.customer?.phoneNumber}</StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.bookingDetails[0]?.bookingSlotStylists[0]?.stylist?.fullName}
-                </StyledTableCell>
-                <StyledTableCell align="center">{formatTime(row?.startTime)}</StyledTableCell>
-                <StyledTableCell align="center">{currencyFormat(row.totalPrice)}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <Chip label={STATUS_LABEL[row.status]} color={STATUS_COLOR[row.status]} />
-                </StyledTableCell>
-                <StyledTableCell align="center">{formatDateTime(row?.createdDate)}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <Box
-                    sx={{
-                      '& > *': {
-                        mr: '8px!important',
-                      },
-                    }}
-                  >
-                    {row.status === 'Processing' && (
-                      <LoadingButton
-                        loading={isLoadingButton}
-                        variant="contained"
-                        color="success"
-                        onClick={() => {
-                          row.status = 'Completed';
-                          handleUpdateBooking(row);
-                        }}
-                      >
-                        Hoàn thành
-                      </LoadingButton>
-                    )}
-                  </Box>
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <IconButton
-                    onClick={() => {
-                      setBookingSelected(row);
-                      setIsOpenModalDetail(true);
-                    }}
-                  >
-                    <InfoOutlined />
-                  </IconButton>
-                </StyledTableCell>
-              </StyledTableRow>
+            {rows.map((row, index) => (
+              <Row key={index} index={index} row={row} handleUpdateBooking={handleUpdateBooking} />
             ))}
           </TableBody>
         </Table>
@@ -373,6 +339,94 @@ export default function ScheduleList() {
     </Box>
   );
 }
-function dispatch(arg0: { payload: boolean; type: 'app/setLoading' }) {
-  throw new Error('Function not implemented.');
+
+function Row(props) {
+  const [isOpenCollapse, setIsOpenCollapse] = useState(false);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
+
+  return (
+    <React.Fragment key={props.index}>
+      <StyledTableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+        <StyledTableCell align="center">
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setIsOpenCollapse(!isOpenCollapse)}
+            key={props.index}
+          >
+            {isOpenCollapse ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          </IconButton>
+        </StyledTableCell>
+        <StyledTableCell component="th" scope="row">
+          {props.index + 1}
+        </StyledTableCell>
+        <StyledTableCell align="center">{props.row.customer?.fullName}</StyledTableCell>
+        <StyledTableCell align="center">{formatDate(props.row?.bookingDate)}</StyledTableCell>
+        <StyledTableCell align="center">{props.row.customer?.phoneNumber}</StyledTableCell>
+        <StyledTableCell align="center">
+          {props.row.bookingDetails[0]?.bookingSlotStylists[0]?.stylist?.fullName}
+        </StyledTableCell>
+        <StyledTableCell align="center">{formatTime(props.row?.startTime)}</StyledTableCell>
+        <StyledTableCell align="center">
+          <Chip label={STATUS_LABEL[props.row.status]} color={STATUS_COLOR[props.row.status]} />
+        </StyledTableCell>
+        <StyledTableCell align="center">{formatDateTime(props.row?.createdDate)}</StyledTableCell>
+        <StyledTableCell align="center">
+          <Box
+            sx={{
+              '& > *': {
+                mr: '8px!important',
+              },
+            }}
+          >
+            {props.row.status === 'Processing' && (
+              <LoadingButton
+                loading={isLoadingButton}
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  props.row.status = 'Completed';
+                  props.handleUpdateBooking(props.row);
+                }}
+              >
+                Hoàn thành
+              </LoadingButton>
+            )}
+          </Box>
+        </StyledTableCell>
+      </StyledTableRow>
+
+      <StyledTableRow>
+        <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
+          <Collapse in={isOpenCollapse} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                Dịch vụ
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">Dịch vụ</TableCell>
+                    <TableCell align="center">Thời gian (phút)</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {props.row.bookingDetails.map((bookingDetail, index) => (
+                    <TableRow key={index}>
+                      <TableCell align="center">
+                        {bookingDetail.service
+                          ? bookingDetail.service.name
+                          : bookingDetail.combo.totalPrice}
+                      </TableCell>
+                      <TableCell align="center">{bookingDetail.duration}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </StyledTableCell>
+      </StyledTableRow>
+    </React.Fragment>
+  );
 }
