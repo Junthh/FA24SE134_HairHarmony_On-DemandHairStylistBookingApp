@@ -24,13 +24,33 @@ namespace hair_hamony.Business.Services.FeedbackServices
 
         public async Task<GetFeedbackModel> Create(CreateFeedbackModel requestBody)
         {
-            var feedback = _mapper.Map<Feedback>(requestBody);
-            feedback.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+            using var dbTransaction = _context.Database.BeginTransaction();
+            try
+            {
+                var feedback = _mapper.Map<Feedback>(requestBody);
+                feedback.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
-            await _context.Feedbacks.AddAsync(feedback);
-            await _context.SaveChangesAsync();
+                var booking = _context.Bookings.FirstOrDefault(x => x.Id == feedback.BookingId);
+                if(booking.Status == "Finished")
+                {
+                    var customer = _context.Customers.FirstOrDefault(x => x.Id == booking.CustomerId);
+                    var vndToPoints = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "VND_TO_POINTS")!.Value;
+                    customer.LoyaltyPoints = (int)(customer.LoyaltyPoints + (booking.TotalPrice * vndToPoints));
 
-            return _mapper.Map<GetFeedbackModel>(feedback);
+                    _context.Customers.Update(customer);
+                }
+
+                await _context.Feedbacks.AddAsync(feedback);
+                await _context.SaveChangesAsync();
+                await dbTransaction.CommitAsync();
+
+                return _mapper.Map<GetFeedbackModel>(feedback);
+            }
+            catch
+            {
+                await dbTransaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task Delete(Guid id)

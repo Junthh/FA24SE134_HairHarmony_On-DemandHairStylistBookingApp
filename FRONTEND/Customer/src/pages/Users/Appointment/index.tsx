@@ -67,9 +67,12 @@ export default function Appointment() {
   const [bookingDetail, setBookingDetail] = useState([]);
   const dispatch = useDispatch();
 
-  const schemaFeedback = Yup.object().shape<any>({});
+  const schemaFeedback = Yup.object().shape<any>({
+    rating: Yup.number().required('Không được trống'),
+    description: Yup.string().required('Đánh giá không được trống'),
+  });
   const defaultValues = {
-    rating: 0,
+    rating: null,
     description: '',
     bookingId: '',
     stylistId: '',
@@ -165,6 +168,7 @@ export default function Appointment() {
           closeModal();
         }}
         width="100%"
+        maxWidth={'sm'}
         title={'Đánh giá'}
         content={
           <FormContainer formContext={formFeedback}>
@@ -174,7 +178,6 @@ export default function Appointment() {
               flexDirection={'column'}
               gap={2}
               padding={'0 20px 20px 20px'}
-              width={'550px'}
             >
               <RatingElement
                 name="rating"
@@ -209,6 +212,7 @@ export default function Appointment() {
           closeModalConfirmCancel();
         }}
         width="100%"
+        maxWidth="sm"
         title={'Bạn có chắc muốn hủy đặt lịch ?'}
         content={
           <Box display={'flex'} justifyContent={'flex-end'} padding={'9px 20px'}>
@@ -233,11 +237,12 @@ export default function Appointment() {
       })
       .then((res) => {
         getListBookingHistory({ size: paging.size, page: paging.page });
-        selectedRow(null);
+        setSelectedRow(null);
         closeModalConfirmCancel();
         showToast('success', 'Hủy đặt lịch thành công!');
       })
       .catch((err) => {
+        console.log(err);
         showToast('error', 'Hủy đặt lịch thất bại!');
       })
       .finally(() => {

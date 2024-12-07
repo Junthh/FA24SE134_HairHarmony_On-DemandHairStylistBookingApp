@@ -6,7 +6,6 @@ export enum LOCAL_STORAGE_KEYS {
   RefreshToken = 'refreshToken',
 }
 
-// save endpoint using in Ecocupid app
 export const ENDPOINTS = {
   ApiBaseUrl: env.apiUrl,
   ApiPrefix: env.prefixApi,
@@ -33,3 +32,38 @@ export enum PaginationConfig {
   PerPage = 12,
   TotalPages = 10,
 }
+
+export enum STATUS {
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
+}
+export enum LEVEL {
+  REGULAR = 'Regular',
+  EXPERT = 'Expert',
+}
+export const enum STATUS_BOOKING {
+  INITIALIZE = 'initialize',
+  CONFIRMED = 'confirmed',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+  FINISHED = 'finished',
+  CANCEL = 'cancel',
+}
+
+export const enum STATUS_BOOKING_LABEL {
+  INITIALIZE = 'Đã đặt lịch',
+  CONFIRMED = 'Đã xác nhận',
+  PROCESSING = 'Bắt đầu thực hiện',
+  COMPLETED = 'Hoàn thành',
+  FINISHED = 'Kết thúc',
+  CANCEL = 'Huỷ',
+}
+
+export const enum STATUS_COLOR {
+  INITIALIZE= 'success',
+  CONFIRMED= 'warning',
+  PROCESSING= 'info',
+  COMPLETED= 'default',
+  FINISHED= 'primary',
+  CANCEL= 'error',
+};

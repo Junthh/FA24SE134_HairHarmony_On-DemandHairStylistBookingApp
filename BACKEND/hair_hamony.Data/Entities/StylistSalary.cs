@@ -21,5 +21,9 @@ public partial class StylistSalary
 
     public Guid? StylistId { get; set; }
 
+    public int? Kpi { get; set; }
+
     public virtual Stylist? Stylist { get; set; }
+
+    public virtual ICollection<StylistSalaryDetail> StylistSalaryDetails { get; set; } = new List<StylistSalaryDetail>();
 }

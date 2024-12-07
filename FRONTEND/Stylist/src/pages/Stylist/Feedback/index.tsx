@@ -8,6 +8,7 @@ import {
   TablePagination,
   Divider,
   LinearProgress,
+  Rating,
 } from '@mui/material';
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -106,7 +107,13 @@ export default function Feedback() {
     ({ size, page, stylistId }: any) => {
       dispatch(setLoading(true));
       feedbackService
-        .list({ pageSize: size, pageIndex: page + 1, stylistId })
+        .list({
+          pageSize: size,
+          pageIndex: page + 1,
+          stylistId,
+          sortKey: 'CreatedDate',
+          sortOrder: 'DESC',
+        })
         .then((resultList: any) => {
           setPaging((prev) => ({
             ...prev,
@@ -132,7 +139,7 @@ export default function Feedback() {
     if (credentialInfo.Id) {
       getAllFeedbackByStylist({ stylistId: credentialInfo.Id });
     }
-  }, []);
+  }, [credentialInfo.Id]);
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
@@ -178,9 +185,19 @@ export default function Feedback() {
             <Box className="card-feedback" key={index}>
               <Avatar src={row.booking.customer.avatar} />
               <Box className="content">
-                <Typography variant="h4" fontWeight={700}>
-                  {row.booking.customer.fullName}
-                </Typography>
+                <Box>
+                  <Typography variant="h4" fontWeight={700}>
+                    {row.booking.customer.fullName}
+                  </Typography>
+                  <Rating
+                    sx={{
+                      margin: '0 auto',
+                    }}
+                    precision={0.5}
+                    value={row.rating}
+                    readOnly
+                  />
+                </Box>
                 <Typography variant="body2">{row.description}</Typography>
               </Box>
               <Typography variant="small1" color={colors.grey2}>

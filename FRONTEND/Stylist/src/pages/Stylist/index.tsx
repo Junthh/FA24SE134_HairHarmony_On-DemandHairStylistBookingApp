@@ -91,6 +91,8 @@ function Staff() {
       setTabName('Cập nhật thông tin');
     } else if (name === STYLIST_PATH.CHANGE_PASSWORD.split('/')[1]) {
       setTabName('Thay đổi mật khẩu');
+    }else if (name === STYLIST_PATH.SALARY.split('/')[1]) {
+      setTabName('Lịch sử lương');
     }
   }, [location]);
 
@@ -156,7 +158,13 @@ function Staff() {
         </InfoAccountStyled>
       </HeaderStyled>
       <MainContainerStyled>
-        <Typography paddingTop={3} paddingBottom={3} paddingLeft={5} variant="h4" fontWeight={400}>
+        <Typography
+          paddingTop={3}
+          paddingBottom={3}
+          variant="h4"
+          fontWeight={700}
+          textTransform={'uppercase'}
+        >
           {tabName}
         </Typography>
         <Divider variant="fullWidth"></Divider>

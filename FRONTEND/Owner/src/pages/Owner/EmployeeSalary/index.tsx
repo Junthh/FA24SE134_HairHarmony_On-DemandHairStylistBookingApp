@@ -92,7 +92,7 @@ export default function EmployeeSalary() {
     getSalaryList({
       size: paging.size,
       page: paging.page,
-      month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+      month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
       year: moment(formSearch.getValues('monthYear')).year().toString(),
       stylistName: formSearch.getValues('stylistName'),
     });
@@ -117,7 +117,7 @@ export default function EmployeeSalary() {
         getSalaryList({
           ...paging,
           stylistName: data.stylistName,
-          month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+          month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
           year: moment(formSearch.getValues('monthYear')).year().toString(),
         });
       }
@@ -153,7 +153,7 @@ export default function EmployeeSalary() {
           getSalaryList({
             size: paging.size,
             page: paging.page,
-            month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+            month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
             year: moment(formSearch.getValues('monthYear')).year().toString(),
             stylistName: formSearch.getValues('stylistName'),
           });
@@ -191,7 +191,7 @@ export default function EmployeeSalary() {
               size,
               page,
               stylistName: formSearch.getValues('stylistName'),
-              month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+              month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
               year: moment(formSearch.getValues('monthYear')).year().toString(),
             });
             handleClose();
@@ -212,7 +212,7 @@ export default function EmployeeSalary() {
               size,
               page,
               stylistName: formSearch.getValues('stylistName'),
-              month: moment(formSearch.getValues('monthYear')).add(1, 'M').month().toString(),
+              month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
               year: moment(formSearch.getValues('monthYear')).year().toString(),
             });
             handleClose();

@@ -1,0 +1,71 @@
+[
+  {
+    "date": "2024-01-01",
+    "stylist": [
+      {
+        "fullName": "Dương Thanh Sang",
+        "timeSlots": [
+          { "time": "09:00-12:00", "isRegister": true },
+          { "time": "12:00-15:00", "isRegister": false },
+          { "time": "15:00-18:00", "isRegister": false },
+          { "time": "18:00-21:00", "isRegister": false }
+        ]
+      },
+      {
+        "fullName": "Lê Hữu Hiếu",
+        "timeSlots": [
+          { "time": "09:00-12:00", "isRegister": false },
+          { "time": "12:00-15:00", "isRegister": true },
+          { "time": "15:00-18:00", "isRegister": false },
+          { "time": "18:00-21:00", "isRegister": false }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-01-02",
+    "stylist": [
+      {
+        "fullName": "Dương Thanh Sang",
+        "timeSlots": [
+          { "time": "09:00-12:00", "isRegister": true },
+          { "time": "12:00-15:00", "isRegister": false },
+          { "time": "15:00-18:00", "isRegister": false },
+          { "time": "18:00-21:00", "isRegister": false }
+        ]
+      },
+      {
+        "fullName": "Lê Hữu Hiếu",
+        "timeSlots": [
+          { "time": "09:00-12:00", "isRegister": false },
+          { "time": "12:00-15:00", "isRegister": true },
+          { "time": "15:00-18:00", "isRegister": false },
+          { "time": "18:00-21:00", "isRegister": false }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-01-03",
+    "stylist": [
+      {
+        "fullName": "Dương Thanh Sang",
+        "timeSlots": [
+          { "time": "09:00-12:00", "isRegister": true },
+          { "time": "12:00-15:00", "isRegister": false },
+          { "time": "15:00-18:00", "isRegister": false },
+          { "time": "18:00-21:00", "isRegister": false }
+        ]
+      },
+      {
+        "fullName": "Lê Hữu Hiếu",
+        "timeSlots": [
+          { "time": "09:00-12:00", "isRegister": false },
+          { "time": "12:00-15:00", "isRegister": true },
+          { "time": "15:00-18:00", "isRegister": false },
+          { "time": "18:00-21:00", "isRegister": false }
+        ]
+      }
+    ]
+  }
+]

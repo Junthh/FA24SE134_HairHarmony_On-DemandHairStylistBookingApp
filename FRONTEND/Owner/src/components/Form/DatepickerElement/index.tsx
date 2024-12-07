@@ -7,7 +7,7 @@ import {
   Path,
   FieldValues,
 } from 'react-hook-form';
-import { FormControl, TextFieldProps, Typography } from '@mui/material';
+import { FormControl, FormHelperText, TextFieldProps, Typography } from '@mui/material';
 import { BaseTextField } from 'components/Base/BaseTextField';
 export declare type ParseAbleDate<TDate> = string | number | Date | null | undefined | TDate;
 
@@ -50,24 +50,24 @@ export default function DatePickerElement<TFieldValues extends FieldValues>({
   ...rest
 }: DatePickerElementProps<TFieldValues, any, any>): JSX.Element {
   return (
-    <FormControl fullWidth variant="outlined" sx={{ position: 'relative' }}>
-      {label && (
-        <Typography
-          sx={{
-            marginLeft: 1,
-            marginBottom: '6px',
-            color: '#666666',
-          }}
-        >
-          {label}
-        </Typography>
-      )}
-      <Controller
-        name={name}
-        rules={validation}
-        control={control}
-        render={({ field: { onChange, value, onBlur }, fieldState: { error } }) => {
-          return (
+    <Controller
+      name={name}
+      rules={validation}
+      control={control}
+      render={({ field: { onChange, value, onBlur }, fieldState: { error } }) => {
+        return (
+          <FormControl fullWidth variant="outlined" sx={{ position: 'relative' }}>
+            {label && (
+              <Typography
+                sx={{
+                  marginLeft: 1,
+                  marginBottom: '6px',
+                  color: '#666666',
+                }}
+              >
+                {label}
+              </Typography>
+            )}
             <DatePicker
               views={views}
               format={inputFormat}
@@ -86,9 +86,10 @@ export default function DatePickerElement<TFieldValues extends FieldValues>({
                 actionBar: { actions: ['clear'] },
               }}
             />
-          );
-        }}
-      />
-    </FormControl>
+            {error && <FormHelperText error>{error.message}</FormHelperText>}
+          </FormControl>
+        );
+      }}
+    />
   );
 }

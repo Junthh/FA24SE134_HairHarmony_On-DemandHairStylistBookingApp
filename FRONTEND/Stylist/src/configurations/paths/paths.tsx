@@ -23,6 +23,7 @@ export enum STYLIST_PATH {
   TIMEKEEPING = '/timekeeping',
   FEEDBACK = '/feedback',
   PROFILE = '/profile',
+  SALARY = '/salary',
   CHANGE_PASSWORD = '/change-password',
 }
 

@@ -39,5 +39,7 @@ public partial class Booking
 
     public virtual Staff? Staff { get; set; }
 
+    public virtual ICollection<StylistSalaryDetail> StylistSalaryDetails { get; set; } = new List<StylistSalaryDetail>();
+
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

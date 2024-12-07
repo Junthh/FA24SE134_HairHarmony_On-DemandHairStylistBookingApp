@@ -55,7 +55,7 @@ namespace hair_hamony.Business.Services.BookingServices
             PagingParam<BookingEnum.BookingSort> paginationModel,
             SearchBookingModel searchBookingModel,
             string? customerPhoneNumber,
-            Guid? stylistId)
+            Guid? stylistId, DateOnly? startDate, DateOnly? endDate)
         {
             var query = _context.Bookings
                 .Include(booking => booking.Customer)
@@ -86,6 +86,11 @@ namespace hair_hamony.Business.Services.BookingServices
                             bookingSlotStylist.Stylist.Id == stylistId)
                         )
                     );
+            }
+
+            if (startDate != null && endDate != null)
+            {
+                query = query.Where(booking => booking.BookingDate >= startDate && booking.BookingDate <= endDate);
             }
 
             query = query.GetWithSearch(searchBookingModel);
@@ -259,7 +264,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
-                            IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -312,7 +317,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         {
                             var timeSlotNext = _context.TimeSlots
                                 .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
-                            IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             _context.BookingSlotStylists.Add(new BookingSlotStylist
                             {
@@ -419,14 +424,32 @@ namespace hair_hamony.Business.Services.BookingServices
                     // nếu trong tháng này chưa có booking thì tạo để có dữ liệu so sánh tổng booking trong tháng
                     if (stylistSalary == null)
                     {
-                        await _stylistSalaryService.Create(new ViewModels.StylistSalarys.CreateStylistSalaryModel
+                        var kpi = _context.Kpis.FirstOrDefault(x =>
+                                x.StartDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                                && x.EndDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()
+                                )
+                            );
+
+                        var stylistSalaryId = Guid.NewGuid();
+                        _context.StylistSalarys.Add(new StylistSalary
                         {
+                            Id = stylistSalaryId,
                             Month = monthCurrent,
                             Year = yearCurrent,
                             StylistId = stylist.Id,
                             TotalBooking = 1,
                             TotalCommission = 0,
-                            TotalSalary = stylist.Salary
+                            Kpi = kpi.Value + stylist.Kpi,
+                            TotalSalary = stylist.Salary,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                        });
+
+                        _context.StylistSalaryDetails.Add(new StylistSalaryDetail
+                        {
+                            Commission = 0,
+                            StylistSalaryId = stylistSalaryId,
+                            BookingId = requestBody.Id,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7()
                         });
                     }
                     else
@@ -434,7 +457,12 @@ namespace hair_hamony.Business.Services.BookingServices
                         var commissionRate = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "COMMISSION_RATE")!.Value!.Value;
 
                         var totalBooking = stylistSalary.TotalBooking + 1;
-                        var newCommission = totalBooking > stylist.Kpi ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        var kpi = _context.Kpis.FirstOrDefault(kpi =>
+                            kpi.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                            && kpi.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                        );
+
+                        var newCommission = totalBooking > kpi.Value ? requestBody.TotalPrice * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -445,18 +473,25 @@ namespace hair_hamony.Business.Services.BookingServices
                             TotalCommission = stylistSalary.TotalCommission + newCommission,
                             TotalSalary = stylistSalary.TotalSalary + newCommission
                         });
+                        _context.StylistSalaryDetails.Add(new StylistSalaryDetail
+                        {
+                            Commission = newCommission,
+                            StylistSalaryId = stylistSalary.Id,
+                            BookingId = requestBody.Id,
+                            CreatedDate = UtilitiesHelper.DatetimeNowUTC7()
+                        });
                     }
 
                     var customer = _context.Customers.FirstOrDefault(customer => customer.Id == requestBody.CustomerId);
-                    var customerLoyaltyPoints = customer!.LoyaltyPoints;
+                    // var customerLoyaltyPoints = customer!.LoyaltyPoints;
 
                     var vndToPoints = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "VND_TO_POINTS")!.Value;
 
-                    customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
+                    // customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
 
                     if (requestBody.LoyaltyPoints != null)
                     {
-                        customerLoyaltyPoints -= requestBody.LoyaltyPoints;
+                        customer!.LoyaltyPoints = customer!.LoyaltyPoints - requestBody.LoyaltyPoints;
                     }
 
                     _context.Customers.Update(customer);
@@ -510,6 +545,54 @@ namespace hair_hamony.Business.Services.BookingServices
                 dbTransaction.Rollback();
                 throw;
             }
+        }
+
+        public GetTotalRevenueByMonthModel GetTotalRevenueByMonth(int year, int month)
+        {
+            var lastDayOfMonth = new DateTime(year, month, 1).AddMonths(1).AddDays(-1).Day;
+
+            var totalRevenueByMonth = _context.Bookings.Where(booking =>
+                booking.BookingDate >= DateOnly.FromDateTime(new DateTime(year, month, 1))
+                && booking.BookingDate <= DateOnly.FromDateTime(new DateTime(year, month, lastDayOfMonth))
+                && booking.Status == "Finished"
+            ).Sum(x => x.TotalPrice);
+
+            var result = new GetTotalRevenueByMonthModel();
+
+            result.Month = month;
+            result.Year = year;
+            result.TotalRevenue = totalRevenueByMonth.Value;
+
+            for (int i = 0; i < lastDayOfMonth; i++)
+            {
+                var totalRevenueByDay = _context.Bookings
+                    .Where(x =>
+                        x.BookingDate == DateOnly.FromDateTime(new DateTime(year, month, i + 1))
+                        && x.Status == "Finished"
+                    )
+                    .Sum(x => x.TotalPrice);
+                result.TotalRevenueByDay.Add(new GetTotalRevenueByMonthModel.GetTotalRevenueByDayModel
+                {
+                    Day = i + 1,
+                    TotalRevenue = totalRevenueByDay.Value
+                });
+            }
+
+            return result;
+        }
+
+        public GetBookingByStatusModel GetTotalBookingByStatus()
+        {
+            var bookings = _context.Bookings.ToList();
+            return new GetBookingByStatusModel
+            {
+                Cancel = bookings.Where(booking => booking.Status == "Cancel").Count(),
+                Initialize = bookings.Where(booking => booking.Status == "Initialize").Count(),
+                Confirmed = bookings.Where(booking => booking.Status == "Confirmed").Count(),
+                Processing = bookings.Where(booking => booking.Status == "Processing").Count(),
+                Completed = bookings.Where(booking => booking.Status == "Completed").Count(),
+                Finished = bookings.Where(booking => booking.Status == "Finished").Count(),
+            };
         }
     }
 }

@@ -25,7 +25,13 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
         public async Task<GetStylistSalaryModel> Create(CreateStylistSalaryModel requestBody)
         {
             var stylistSalary = _mapper.Map<StylistSalary>(requestBody);
-            stylistSalary.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
+
+            var datetimeNow = UtilitiesHelper.DatetimeNowUTC7();
+            var kpi = _context.Kpis
+                .FirstOrDefault(x => x.StartDate >= DateOnly.FromDateTime(datetimeNow) && x.EndDate >= DateOnly.FromDateTime(datetimeNow));
+
+            stylistSalary.CreatedDate = datetimeNow;
+            stylistSalary.Kpi = kpi.Value;
 
             await _context.StylistSalarys.AddAsync(stylistSalary);
             await _context.SaveChangesAsync();
@@ -41,7 +47,7 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
         }
 
         public async Task<(IList<GetDetailStylistSalaryModel>, int)> GetAll(
-            PagingParam<StylistSalaryEnum.StylistSalarySort> paginationModel, 
+            PagingParam<StylistSalaryEnum.StylistSalarySort> paginationModel,
             SearchStylistSalaryModel searchStylistSalaryModel,
             string? stylistName)
         {
@@ -49,7 +55,7 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
                 .Include(stylistSalary => stylistSalary.Stylist)
                 .AsQueryable();
 
-            if(stylistName != null)
+            if (stylistName != null)
             {
                 query = query.Where(stylistSalary => stylistSalary.Stylist.FullName.Contains(stylistName));
             }

@@ -62,10 +62,9 @@ const RegisterWorkScheduleStyled = styled(Box)({
     },
   },
   '& .card-analyst': {
-    boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+    // boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
     minHeight: 50,
     width: '100%',
-    padding: '20px 40px',
     borderRadius: 20,
   },
 });
@@ -447,13 +446,15 @@ export default function RegisterWorkSchedule() {
                         }}
                         align="right"
                       >
-                        <IconButton
-                          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                            handleClick(event, row)
-                          }
-                        >
-                          <ICONS.IconThreeDot />
-                        </IconButton>
+                        {!row.isTimekeeping ? (
+                          <IconButton
+                            onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                              handleClick(event, row)
+                            }
+                          >
+                            <ICONS.IconThreeDot />
+                          </IconButton>
+                        ) : null}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}

@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import Image1 from './mock/image1.png';
 import * as colors from 'constants/colors';
 import { ButtonPrimary } from 'pages/common/style/Button';
+import TopSylistSlider from '../Home/components/TopSylistSlider';
+import { useDispatch } from 'react-redux';
+import { setLoading } from 'redux/Reducer';
+import { stylistServices } from 'services/stylist.service';
+import { showToast } from 'components/Common/Toast';
+import TopStylistExpert from './components/TopStylistExpert';
 const OurTeammatesStyled = styled(Box)({
   '& .header': {
     position: 'relative',
@@ -40,6 +46,29 @@ const OurTeammatesStyled = styled(Box)({
 });
 //
 export default function OurTeammates() {
+  const dispatch = useDispatch();
+  const [stylist, setStylist] = useState([]);
+  const [stylistExpert, setStylistExpert] = useState([]);
+  const handleGetStylist = async () => {
+    dispatch(setLoading(true));
+    try {
+      const res = await stylistServices.list();
+      const stylistRegular = res.data.filter((item) => item.level === 'Regular');
+      const stylistExpert = res.data.filter((item) => item.level === 'Expert');
+      setStylist(stylistRegular);
+      setStylistExpert(stylistExpert);
+    } catch (error) {
+      showToast('error', error.msg);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+  useEffect(() => {
+    // Change title
+    document.title = 'Our Teammates';
+    handleGetStylist();
+    // getIntroVideo();
+  }, []);
   return (
     <OurTeammatesStyled>
       <Box className="header">
@@ -79,15 +108,11 @@ export default function OurTeammates() {
         <Typography variant="h5" fontFamily={'GFS Didot !important'} fontSize={'1.5rem'}>
           Stylist Expert
         </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={4}></Grid>
-        </Grid>
+        <TopSylistSlider stylist={stylistExpert} />
         <Typography variant="h5" fontFamily={'GFS Didot !important'} fontSize={'1.5rem'}>
           Stylist Regular
         </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={4}></Grid>
-        </Grid>
+        <TopStylistExpert stylist={stylist} />
       </Box>
       <Box className="contact">
         <Typography variant="h1" className="header">

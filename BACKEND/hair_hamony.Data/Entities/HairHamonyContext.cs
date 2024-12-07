@@ -31,6 +31,8 @@ public partial class HairHamonyContext : DbContext
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
+    public virtual DbSet<Kpi> Kpis { get; set; }
+
     public virtual DbSet<News> News { get; set; }
 
     public virtual DbSet<Owner> Owners { get; set; }
@@ -49,11 +51,15 @@ public partial class HairHamonyContext : DbContext
 
     public virtual DbSet<StylistSalary> StylistSalarys { get; set; }
 
+    public virtual DbSet<StylistSalaryDetail> StylistSalaryDetails { get; set; }
+
     public virtual DbSet<StylistWorkship> StylistWorkships { get; set; }
 
     public virtual DbSet<SystemConfig> SystemConfigs { get; set; }
 
     public virtual DbSet<TimeSlot> TimeSlots { get; set; }
+
+    public virtual DbSet<Timekeeping> Timekeepings { get; set; }
 
     public virtual DbSet<Transaction> Transactions { get; set; }
 
@@ -208,6 +214,16 @@ public partial class HairHamonyContext : DbContext
                 .HasConstraintName("FK_Feedbacks_Stylists");
         });
 
+        modelBuilder.Entity<Kpi>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Kpis__3214EC072E2BF8F5");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+        });
+
         modelBuilder.Entity<News>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__News__3214EC0779EEB0CB");
@@ -352,6 +368,22 @@ public partial class HairHamonyContext : DbContext
                 .HasConstraintName("FK__SalarySty__Styli__6FE99F9F");
         });
 
+        modelBuilder.Entity<StylistSalaryDetail>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__StylistS__3214EC07E32F9466");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Booking).WithMany(p => p.StylistSalaryDetails)
+                .HasForeignKey(d => d.BookingId)
+                .HasConstraintName("FK__StylistSa__Booki__11158940");
+
+            entity.HasOne(d => d.StylistSalary).WithMany(p => p.StylistSalaryDetails)
+                .HasForeignKey(d => d.StylistSalaryId)
+                .HasConstraintName("FK__StylistSa__Styli__10216507");
+        });
+
         modelBuilder.Entity<StylistWorkship>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__StylistW__3214EC070686DA2E");
@@ -363,6 +395,10 @@ public partial class HairHamonyContext : DbContext
             entity.HasOne(d => d.Stylist).WithMany(p => p.StylistWorkships)
                 .HasForeignKey(d => d.StylistId)
                 .HasConstraintName("FK__StylistWo__Styli__778AC167");
+
+            entity.HasOne(d => d.Timekeeping).WithMany(p => p.StylistWorkships)
+                .HasForeignKey(d => d.TimekeepingId)
+                .HasConstraintName("FK__StylistWo__Timek__14E61A24");
 
             entity.HasOne(d => d.Workship).WithMany(p => p.StylistWorkships)
                 .HasForeignKey(d => d.WorkshipId)
@@ -382,6 +418,14 @@ public partial class HairHamonyContext : DbContext
         modelBuilder.Entity<TimeSlot>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__TimeSlot__3214EC07FCE40C10");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Timekeeping>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Timekeep__3214EC07CD8D3481");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
