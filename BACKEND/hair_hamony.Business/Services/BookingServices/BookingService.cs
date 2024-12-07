@@ -439,7 +439,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             StylistId = stylist.Id,
                             TotalBooking = 1,
                             TotalCommission = 0,
-                            Kpi = kpi.Value,
+                            Kpi = kpi.Value + stylist.Kpi,
                             TotalSalary = stylist.Salary,
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                         });
@@ -461,6 +461,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             kpi.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
                             && kpi.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
                         );
+                        
                         var newCommission = totalBooking > kpi.Value ? stylist.Salary * commissionRate / 100 : 0;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {

@@ -23,8 +23,6 @@ public partial class BookingSlotStylist
 
     public Guid? StylistWorkshipId { get; set; }
 
-    public Guid? KpiId { get; set; }
-
     public virtual BookingDetail? BookingDetail { get; set; }
 
     public virtual Stylist? Stylist { get; set; }
