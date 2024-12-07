@@ -565,7 +565,7 @@ namespace hair_hamony.Business.Services.BookingServices
             for (int i = 0; i < lastDayOfMonth; i++)
             {
                 var totalRevenueByDay = _context.Bookings
-                    .Where(x => 
+                    .Where(x =>
                         x.BookingDate == DateOnly.FromDateTime(new DateTime(year, month, i + 1))
                         && x.Status == "Finished"
                     )
@@ -578,6 +578,20 @@ namespace hair_hamony.Business.Services.BookingServices
             }
 
             return result;
+        }
+
+        public GetBookingByStatusModel GetTotalBookingByStatus()
+        {
+            var bookings = _context.Bookings.ToList();
+            return new GetBookingByStatusModel
+            {
+                Cancel = bookings.Where(booking => booking.Status == "Cancel").Count(),
+                Initialize = bookings.Where(booking => booking.Status == "Initialize").Count(),
+                Confirmed = bookings.Where(booking => booking.Status == "Confirmed").Count(),
+                Processing = bookings.Where(booking => booking.Status == "Processing").Count(),
+                Completed = bookings.Where(booking => booking.Status == "Completed").Count(),
+                Finished = bookings.Where(booking => booking.Status == "Finished").Count(),
+            };
         }
     }
 }
