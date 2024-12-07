@@ -439,6 +439,18 @@ export default function Appointment() {
                     Tổng tiền:{' '}
                     <span style={{ fontWeight: 700 }}>{currencyFormat(item?.totalPrice)}</span>
                   </Typography>
+                  {item?.loyaltyPoints && (
+                    <Typography variant="h5" fontWeight={600}>
+                      Điểm tích luỹ đã sử dụng:{' '}
+                      <span style={{ fontWeight: 700 }}>{item?.loyaltyPoints}</span>
+                    </Typography>
+                  )}
+                  {item?.status === 'Finished' && (
+                    <Typography variant="h5" fontWeight={600}>
+                      Số tiền đã thanh toán:{' '}
+                      <span style={{ fontWeight: 700 }}>{currencyFormat(item?.amoutToPaid)}</span>
+                    </Typography>
+                  )}
                 </Box>
                 <Box textAlign={'center'}>
                   {item?.status === STATUS_LABEL.Finished && item.isFeedback ? (
