@@ -165,6 +165,7 @@ export default function RegisterWorkSchedule() {
         stylistId: credentialInfo.Id,
       };
       if (selectedRow) {
+        data.workshipId = data.workshipIds
         dispatch(setLoading(true));
         workshipService
           .updateWorkshipStylist(data.id, data)
@@ -432,10 +433,10 @@ export default function RegisterWorkSchedule() {
                         {workships[row.workshipId]?.endTime}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {formatDate(row.createdDate, 'dd/MM/yyyy')}
+                        {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {formatDate(row.updatedDate, 'dd/MM/yyyy')}
+                        {formatDate(row.updatedDate, 'dd/MM/yyyy HH:mm')}
                       </StyledTableCell>
                       <StyledTableCell
                         style={{
