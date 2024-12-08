@@ -251,6 +251,9 @@ export default function Salary() {
                 Tổng lượt booking
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                KPI
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng hoa hồng
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -270,6 +273,7 @@ export default function Salary() {
                 <StyledTableCell align="center">{row.month}</StyledTableCell>
                 <StyledTableCell align="center">{row.year}</StyledTableCell>
                 <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
+                <StyledTableCell align="center">{row.kpi}</StyledTableCell>
                 <StyledTableCell align="center">
                   {currencyFormat(row.totalCommission)}
                 </StyledTableCell>
