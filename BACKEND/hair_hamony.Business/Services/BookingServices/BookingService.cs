@@ -425,8 +425,8 @@ namespace hair_hamony.Business.Services.BookingServices
                     if (stylistSalary == null)
                     {
                         var kpi = _context.Kpis.FirstOrDefault(x =>
-                                x.StartDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
-                                && x.EndDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()
+                                x.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                                && x.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()
                                 )
                             );
 
