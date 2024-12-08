@@ -431,6 +431,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             );
 
                         var stylistSalaryId = Guid.NewGuid();
+                        var totalKpi = kpi.Value + stylist.Kpi;
+                        var totalSalary = stylist.Salary * 1 / totalKpi;
                         _context.StylistSalarys.Add(new StylistSalary
                         {
                             Id = stylistSalaryId,
@@ -439,8 +441,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             StylistId = stylist.Id,
                             TotalBooking = 1,
                             TotalCommission = 0,
-                            Kpi = kpi.Value + stylist.Kpi,
-                            TotalSalary = stylist.Salary,
+                            Kpi = totalKpi,
+                            TotalSalary = totalSalary,
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                         });
 
@@ -463,6 +465,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         //);
 
                         var newCommission = totalBooking > stylistSalary.Kpi ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        var totalSalary = stylist.Salary * totalBooking / stylistSalary.Kpi;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -471,7 +474,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             StylistId = stylistSalary.StylistId,
                             TotalBooking = totalBooking,
                             TotalCommission = stylistSalary.TotalCommission + newCommission,
-                            TotalSalary = stylistSalary.TotalSalary + newCommission
+                            TotalSalary = totalSalary + newCommission
                         });
                         _context.StylistSalaryDetails.Add(new StylistSalaryDetail
                         {
