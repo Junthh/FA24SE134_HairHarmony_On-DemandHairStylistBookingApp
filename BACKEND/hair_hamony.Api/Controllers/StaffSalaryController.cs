@@ -71,7 +71,7 @@ namespace home_travel.API.Controllers
         /// <param name="month">A month wanna timekeeping</param>
         /// <returns>A staffSalary within status 201 or error status</returns>
         /// <response code="201">Returns the staffSalary</response>
-        [HttpGet]
+        [HttpGet("Timekeeping")]
         [ProducesResponseType(typeof(BaseResponse<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateTimekeeping([FromQuery] int year, [FromQuery] int month)
         {
