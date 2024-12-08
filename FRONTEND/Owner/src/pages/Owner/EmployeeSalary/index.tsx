@@ -356,10 +356,10 @@ export default function EmployeeSalary() {
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Username stylist
+                Username
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Tên stylist
+                Tên
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Tháng

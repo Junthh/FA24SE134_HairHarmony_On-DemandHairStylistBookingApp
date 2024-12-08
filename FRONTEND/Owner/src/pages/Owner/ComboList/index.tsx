@@ -372,14 +372,14 @@ export default function ComboList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Tên combo
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Mô tả
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Combo service
+                Dịch vụ combo
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Trong khoản thời gian
@@ -396,7 +396,7 @@ export default function ComboList() {
                 <StyledTableCell
                   component="th"
                   scope="row"
-                  sx={{ display: 'flex', flexDirection: 'row' }}
+                  sx={{ display: 'flex', alignItems: 'center' }}
                 >
                   <img
                     style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}

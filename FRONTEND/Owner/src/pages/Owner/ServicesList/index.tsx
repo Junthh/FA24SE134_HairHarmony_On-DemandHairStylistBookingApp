@@ -329,7 +329,7 @@ export default function ServicesList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Tên dịch vụ
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">

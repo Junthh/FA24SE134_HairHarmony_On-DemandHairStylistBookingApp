@@ -41,7 +41,7 @@ export const OWNER_PATH_SIDEBAR = [
     icon: <DashboardIcon />,
   },
   {
-    title: 'Danh sách nhân viên',
+    title: 'Danh sách staff',
     path: OWNER_PATH.EMPLOYEE_STAFF_LIST,
     icon: <PeopleAltIcon />,
   },
@@ -56,7 +56,7 @@ export const OWNER_PATH_SIDEBAR = [
     icon: <PeopleAltIcon />,
   },
   {
-    title: 'Lịch nhân viên',
+    title: 'Lịch stylist',
     path: OWNER_PATH.EMPLOYEE_WORK_SCHEDULE,
     icon: <CalendarMonthIcon />,
   },
@@ -71,7 +71,7 @@ export const OWNER_PATH_SIDEBAR = [
     icon: <PaidIcon />,
   },
   {
-    title: 'Categories',
+    title: 'Loại dịch vụ',
     path: OWNER_PATH.CATEGORIES,
     icon: <CategoryIcon />,
   },
