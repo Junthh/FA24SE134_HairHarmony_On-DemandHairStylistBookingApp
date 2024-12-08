@@ -27,6 +27,7 @@ import { staffSalaryServices } from 'services/staffSalary.service';
 import { currencyFormat } from 'utils/helper';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
+import { showToast } from 'components/Common/Toast';
 
 export default function StaffSalary() {
   const dispatch = useDispatch();
@@ -136,6 +137,27 @@ export default function StaffSalary() {
     }));
   };
 
+  const handleCreateTimekeeping = () => {
+    staffSalaryServices
+      .createTimekeeping({
+        month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
+        year: moment(formSearch.getValues('monthYear')).year().toString(),
+      })
+      .then(() => {
+        showToast('success', 'Chấm công thành công');
+        getSalaryList({
+          ...paging,
+          staffName: formSearch.getValues('staffName'),
+          month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
+          year: moment(formSearch.getValues('monthYear')).year().toString(),
+        });
+      })
+      .catch((error) => {
+        showToast('error', error.msg);
+        console.log(error);
+      });
+  };
+
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -168,8 +190,17 @@ export default function StaffSalary() {
               <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
             </ButtonPrimary>
             <Box width={'50%'}></Box>
-          </Box>
-          <Box className="search-right">
+            <Box className="search-right">
+              {rows.length === 0 && (
+                <ButtonPrimary
+                  severity="primary"
+                  padding={'7px 14px'}
+                  onClick={handleCreateTimekeeping}
+                >
+                  Chốt chấm công
+                </ButtonPrimary>
+              )}
+            </Box>
           </Box>
         </BoxHeaderSearch>
       </FormContainer>
