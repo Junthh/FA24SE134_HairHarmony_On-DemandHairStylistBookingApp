@@ -31,13 +31,17 @@ namespace hair_hamony.Business.Services.FeedbackServices
                 feedback.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
                 var booking = _context.Bookings.FirstOrDefault(x => x.Id == feedback.BookingId);
-                if(booking.Status == "Finished")
+                if (booking.Status == "Finished")
                 {
                     var customer = _context.Customers.FirstOrDefault(x => x.Id == booking.CustomerId);
                     var vndToPoints = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "VND_TO_POINTS")!.Value;
                     customer.LoyaltyPoints = (int)(customer.LoyaltyPoints + (booking.TotalPrice * vndToPoints));
-
                     _context.Customers.Update(customer);
+
+                    var countFeedbackOfStylist = _context.Feedbacks.Where(x => x.StylistId == requestBody.StylistId).Count();
+                    var stylist = _context.Stylists.FirstOrDefault(x => x.Id == requestBody.StylistId);
+                    stylist.Rating = ((stylist.Rating * countFeedbackOfStylist) + requestBody.Rating) / (countFeedbackOfStylist + 1);
+                    _context.Stylists.Update(stylist);
                 }
 
                 await _context.Feedbacks.AddAsync(feedback);
