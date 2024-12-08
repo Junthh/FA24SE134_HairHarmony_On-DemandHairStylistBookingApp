@@ -65,6 +65,21 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for create timekeeping for staff
+        /// </summary>
+        /// <param name="year">A year wanna timekeeping</param>
+        /// <param name="month">A month wanna timekeeping</param>
+        /// <returns>A staffSalary within status 201 or error status</returns>
+        /// <response code="201">Returns the staffSalary</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(BaseResponse<string>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateTimekeeping([FromQuery] int year, [FromQuery] int month)
+        {
+            await _staffSalaryService.CreateTimekeeping(year, month);
+            return Ok(new BaseResponse<string>(data: "Chấm công thành công"));
+        }
+
+        /// <summary>
         /// Endpoint for create staffSalary
         /// </summary>
         /// <param name="requestBody">An obj contains input info of a staffSalary</param>
