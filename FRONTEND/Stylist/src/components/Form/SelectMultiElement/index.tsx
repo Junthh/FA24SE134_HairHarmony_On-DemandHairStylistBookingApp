@@ -51,7 +51,7 @@ const SelectMultiElement: React.FC<ISelectMultiElementProps> = ({
             <BaseSelect
               multiple
               displayEmpty
-              value={typeof value === 'string' ? [value] : value || []}
+              value={typeof value === 'string' && value ? [value] : value || []}
               onChange={(event) => onChange(event.target.value)}
               renderValue={(selected) => {
                 if (typeof selected === 'string') {
