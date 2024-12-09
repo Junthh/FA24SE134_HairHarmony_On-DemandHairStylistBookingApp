@@ -39,6 +39,7 @@ import { stylistSalaryServices } from 'services/stylistSalary.service';
 import { currencyFormat } from 'utils/helper';
 import DatePickerElement from 'components/Form/DatepickerElement';
 import moment from 'moment';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { current } from '@reduxjs/toolkit';
 export default function EmployeeSalary() {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ export default function EmployeeSalary() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rows, setRows] = useState([]);
+  const [stylistSalaryDetails, setStylistSalaryDetails] = useState([]);
   const [paging, setPaging] = useState({
     size: 10,
     page: 0,
@@ -178,6 +180,20 @@ export default function EmployeeSalary() {
     setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
 
+  const handleViewDetails = async ($event, row) => {
+    try {
+      dispatch(setLoading(true));
+      const res = await stylistSalaryServices.findById({
+        stylistSalaryId: row.id,
+      });
+      setStylistSalaryDetails(res.data);
+      openModal();
+    } catch (error) {
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       if (selectedRow) {
@@ -226,6 +242,88 @@ export default function EmployeeSalary() {
     }),
     [selectedRow, paging],
   );
+  // const renderDialog = useMemo(() => {
+  //   return (
+  //     <Dialog
+  //       open={isOpen}
+  //       onClose={() => {
+  //         closeModal();
+  //       }}
+  //       width="100%"
+  //       title={selectedRow ? 'Edit' : 'Create'}
+  //       content={
+  //         <FormContainer formContext={formUser}>
+  //           <Box
+  //             display={'flex'}
+  //             justifyContent={'center'}
+  //             flexDirection={'column'}
+  //             gap={2}
+  //             padding={'0 20px 20px 20px'}
+  //             width={'550px'}
+  //           >
+  //             <TextFieldElement
+  //               name="fullName"
+  //               control={control}
+  //               placeholder="Nhập Họ và tên"
+  //               label={'Họ và tên'}
+  //               //   onKeyUp={handleKeyup}
+  //             />
+  //             <TextFieldElement
+  //               name="email"
+  //               control={control}
+  //               type="email"
+  //               placeholder="Nhập Email"
+  //               label={'Email'}
+  //               //   onKeyUp={handleKeyup}
+  //             />
+  //             <TextFieldElement
+  //               name="phoneNumber"
+  //               control={control}
+  //               type="number"
+  //               placeholder="Nhập số điện thoại"
+  //               label={'Số điện thoại'}
+  //               //   onKeyUp={handleKeyup}
+  //             />
+  //             <SelectElement
+  //               control={control}
+  //               name="roleId"
+  //               options={
+  //                 roles &&
+  //                 Object.keys(roles).map((id) => ({
+  //                   value: id,
+  //                   label: roles[id].name,
+  //                 }))
+  //               }
+  //               placeholder="Chọn role"
+  //               label={'Roles'}
+  //             ></SelectElement>
+  //             <TextFieldElement
+  //               name="totalSalary"
+  //               control={control}
+  //               placeholder="Nhập totalSalary"
+  //               label={'Tổng lương'}
+  //               disabled={!!selectedRow?.totalSalary}
+  //               //   onKeyUp={handleKeyup}
+  //             />
+  //             <SelectElement
+  //               control={control}
+  //               name="status"
+  //               options={STATUS_USER}
+  //               placeholder="Chọn trạng thái"
+  //               label={'Trạng thái'}
+  //             ></SelectElement>
+  //             <Box display={'flex'} justifyContent={'flex-end'}>
+  //               <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
+  //                 Lưu
+  //               </ButtonPrimary>
+  //             </Box>
+  //           </Box>
+  //         </FormContainer>
+  //       }
+  //     ></Dialog>
+  //   );
+  // }, [isOpen]);
+
   const renderDialog = useMemo(() => {
     return (
       <Dialog
@@ -234,79 +332,41 @@ export default function EmployeeSalary() {
           closeModal();
         }}
         width="100%"
-        title={selectedRow ? 'Edit' : 'Create'}
+        title={'Chi tiết lương'}
         content={
-          <FormContainer formContext={formUser}>
-            <Box
-              display={'flex'}
-              justifyContent={'center'}
-              flexDirection={'column'}
-              gap={2}
-              padding={'0 20px 20px 20px'}
-              width={'550px'}
-            >
-              <TextFieldElement
-                name="fullName"
-                control={control}
-                placeholder="Nhập Họ và tên"
-                label={'Họ và tên'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="email"
-                control={control}
-                type="email"
-                placeholder="Nhập Email"
-                label={'Email'}
-                //   onKeyUp={handleKeyup}
-              />
-              <TextFieldElement
-                name="phoneNumber"
-                control={control}
-                type="number"
-                placeholder="Nhập số điện thoại"
-                label={'Số điện thoại'}
-                //   onKeyUp={handleKeyup}
-              />
-              <SelectElement
-                control={control}
-                name="roleId"
-                options={
-                  roles &&
-                  Object.keys(roles).map((id) => ({
-                    value: id,
-                    label: roles[id].name,
-                  }))
-                }
-                placeholder="Chọn role"
-                label={'Roles'}
-              ></SelectElement>
-              <TextFieldElement
-                name="totalSalary"
-                control={control}
-                placeholder="Nhập totalSalary"
-                label={'Tổng lương'}
-                disabled={!!selectedRow?.totalSalary}
-                //   onKeyUp={handleKeyup}
-              />
-              <SelectElement
-                control={control}
-                name="status"
-                options={STATUS_USER}
-                placeholder="Chọn trạng thái"
-                label={'Trạng thái'}
-              ></SelectElement>
-              <Box display={'flex'} justifyContent={'flex-end'}>
-                <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
-                  Lưu
-                </ButtonPrimary>
-              </Box>
-            </Box>
-          </FormContainer>
+          <Box padding={2}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead style={{ background: '#2D3748' }}>
+                  <TableRow>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Hoa hồng
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Ngày nhận hoa hồng
+                    </StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {stylistSalaryDetails.map((row, index) => (
+                    <StyledTableRow key={index}>
+                      <StyledTableCell align="center">
+                        {currencyFormat(row.commission)}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         }
       ></Dialog>
     );
   }, [isOpen]);
+
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
       <FormContainer formContext={formSearch}>
@@ -383,6 +443,7 @@ export default function EmployeeSalary() {
                 Tổng lương
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -401,6 +462,23 @@ export default function EmployeeSalary() {
                   {currencyFormat(row.stylist.salary)}
                 </StyledTableCell>
                 <StyledTableCell align="center">{currencyFormat(row.totalSalary)}</StyledTableCell>
+                <StyledTableCell
+                  style={{
+                    color: 'white',
+                    position: 'sticky',
+                    right: 0,
+                    zIndex: 1,
+                  }}
+                  align="right"
+                >
+                  <IconButton
+                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                      handleViewDetails(event, row)
+                    }
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

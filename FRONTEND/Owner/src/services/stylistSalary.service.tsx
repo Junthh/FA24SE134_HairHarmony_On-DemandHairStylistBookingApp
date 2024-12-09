@@ -77,6 +77,17 @@ class StylistSalaryServices {
       throw error;
     }
   }
+
+  async findById(params = {}) {
+    try {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/StylistSalaryDetails`, {
+        params,
+      });
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const stylistSalaryServices = new StylistSalaryServices();

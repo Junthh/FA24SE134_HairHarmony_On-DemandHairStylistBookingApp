@@ -11,6 +11,7 @@ const OwnerPage = lazy(() => import('pages/Owner'));
 const AccountManagement = lazy(() => import('pages/Owner/AccountManagement'));
 const AppointmentManagement = lazy(() => import('pages/Owner/AppointmentManagement'));
 const Dashboard = lazy(() => import('pages/Owner/Dashboard'));
+const ScheduleList = lazy(() => import('pages/Owner/ScheduleList'));
 const EmployeeStaffList = lazy(() => import('pages/Owner/EmployeeStaffList'));
 const EmployeeStylistList = lazy(() => import('pages/Owner/EmployeeStylistList'));
 const EmployeeSalary = lazy(() => import('pages/Owner/EmployeeSalary'));
@@ -46,6 +47,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.DASHBOARD}`,
       element: <Dashboard />,
+    },
+    {
+      path: `${OWNER_PATH.SCHEDULE_LIST}`,
+      element: <ScheduleList />,
     },
     {
       path: `${OWNER_PATH.EMPLOYEE_STAFF_LIST}`,
