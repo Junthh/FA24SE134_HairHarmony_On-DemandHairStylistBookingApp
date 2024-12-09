@@ -13,6 +13,7 @@ using hair_hamony.Business.Services.NewsServices;
 using hair_hamony.Business.Services.OwnerServices;
 using hair_hamony.Business.Services.PaymentDetailServices;
 using hair_hamony.Business.Services.PaymentServices;
+using hair_hamony.Business.Services.SendSms;
 using hair_hamony.Business.Services.ServiceServices;
 using hair_hamony.Business.Services.StaffSalaryServices;
 using hair_hamony.Business.Services.StaffServices;
@@ -37,6 +38,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IJwtHelper, JwtHelper>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<HttpClient, HttpClient>();
+            services.AddScoped<ISmsService, SmsService>();
 
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IBookingDetailService, BookingDetailService>();
