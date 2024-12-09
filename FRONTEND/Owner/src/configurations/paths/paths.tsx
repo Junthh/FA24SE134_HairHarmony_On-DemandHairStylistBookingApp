@@ -13,10 +13,12 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import PixIcon from '@mui/icons-material/Pix';
 import CategoryIcon from '@mui/icons-material/Category';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
+import { CalendarIcon } from '@mui/x-date-pickers';
 //
 export enum OWNER_PATH {
   EMPLOYEE_WORK_SCHEDULE = '/employee-work-schedule',
   EMPLOYEE_STAFF_LIST = '/employee-staff-list',
+  SCHEDULE_LIST = '/schedule-list',
   EMPLOYEE_STYLIST_LIST = '/employee-stylist',
   CUSTOMER_LIST = '/customer',
   STAFF_SALARY = '/staff-salary',
@@ -39,6 +41,11 @@ export const OWNER_PATH_SIDEBAR = [
     title: 'Thống kê',
     path: OWNER_PATH.DASHBOARD,
     icon: <DashboardIcon />,
+  },
+  {
+    title: 'Danh sách đặt lịch',
+    path: OWNER_PATH.SCHEDULE_LIST,
+    icon: <CalendarIcon />,
   },
   {
     title: 'Danh sách staff',
