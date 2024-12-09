@@ -12,7 +12,7 @@ const NewStyled = styled(Box)({
   '& .thumbnail': {
     width: '100%',
     height: '500px',
-    objectFit: 'cover',
+    objectFit: 'contain',
     position: 'relative',
     display: 'block',
   },
@@ -70,7 +70,7 @@ export default function News() {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <div className="thumbnail-container">
-            <img className="thumbnail" src={news.thumbnail} alt="" />
+            <img className="thumbnail" src={news.thumbnail}  alt="" />
             <div className="thumbnail-overlay"></div>
           </div>
           <Typography textAlign={'center'} variant="h1" fontWeight={700} color={colors.primary1}>

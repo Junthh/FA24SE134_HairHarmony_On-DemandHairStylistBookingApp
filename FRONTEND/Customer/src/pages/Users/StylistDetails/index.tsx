@@ -107,11 +107,13 @@ export default function StylistDetails() {
                 Đã hoàn thành
               </Typography>
               <Typography className="content-body" variant="body1">
-                {(
-                  (stylist.bookingSlotStylists?.filter((x) => x.status === 'Booked').length /
-                    stylist.bookingSlotStylists?.length) *
-                  100
-                ).toFixed(2)}
+                {stylist.bookingSlotStylists?.length > 0
+                  ? (
+                      (stylist.bookingSlotStylists?.filter((x) => x.status === 'Booked').length /
+                        stylist.bookingSlotStylists?.length) *
+                      100
+                    ).toFixed(2)
+                  : 0}
                 %
               </Typography>
             </BoxInfoStyled>
@@ -182,21 +184,15 @@ export default function StylistDetails() {
                       src={feedback?.booking.customer?.avatar}
                     />
                     <Box>
-                      <Typography variant="h2">{feedback?.booking.customer?.name}</Typography>
+                      <Typography variant="h6">{feedback?.booking.customer?.fullName}</Typography>
                       <Typography variant="caption">
                         {formatDateTime(feedback.createdDate)}
                       </Typography>
+                      <Typography variant="body1">{feedback.description}</Typography>
                     </Box>
-                    <Box width={40}></Box>
                     <Box display={'flex'} alignItems={'center'} gap={2}>
-                      <span style={{ fontWeight: 600 }}>{feedback.rating}</span>{' '}
                       <Rating precision={0.5} name="read-only" value={5} readOnly />
                     </Box>
-                  </Box>
-
-                  <Box className="comment-content">
-                    <Box width={80}></Box>
-                    <Typography variant="body1">{feedback.description}</Typography>
                   </Box>
                   <hr />
                 </React.Fragment>
