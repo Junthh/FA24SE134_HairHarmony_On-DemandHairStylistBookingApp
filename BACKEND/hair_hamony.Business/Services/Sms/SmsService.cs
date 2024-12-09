@@ -51,7 +51,7 @@ namespace hair_hamony.Business.Services.SendSms
                         StatusCode = StatusCodes.Status400BadRequest
                     };
                 }
-                throw new Exception(ex.Message);
+                throw;
             }
         }
 
