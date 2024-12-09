@@ -51,16 +51,22 @@ const SelectMultiElement: React.FC<ISelectMultiElementProps> = ({
             <BaseSelect
               multiple
               displayEmpty
-              value={value || []}
+              value={typeof value === 'string' ? [value] : value || []}
               onChange={(event) => onChange(event.target.value)}
-              renderValue={(selected) =>
-                (selected as string[])
-                  .map((value) => {
-                    const selectedOption = options.find((option) => option.value === value);
-                    return selectedOption ? selectedOption.label : value;
-                  })
-                  .join(', ')
-              }
+              renderValue={(selected) => {
+                if (typeof selected === 'string') {
+                  selected = [selected];
+                }
+                return (
+                  selected &&
+                  (selected as string[])
+                    ?.map((value) => {
+                      const selectedOption = options.find((option) => option.value === value);
+                      return selectedOption ? selectedOption.label : value;
+                    })
+                    .join(', ')
+                );
+              }}
               disabled={disabled}
               error={!!error}
             >

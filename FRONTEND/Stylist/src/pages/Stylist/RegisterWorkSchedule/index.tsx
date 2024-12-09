@@ -309,11 +309,12 @@ export default function RegisterWorkSchedule() {
                   label="Ca làm việc"
                   control={control}
                   options={
-                    workships &&
-                    Object.keys(workships).map((id) => ({
-                      value: id,
-                      label: `${workships[id].startTime} - ${workships[id].endTime}`,
-                    }))
+                    (workships &&
+                      Object.keys(workships).map((id) => ({
+                        value: id,
+                        label: `${workships[id].startTime} - ${workships[id].endTime}`,
+                      }))) ||
+                    []
                   }
                   placeholder="Chọn ca làm việc"
                 />
@@ -329,7 +330,7 @@ export default function RegisterWorkSchedule() {
         }
       ></Dialog>
     );
-  }, [isOpen, workships]);
+  }, [isOpen, workships, selectedRow]);
   return (
     <RegisterWorkScheduleStyled>
       <BoxHeaderSearch>
