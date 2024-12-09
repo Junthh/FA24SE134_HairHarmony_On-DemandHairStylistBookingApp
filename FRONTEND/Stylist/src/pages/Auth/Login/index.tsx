@@ -98,7 +98,7 @@ function Login() {
             name={authProps.username.propertyName}
             control={control}
             label={authProps.username.propertyLabel}
-            placeholder="Your username"
+            placeholder="Tài khoản"
             onKeyDown={handleKeyDown}
             autoFocus
           />
@@ -112,22 +112,22 @@ function Login() {
             control={control}
             label={authProps.password.propertyLabel}
             type="password"
-            placeholder="Password"
+            placeholder="Mật khẩu"
             onKeyDown={handleKeyDown}
           />
         </FormItem>
 
-        <Box>
+        {/* <Box>
           <Typography sx={{ color: colors.primary1, fontWeight: '700' }}>
             Forgot password
           </Typography>
-        </Box>
+        </Box> */}
 
         <Box height={2}></Box>
 
-        <Box>
+        {/* <Box>
           <CheckboxElement name="rememberMe" control={control} label="Remember me" />
-        </Box>
+        </Box> */}
 
         <Box height={5}></Box>
 
@@ -171,7 +171,7 @@ function Login() {
           ></Box>
         </Box>
 
-        <Box>
+        {/* <Box>
           <Box
             sx={{
               display: 'flex',
@@ -190,7 +190,7 @@ function Login() {
               Register
             </Typography>
           </Box>
-        </Box>
+        </Box> */}
       </FormContent>
     </FormContainer>
   );

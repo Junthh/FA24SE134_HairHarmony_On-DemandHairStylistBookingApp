@@ -14,8 +14,8 @@ type AuthProps = {
 };
 
 export const authProps: AuthProps = {
-  username: { propertyLabel: 'Username', propertyName: 'username' },
-  password: { propertyLabel: 'Password', propertyName: 'password' },
+  username: { propertyLabel: 'Tài khoản', propertyName: 'username' },
+  password: { propertyLabel: 'Mật khẩu', propertyName: 'password' },
   confirmPassword: { propertyLabel: 'Confirm Password', propertyName: 'confirmPassword' },
 };
 
@@ -35,10 +35,10 @@ export const loginFormDefaultValues = {
 export const registerSchema = () => {
   return Yup.object().shape<any>({
     // Email
-    [authProps.username.propertyName]: Yup.string().required(`Username is required.`),
+    [authProps.username.propertyName]: Yup.string().required(`Tài khoản không được trống.`),
 
     // Password
-    [authProps.password.propertyName]: Yup.string().required(`Password is required.`),
+    [authProps.password.propertyName]: Yup.string().required(`Mật khẩu không được trống.`),
 
     // Confirm Password
     [authProps.confirmPassword.propertyName]: Yup.string()
@@ -50,9 +50,9 @@ export const registerSchema = () => {
 export const loginSchema = () => {
   return Yup.object().shape<any>({
     // Email
-    [authProps.username.propertyName]: Yup.string().required(`Username is required.`),
+    [authProps.username.propertyName]: Yup.string().required(`Tài khoản không được trống.`),
 
     // Password
-    [authProps.password.propertyName]: Yup.string().required(`Password is required.`),
+    [authProps.password.propertyName]: Yup.string().required(`Mật khẩu không được trống.`),
   });
 };
