@@ -44,6 +44,18 @@ class AuthService {
       data: body,
     });
   };
+  sendVerificationCode = (phoneNumber: string) => {
+    return axios({
+      url: `${ENDPOINTS.ApiPrefix}/Sms/sendOTP?phoneNumber=${phoneNumber}`,
+      method: 'GET',
+    });
+  };
+  checkVerificationCode = (phoneNumber: string, code: string) => {
+    return axios({
+      url: `${ENDPOINTS.ApiPrefix}/Sms/verificationOTP?phoneNumber=${phoneNumber}&code=${code}`,
+      method: 'GET',
+    });
+  };
 }
 
 export const authService = new AuthService();
