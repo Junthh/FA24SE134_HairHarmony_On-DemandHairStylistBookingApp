@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 
 export interface AuthKeys {
   phoneNumber: string;
+  code: string;
   fullName: string;
   password: string;
   confirmPassword: string;
@@ -16,6 +17,7 @@ type AuthProps = {
 
 export const authProps: AuthProps = {
   phoneNumber: { propertyLabel: 'phoneNumber', propertyName: 'phoneNumber' },
+  code: { propertyLabel: 'code', propertyName: 'code' },
   fullName: { propertyLabel: 'fullName', propertyName: 'fullName' },
   password: { propertyLabel: 'Password', propertyName: 'password' },
   confirmPassword: { propertyLabel: 'Confirm Password', propertyName: 'confirmPassword' },
@@ -41,6 +43,9 @@ export const registerSchema = () => {
     [authProps.phoneNumber.propertyName]: Yup.string()
       .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không đúng định dạng')
       .required(`Vui lòng nhập số điện thoại.`),
+
+    // code
+    [authProps.code.propertyName]: Yup.string().required(`Vui lòng nhập mã xác thực.`),
 
     // fullName
     [authProps.fullName.propertyName]: Yup.string().required(`Vui lòng nhập họ tên.`),

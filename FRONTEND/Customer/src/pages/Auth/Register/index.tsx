@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Typography } from '@mui/material';
+import { Box, formControlClasses, Grid, Typography } from '@mui/material';
 import { showToast } from 'components/Common/Toast';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { ADMIN_PATH, AUTH_PATH, USER_PATH } from 'configurations/paths/paths';
@@ -46,6 +46,11 @@ function Register() {
   const handleRegister = handleSubmit(async (data: AuthKeys) => {
     dispatch(setLoading(true));
     try {
+      await authService.checkVerificationCode(
+        formContext.getValues('phoneNumber'),
+        formContext.getValues('code'),
+      );
+
       const payload: RegisterPayload = {
         phoneNumber: data.phoneNumber,
         fullName: data.fullName,
@@ -80,6 +85,19 @@ function Register() {
     navigate(AUTH_PATH.LOGIN);
   };
 
+  const handleSendVerificationCode = async () => {
+    try {
+      if (!formContext.getValues('phoneNumber')) {
+        formContext.trigger('phoneNumber');
+        return;
+      }
+      await authService.sendVerificationCode(formContext.getValues('phoneNumber'));
+      showToast('success', 'Gửi mã xác thực thành công');
+    } catch (error) {
+      showToast('error', 'Gửi mã xác thực thất bại vui lòng thử lại');
+    }
+  };
+
   return (
     <FormContainer>
       <FormContent>
@@ -102,19 +120,46 @@ function Register() {
         </FormTitle>
         <FormItem>
           <TextFieldElement
-            name={authProps.phoneNumber.propertyName}
-            control={control}
-            label="Nhập số điện thoại"
-            placeholder=""
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-        </FormItem>
-        <FormItem>
-          <TextFieldElement
             name={authProps.fullName.propertyName}
             control={control}
             label="Nhập họ tên"
+            placeholder=""
+            onKeyDown={handleKeyDown}
+          />
+        </FormItem>
+        <FormItem>
+          <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'flex-end' }}>
+            <Grid item xs={8}>
+              <TextFieldElement
+                name={authProps.phoneNumber.propertyName}
+                control={control}
+                label="Nhập số điện thoại"
+                placeholder=""
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <ButtonPrimary
+                padding={'16px 0'}
+                severity="primary"
+                variant="outlined"
+                sx={{
+                  textTransform: 'none',
+                  width: '100%',
+                }}
+                onClick={handleSendVerificationCode}
+              >
+                Gửi mã
+              </ButtonPrimary>
+            </Grid>
+          </Grid>
+        </FormItem>
+        <FormItem>
+          <TextFieldElement
+            name={authProps.code.propertyName}
+            control={control}
+            label="Nhập mã xác thực"
             placeholder=""
             onKeyDown={handleKeyDown}
           />
