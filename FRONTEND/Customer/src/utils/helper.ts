@@ -1,12 +1,7 @@
 import { ResponseErrorApi } from "models/Response.model";
 
 // Write code to build common functions/methods
-export const currencyFormat = (value) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(value);
-}
+export const currencyFormat = (value) => value.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
 
 export const numberSepartorFormat = (value) => {
     return value.toLocaleString();

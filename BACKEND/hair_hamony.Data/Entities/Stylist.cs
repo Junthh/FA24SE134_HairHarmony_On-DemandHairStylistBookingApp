@@ -31,6 +31,8 @@ public partial class Stylist
 
     public DateTime? CreatedDate { get; set; }
 
+    public int? Kpi { get; set; }
+
     public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();

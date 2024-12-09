@@ -102,7 +102,7 @@ function Staff() {
       <HeaderStyled>
         <Typography variant="h3" fontWeight={700}></Typography>
         <InfoAccountStyled onClick={() => setToggle(!toggle)} ref={buttonRef}>
-          <Avatar src="" />
+          {/* <Avatar src="" /> */}
           <EmailWrapper>
             <Typography
               variant="body2"

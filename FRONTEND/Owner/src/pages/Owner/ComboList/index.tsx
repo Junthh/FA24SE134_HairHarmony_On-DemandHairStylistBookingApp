@@ -372,50 +372,53 @@ export default function ComboList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Tên combo
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Mô tả
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
-                Combo service
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Dịch vụ combo
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Trong khoản thời gian
               </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Đơn giá
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
               <StyledTableRow key={index}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell
+                  component="th"
+                  scope="row"
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
                   <img
                     style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
                     src={row.image}
                     alt=""
                   />
+                  <Typography sx={{ ml: 1 }} variant="body2">
+                    {row.name}
+                  </Typography>
                 </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
-                  {row.name}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.description}</StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">{row.description}</StyledTableCell>
+                <StyledTableCell align="center">
                   {row.comboServices?.map((item) => item?.service?.name || '').join(', ')}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.duration}/phút</StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">{row.duration}/phút</StyledTableCell>
+                <StyledTableCell align="center">
                   <span style={{ textDecoration: 'line-through' }}>
                     {currencyFormat(row.totalPrice + row.discount)}
                   </span>
                   /{currencyFormat(row.totalPrice)}
                 </StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                       handleClick(event, row)

@@ -290,39 +290,42 @@ export default function CategoriesList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="left">
-                Category Name
+                Tên
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Ngày tạo
               </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="right">
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Ngày cập nhật
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="right"></StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
               <StyledTableRow key={index}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell
+                  component="th"
+                  scope="row"
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
                   <img
                     style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
                     src={row.image}
                     alt=""
                   />
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    {row.name}
+                  </Typography>
                 </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
-                  {row.name}
-                </StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">
                   {formatDate(row.createdDate, 'dd/MM/yyyy')}
                 </StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">
                   {formatDate(row.updatedDate, 'dd/MM/yyyy')}
                 </StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="center">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                       handleClick(event, row)

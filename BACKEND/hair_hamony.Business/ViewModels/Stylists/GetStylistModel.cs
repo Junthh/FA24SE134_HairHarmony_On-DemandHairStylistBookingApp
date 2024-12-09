@@ -15,6 +15,7 @@
         public string? Avatar { get; set; }
         public string? Password { get; set; }
         public double? ExpertFee { get; set; }
+        public int? Kpi { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }

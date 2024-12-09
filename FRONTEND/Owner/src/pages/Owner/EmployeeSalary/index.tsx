@@ -356,10 +356,10 @@ export default function EmployeeSalary() {
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Username stylist
+                Username
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Tên stylist
+                Tên
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Tháng
@@ -369,6 +369,9 @@ export default function EmployeeSalary() {
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng lượt booking
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                KPI
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng hoa hồng
@@ -390,6 +393,7 @@ export default function EmployeeSalary() {
                 <StyledTableCell align="center">{row.month}</StyledTableCell>
                 <StyledTableCell align="center">{row.year}</StyledTableCell>
                 <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
+                <StyledTableCell align="center">{row.kpi}</StyledTableCell>
                 <StyledTableCell align="center">
                   {currencyFormat(row.totalCommission)}
                 </StyledTableCell>

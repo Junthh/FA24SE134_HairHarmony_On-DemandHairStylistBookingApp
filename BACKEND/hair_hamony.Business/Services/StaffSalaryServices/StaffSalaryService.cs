@@ -33,6 +33,34 @@ namespace hair_hamony.Business.Services.StaffSalaryServices
             return _mapper.Map<GetStaffSalaryModel>(staffSalary);
         }
 
+        public async Task CreateTimekeeping(int year, int month)
+        {
+            using var dbTransaction = _context.Database.BeginTransaction();
+            try
+            {
+                var staffs = _context.Staffs.Where(x => x.Status == "Active");
+                foreach (var staff in staffs)
+                {
+                    _context.StaffSalarys.Add(new StaffSalary
+                    {
+                        CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                        Month = month,
+                        Year = year,
+                        StaffId = staff.Id,
+                        TotalSalary = staff.Salary
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+                await dbTransaction.CommitAsync();
+            }
+            catch
+            {
+                dbTransaction.Rollback();
+                throw;
+            }
+        }
+
         public async Task Delete(Guid id)
         {
             var staffSalary = _mapper.Map<StaffSalary>(await GetById(id));

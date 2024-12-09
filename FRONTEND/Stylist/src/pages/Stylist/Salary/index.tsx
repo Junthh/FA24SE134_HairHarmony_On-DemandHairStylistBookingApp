@@ -80,7 +80,15 @@ export default function Salary() {
   const getSalaryList = useCallback(({ size, page, stylistId = '', month = '', year = '' }) => {
     dispatch(setLoading(true));
     stylistSalaryServices
-      .list({ pageSize: size, pageIndex: page + 1, stylistId, month, year })
+      .list({
+        pageSize: size,
+        pageIndex: page + 1,
+        stylistId,
+        month,
+        year,
+        sortKey: 'CreatedDate',
+        sortOrder: 'DESC',
+      })
       .then((resultList: any) => {
         setPaging((prev) => ({
           ...prev,
@@ -176,7 +184,7 @@ export default function Salary() {
                         {currencyFormat(row.commission)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {formatDate(row.createdDate, 'dd/MM/yyyy')}
+                        {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
                       </StyledTableCell>
                     </StyledTableRow>
                   ))}
@@ -243,6 +251,9 @@ export default function Salary() {
                 Tổng lượt booking
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                KPI
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng hoa hồng
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -262,6 +273,7 @@ export default function Salary() {
                 <StyledTableCell align="center">{row.month}</StyledTableCell>
                 <StyledTableCell align="center">{row.year}</StyledTableCell>
                 <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
+                <StyledTableCell align="center">{row.kpi}</StyledTableCell>
                 <StyledTableCell align="center">
                   {currencyFormat(row.totalCommission)}
                 </StyledTableCell>

@@ -12,5 +12,6 @@
         public string? PhoneNumber { get; set; }
         public string? Status { get; set; }
         public string? Avatar { get; set; }
+        public int? Kpi { get; set; }
     }
 }

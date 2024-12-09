@@ -401,7 +401,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
 
                 // tăng số lượng booking cho stylist khi hoàn thành booking
-                if (requestBody.Status == "Completed")
+                if (requestBody.Status == "Finished")
                 {
                     var stylistIds = from bookingDetail in _context.BookingDetails
                                      join bookingSlotStylist in _context.BookingSlotStylists on bookingDetail.Id equals bookingSlotStylist.BookingDetailId
@@ -425,12 +425,14 @@ namespace hair_hamony.Business.Services.BookingServices
                     if (stylistSalary == null)
                     {
                         var kpi = _context.Kpis.FirstOrDefault(x =>
-                                x.StartDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
-                                && x.EndDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()
+                                x.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                                && x.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()
                                 )
                             );
 
                         var stylistSalaryId = Guid.NewGuid();
+                        var totalKpi = kpi.Value + stylist.Kpi;
+                        var totalSalary = stylist.Salary * 1 / totalKpi;
                         _context.StylistSalarys.Add(new StylistSalary
                         {
                             Id = stylistSalaryId,
@@ -439,8 +441,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             StylistId = stylist.Id,
                             TotalBooking = 1,
                             TotalCommission = 0,
-                            Kpi = kpi.Value,
-                            TotalSalary = stylist.Salary,
+                            Kpi = totalKpi,
+                            TotalSalary = totalSalary,
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                         });
 
@@ -457,11 +459,13 @@ namespace hair_hamony.Business.Services.BookingServices
                         var commissionRate = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "COMMISSION_RATE")!.Value!.Value;
 
                         var totalBooking = stylistSalary.TotalBooking + 1;
-                        var kpi = _context.Kpis.FirstOrDefault(kpi =>
-                            kpi.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
-                            && kpi.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
-                        );
-                        var newCommission = totalBooking > kpi.Value ? stylist.Salary * commissionRate / 100 : 0;
+                        //var kpi = _context.Kpis.FirstOrDefault(kpi =>
+                        //    kpi.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                        //    && kpi.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                        //);
+
+                        var newCommission = totalBooking > stylistSalary.Kpi ? requestBody.TotalPrice * commissionRate / 100 : 0;
+                        var totalSalary = totalBooking < stylistSalary.Kpi ? stylist.Salary * totalBooking / stylistSalary.Kpi : stylistSalary.TotalSalary;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
@@ -470,7 +474,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             StylistId = stylistSalary.StylistId,
                             TotalBooking = totalBooking,
                             TotalCommission = stylistSalary.TotalCommission + newCommission,
-                            TotalSalary = stylistSalary.TotalSalary + newCommission
+                            TotalSalary = totalSalary + newCommission
                         });
                         _context.StylistSalaryDetails.Add(new StylistSalaryDetail
                         {
@@ -482,15 +486,15 @@ namespace hair_hamony.Business.Services.BookingServices
                     }
 
                     var customer = _context.Customers.FirstOrDefault(customer => customer.Id == requestBody.CustomerId);
-                    var customerLoyaltyPoints = customer!.LoyaltyPoints;
+                    // var customerLoyaltyPoints = customer!.LoyaltyPoints;
 
                     var vndToPoints = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "VND_TO_POINTS")!.Value;
 
-                   // customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
+                    // customerLoyaltyPoints = (int)(customerLoyaltyPoints + (requestBody.TotalPrice * vndToPoints));
 
                     if (requestBody.LoyaltyPoints != null)
                     {
-                        customerLoyaltyPoints -= requestBody.LoyaltyPoints;
+                        customer!.LoyaltyPoints = customer!.LoyaltyPoints - requestBody.LoyaltyPoints;
                     }
 
                     _context.Customers.Update(customer);

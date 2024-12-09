@@ -209,10 +209,7 @@ export default function CustomerList() {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
-              <StyledTableCell style={{ color: 'white' }} align="center">
-                Username
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Họ và tên
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -242,21 +239,21 @@ export default function CustomerList() {
           <TableBody>
             {rows.map((row, index) => (
               <StyledTableRow key={index}>
-                <StyledTableCell align="center">
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    {row.avatar && (
-                      <img
-                        style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
-                        src={row.avatar}
-                        alt=""
-                      />
-                    )}
-                    <Typography sx={{ ml: 2 }} variant="body2">
-                      {row.username}
-                    </Typography>
-                  </Box>
+                <StyledTableCell
+                  align="left"
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
+                  {row.avatar && (
+                    <img
+                      style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                      src={row.avatar}
+                      alt=""
+                    />
+                  )}
+                  <Typography sx={{ ml: 1 }} variant="body2">
+                    {row.fullName}
+                  </Typography>
                 </StyledTableCell>
-                <StyledTableCell align="center">{row.fullName}</StyledTableCell>
                 <StyledTableCell align="center">{row.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="center">{row.loyaltyPoints}</StyledTableCell>
                 <StyledTableCell align="center">{row.status}</StyledTableCell>

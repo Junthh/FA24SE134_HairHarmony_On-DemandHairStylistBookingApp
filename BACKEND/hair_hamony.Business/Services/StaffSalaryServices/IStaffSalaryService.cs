@@ -10,6 +10,7 @@ namespace hair_hamony.Business.Services.StaffSalaryServices
             PagingParam<StaffSalaryEnum.StaffSalarySort> paginationModel,
             SearchStaffSalaryModel searchStaffSalaryModel,
             string? staffName);
+        Task CreateTimekeeping(int year, int month);
         Task<GetStaffSalaryModel> GetById(Guid id);
         Task<GetStaffSalaryModel> Create(CreateStaffSalaryModel requestBody);
         Task<GetStaffSalaryModel> Update(Guid id, UpdateStaffSalaryModel requestBody);

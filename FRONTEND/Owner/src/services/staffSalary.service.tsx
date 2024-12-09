@@ -20,6 +20,18 @@ class StaffSalaryServices {
       } as DataEmployeeError;
     }
   }
+  async createTimekeeping({ month, year }) {
+    try {
+      await axios.get(
+        `${ENDPOINTS.ApiPrefix}/StaffSalarys/Timekeeping?year=${year}&month=${month}`,
+      );
+    } catch (error) {
+      return {
+        success: false,
+        errors: error.errors || errorDefault,
+      } as DataEmployeeError;
+    }
+  }
 }
 
 export const staffSalaryServices = new StaffSalaryServices();
