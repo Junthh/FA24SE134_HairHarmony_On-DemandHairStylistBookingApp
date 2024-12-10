@@ -10,9 +10,9 @@ function SettingBoard(props: SettingBoardProps) {
 
   return (
     <SettingBoardContainer>
-      <div className="setting-board-item">Manage Account</div>
+      <div className="setting-board-item">Quản lý tài khoản</div>
       <div className="setting-board-item" onClick={onLogout}>
-        Log out
+        Đăng xuất
       </div>
     </SettingBoardContainer>
   );
