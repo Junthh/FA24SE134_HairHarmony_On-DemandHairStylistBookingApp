@@ -259,6 +259,9 @@ export default function Dashboard() {
       <Grid container spacing={2}>
         <Grid item xs={8}>
           <Box className="card-analyst">
+            <Typography variant="h4" fontWeight={700} fontFamily={'Lato !important'}>
+              Tổng doanh thu
+            </Typography>
             <ReactApexChart
               options={optionsBar}
               series={optionsBar.series}
@@ -269,6 +272,9 @@ export default function Dashboard() {
         </Grid>
         <Grid item xs={4}>
           <Box className="card-analyst">
+            <Typography variant="h4" fontWeight={700} fontFamily={'Lato !important'}>
+              Tổng trạng thái
+            </Typography>
             <ReactApexChart
               options={optionsPie}
               series={optionsPie.series} // Series data
@@ -279,6 +285,9 @@ export default function Dashboard() {
         </Grid>
         <Grid item xs={6}>
           <Box className="card-analyst">
+            <Typography variant="h4" fontWeight={700} fontFamily={'Lato !important'}>
+              Tổng lương stylist
+            </Typography>
             <ReactApexChart
               options={optionsBarSalaryStylist}
               series={optionsBarSalaryStylist.series}
@@ -295,6 +304,9 @@ export default function Dashboard() {
         </Grid>
         <Grid item xs={6}>
           <Box className="card-analyst">
+            <Typography variant="h4" fontWeight={700} fontFamily={'Lato !important'}>
+              Tổng lương nhân viên
+            </Typography>
             <ReactApexChart
               options={optionsBarSalaryStaff}
               series={optionsBarSalaryStaff.series}
