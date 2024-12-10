@@ -28,10 +28,12 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
 
             var datetimeNow = UtilitiesHelper.DatetimeNowUTC7();
             var kpi = _context.Kpis
-                .FirstOrDefault(x => x.StartDate >= DateOnly.FromDateTime(datetimeNow) && x.EndDate >= DateOnly.FromDateTime(datetimeNow));
+                .FirstOrDefault(x => x.StartDate <= DateOnly.FromDateTime(datetimeNow) && x.EndDate >= DateOnly.FromDateTime(datetimeNow));
+            var stylist = _context.Stylists
+                .FirstOrDefault(x => x.Id == requestBody.StylistId);
 
             stylistSalary.CreatedDate = datetimeNow;
-            stylistSalary.Kpi = kpi.Value;
+            stylistSalary.Kpi = kpi.Value + stylist.Kpi;
 
             await _context.StylistSalarys.AddAsync(stylistSalary);
             await _context.SaveChangesAsync();

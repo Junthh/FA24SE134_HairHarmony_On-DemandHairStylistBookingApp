@@ -151,7 +151,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                         StylistId = item.Id,
                         TotalBooking = 0,
                         TotalCommission = 0,
-                        TotalSalary = stylist.Salary
+                        TotalSalary = 0
                     });
                 }
             }
