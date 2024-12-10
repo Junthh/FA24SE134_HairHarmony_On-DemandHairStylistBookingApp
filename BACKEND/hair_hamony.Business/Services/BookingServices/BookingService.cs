@@ -465,7 +465,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         //);
 
                         var newCommission = totalBooking > stylistSalary.Kpi ? requestBody.TotalPrice * commissionRate / 100 : 0;
-                        var totalSalary = totalBooking < stylistSalary.Kpi ? stylist.Salary * totalBooking / stylistSalary.Kpi : stylistSalary.TotalSalary;
+                        var totalSalary = stylistSalary.Kpi > totalBooking ? stylistSalary.TotalSalary : stylist.Salary * totalBooking / stylistSalary.Kpi;
                         await _stylistSalaryService.Update(stylistSalary.Id, new ViewModels.StylistSalarys.UpdateStylistSalaryModel
                         {
                             Id = stylistSalary.Id,
