@@ -141,7 +141,7 @@ function Register() {
             </Grid>
             <Grid item xs={4}>
               <ButtonPrimary
-                padding={'16px 0'}
+                padding={'8px 0px'}
                 severity="primary"
                 variant="outlined"
                 sx={{
