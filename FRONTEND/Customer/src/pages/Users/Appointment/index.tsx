@@ -340,7 +340,13 @@ export default function Appointment() {
                 <Box>
                   <Typography variant="h5" fontWeight={600}>
                     Dịch vụ:{' '}
-                    {item?.bookingDetails[0]?.combo?.name || item?.bookingDetails[0]?.service?.name}
+                    {/* {item?.bookingDetails[0]?.combo?.name || item?.bookingDetails[0]?.service?.name} */}
+                    {item?.bookingDetails
+                      ?.map(
+                        (bookingDetail) =>
+                          bookingDetail?.combo?.name || bookingDetail?.service?.name,
+                      )
+                      .join(', ')}
                   </Typography>
                   <Typography variant="h5" fontWeight={600}>
                     Stylist: {item?.bookingDetails[0]?.bookingSlotStylists[0].stylist?.fullName}
@@ -412,7 +418,13 @@ export default function Appointment() {
                 <Box>
                   <Typography variant="h5" fontWeight={600}>
                     Dịch vụ:{' '}
-                    {item?.bookingDetails[0]?.combo?.name || item?.bookingDetails[0]?.service?.name}
+                    {/* {item?.bookingDetails[0]?.combo?.name || item?.bookingDetails[0]?.service?.name} */}
+                    {item?.bookingDetails
+                      ?.map(
+                        (bookingDetail) =>
+                          bookingDetail?.combo?.name || bookingDetail?.service?.name,
+                      )
+                      .join(', ')}
                   </Typography>
                   <Typography variant="h5" fontWeight={600}>
                     Stylist: {item?.bookingDetails[0]?.bookingSlotStylists[0].stylist?.fullName}
@@ -449,6 +461,12 @@ export default function Appointment() {
                     <Typography variant="h5" fontWeight={600}>
                       Số tiền đã thanh toán:{' '}
                       <span style={{ fontWeight: 700 }}>{currencyFormat(item?.amoutToPaid)}</span>
+                    </Typography>
+                  )}
+                  {item?.status === 'Finished' && item.isFeedback && (
+                    <Typography variant="h5" fontWeight={600}>
+                      Đánh giá:{' '}
+                      <span style={{ fontWeight: 700 }}>{item?.feedbacks[0].description}</span>
                     </Typography>
                   )}
                 </Box>
