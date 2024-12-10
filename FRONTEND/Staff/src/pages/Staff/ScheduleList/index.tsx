@@ -250,7 +250,7 @@ export default function ScheduleList() {
           <Tab value="Finished" label="Kết thúc" />
           <Tab value="Cancel" label="Huỷ" />
         </Tabs>
-        <Table sx={{ minWidth: 1500 }} aria-label="customized table">
+        <Table sx={{ minWidth: 1800 }} aria-label="customized table">
           <TableHead style={{ background: '#2D3748' }}>
             <TableRow>
               <StyledTableCell style={{ color: 'white' }} align="left">
