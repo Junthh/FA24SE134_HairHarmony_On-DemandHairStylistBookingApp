@@ -36,7 +36,7 @@ const AppointmentStyled = styled(Box)({
 const AppointmentCard = styled(Box)({
   border: '1px solid black',
   borderRadius: 12,
-  width: 550,
+  width: 1000,
   padding: '12px 24px',
   boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
   marginBottom: 20,
