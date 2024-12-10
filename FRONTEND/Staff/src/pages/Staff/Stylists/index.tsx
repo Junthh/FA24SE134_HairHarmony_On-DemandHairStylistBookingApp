@@ -296,13 +296,13 @@ export default function Stylists() {
                 label={'Số KPI'}
                 //   onKeyUp={handleKeyup}
               />
-              <CurrencyFieldElement
+              {/* <CurrencyFieldElement
                 name="salary"
                 control={control}
                 placeholder="Nhập lương"
                 label={'Số lương'}
                 //   onKeyUp={handleKeyup}
-              />
+              /> */}
               <SelectElement
                 control={control}
                 name="status"
@@ -380,9 +380,9 @@ export default function Stylists() {
               <StyledTableCell style={{ color: 'white' }} align="center">
                 KPI
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              {/* <StyledTableCell style={{ color: 'white' }} align="center">
                 Lương
-              </StyledTableCell>
+              </StyledTableCell> */}
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Đánh giá
               </StyledTableCell>
@@ -392,7 +392,7 @@ export default function Stylists() {
               <StyledTableCell style={{ color: 'white', minWidth: 150 }} align="center">
                 Ngày tạo
               </StyledTableCell>
-              <StyledTableCell
+              {/* <StyledTableCell
                 style={{
                   color: 'white',
                   position: 'sticky',
@@ -401,7 +401,7 @@ export default function Stylists() {
                   zIndex: 1,
                 }}
                 align="center"
-              ></StyledTableCell>
+              ></StyledTableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -424,14 +424,14 @@ export default function Stylists() {
                 <StyledTableCell align="center">{row.level}</StyledTableCell>
                 <StyledTableCell align="center">{row.experience}</StyledTableCell>
                 <StyledTableCell align="center">{row.kpi}</StyledTableCell>
-                <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell>
+                {/* <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell> */}
                 <StyledTableCell align="center">
                   <Rating readOnly precision={0.5} name="read-only" value={row.rating} />
                 </StyledTableCell>
 
                 <StyledTableCell align="center">{row.status}</StyledTableCell>
                 <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
-                <StyledTableCell align="center">
+                {/* <StyledTableCell align="center">
                   <IconButton
                     className="content"
                     onClick={() => {
@@ -441,7 +441,7 @@ export default function Stylists() {
                   >
                     <EditIcon />
                   </IconButton>
-                </StyledTableCell>
+                </StyledTableCell> */}
               </StyledTableRow>
             ))}
           </TableBody>
