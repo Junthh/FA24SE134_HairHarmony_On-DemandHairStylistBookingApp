@@ -450,7 +450,7 @@ export default function ScheduleList() {
                   bookingSelected.bookingDetails.reduce((sum, item) => sum + item.price, 0),
                 )}
               </Grid>
-              {bookingSelected.expertFee && (
+              {bookingSelected.expertFee !== 0 && (
                 <>
                   <Grid item xs={6}>
                     Phí chuyên gia

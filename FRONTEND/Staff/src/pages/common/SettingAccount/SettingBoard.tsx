@@ -21,10 +21,10 @@ function SettingBoard(props: SettingBoardProps) {
           navigate(`${STAFF_PATH.PROFILE}/${credentialInfo.Id}`);
         }}
       >
-        Manage Account
+        Quản lý tài khoản
       </div>
       <div className="setting-board-item" onClick={onLogout}>
-        Log out
+        Đăng xuất
       </div>
     </SettingBoardContainer>
   );
