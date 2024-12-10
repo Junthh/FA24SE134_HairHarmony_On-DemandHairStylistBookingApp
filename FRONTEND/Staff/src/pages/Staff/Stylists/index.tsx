@@ -341,7 +341,7 @@ export default function Stylists() {
             <Box width={'50%'}></Box>
           </Box>
           <Box className="search-right">
-            <ButtonPrimary
+            {/* <ButtonPrimary
               severity="primary"
               padding={'9px 14px'}
               onClick={() => {
@@ -353,7 +353,7 @@ export default function Stylists() {
             >
               <ControlPointIcon />
               &nbsp; Thêm mới
-            </ButtonPrimary>
+            </ButtonPrimary> */}
           </Box>
         </BoxHeaderSearch>
       </FormContainer>
