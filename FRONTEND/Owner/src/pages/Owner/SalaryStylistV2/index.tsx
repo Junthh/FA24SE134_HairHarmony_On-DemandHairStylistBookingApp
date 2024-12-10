@@ -164,18 +164,22 @@ export default function ScheduleTableGroup() {
   );
 
   const handleClickTimekeeping = () => {
-    const updateTimekeeping = timekeeping;
-    updateTimekeeping.isTimekeepping = true;
-    timekeeping
-      .update(updateTimekeeping.id, updateTimekeeping)
-      .then(() => {
-        showToast('success', 'Chấm công thành công');
-        dispatch(setLoading(false));
-      })
-      .catch((err) => {
-        showToast('error', err.message);
-        dispatch(setLoading(false));
-      });
+    if (timekeeping) {
+      const updateTimekeeping = timekeeping;
+      updateTimekeeping.isTimekeepping = true;
+      timekeepingServices
+        .update(updateTimekeeping.id, updateTimekeeping)
+        .then(() => {
+          showToast('success', 'Chấm công thành công');
+          dispatch(setLoading(false));
+        })
+        .catch((err) => {
+          showToast('error', err.message);
+          dispatch(setLoading(false));
+        });
+    } else {
+      showToast('error', 'Không có ngày công để chấm công');
+    }
   };
 
   return (
