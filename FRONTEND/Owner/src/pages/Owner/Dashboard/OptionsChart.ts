@@ -92,11 +92,11 @@ export const OptionsPieConfig: ApexOptions = {
 };
 export const OptionsLineColumnsConfig: ApexOptions = {
   series: [
-    {
-      name: 'Website Blog',
-      type: 'column',
-      data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160],
-    },
+    // {
+    //   name: 'Website Blog',
+    //   type: 'column',
+    //   data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160],
+    // },
     {
       name: 'Social Media',
       type: 'line',
@@ -111,7 +111,7 @@ export const OptionsLineColumnsConfig: ApexOptions = {
     width: [0, 4],
   },
   title: {
-    text: 'Traffic Sources',
+    text: 'Tổng doanh thu',
   },
   dataLabels: {
     enabled: true,
@@ -134,13 +134,13 @@ export const OptionsLineColumnsConfig: ApexOptions = {
   yaxis: [
     {
       title: {
-        text: 'Website Blog',
+        text: 'Tổng doanh thu',
       },
     },
     {
       opposite: true,
       title: {
-        text: 'Social Media',
+        text: 'Lương Stylist',
       },
     },
   ],
@@ -185,6 +185,127 @@ export const OptionsAreaConfig: ApexOptions = {
   tooltip: {
     x: {
       format: 'dd/MM/yy HH:mm',
+    },
+  },
+};
+
+export const OptionsBarConfigSalaryStylist: ApexOptions = {
+  series: [
+    {
+      name: 'Tổng lương stylist',
+      data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+    },
+    // {
+    //   name: 'Revenue',
+    //   data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+    // },
+    // {
+    //   name: 'Free Cash Flow',
+    //   data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+    // },
+  ],
+  colors: ['#FFC733'], // Custom slice colors
+  chart: {
+    type: 'bar',
+    height: 400,
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '55%',
+      borderRadius: 5,
+      borderRadiusApplication: 'end',
+    },
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  stroke: {
+    show: true,
+    width: 2,
+    colors: ['transparent'],
+  },
+  xaxis: {
+    categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+  },
+  yaxis: {
+    title: {
+      text: 'đ (vnd)',
+    },
+    labels: {
+      formatter: function (value) {
+        return `${currencyFormat(value)}`; // Custom formatting
+      },
+    },
+  },
+  fill: {
+    opacity: 1,
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return '$ ' + currencyFormat(val) + ' vnd';
+      },
+    },
+  },
+};
+export const OptionsBarConfigSalaryStaff: ApexOptions = {
+  series: [
+    {
+      name: 'Tổng lương nhân viên',
+      data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+    },
+    // {
+    //   name: 'Revenue',
+    //   data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+    // },
+    // {
+    //   name: 'Free Cash Flow',
+    //   data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+    // },
+  ],
+  colors: ['#22c55e'], // Custom slice colors
+  chart: {
+    type: 'bar',
+    height: 400,
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '55%',
+      borderRadius: 5,
+      borderRadiusApplication: 'end',
+    },
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  stroke: {
+    show: true,
+    width: 2,
+    colors: ['transparent'],
+  },
+  xaxis: {
+    categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+  },
+  yaxis: {
+    title: {
+      text: 'đ (vnd)',
+    },
+    labels: {
+      formatter: function (value) {
+        return `${currencyFormat(value)}`; // Custom formatting
+      },
+    },
+  },
+  fill: {
+    opacity: 1,
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return '$ ' + currencyFormat(val) + ' vnd';
+      },
     },
   },
 };

@@ -30,6 +30,26 @@ class DashboardServices {
       throw error;
     }
   }
+  async listTotalSalaryStylistByMonth(params = {}) {
+    try {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/StylistSalarys`, {
+        params,
+      });
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async listTotalSalaryStaffByMonth(params = {}) {
+    try {
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/StaffSalarys`, {
+        params,
+      });
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const dashboardServices = new DashboardServices();
