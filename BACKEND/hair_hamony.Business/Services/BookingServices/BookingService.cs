@@ -612,11 +612,6 @@ namespace hair_hamony.Business.Services.BookingServices
             string hashSecret = _configuration["VnPay:HashSecret"]!;
             VnPayLibrary pay = new();
 
-            string result = JsonConvert.SerializeObject(requestBody);
-            result = result.Replace("{", "jjj");
-            result = result.Replace("}", "kkk");
-            result = result.Replace("\"", "'");
-
             pay.AddRequestData("vnp_Version", "2.1.0"); //Phiên bản api mà merchant kết nối. Phiên bản hiện tại là 2.0.0
             pay.AddRequestData("vnp_Command", "pay"); //Mã API sử dụng, mã cho giao dịch thanh toán là 'pay'
             pay.AddRequestData("vnp_TmnCode", tmnCode); //Mã website của merchant trên hệ thống của VNPAY (khi đăng ký tài khoản sẽ có trong mail VNPAY gửi về)
@@ -675,7 +670,8 @@ namespace hair_hamony.Business.Services.BookingServices
                 if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
                 {
                     status = "Success";
-                    var booking = _context.Bookings.FirstOrDefault(x => x.Id == bookingId);
+                    var booking = _context.Bookings
+                        .AsNoTracking().FirstOrDefault(x => x.Id == bookingId);
                     await Update(bookingId, new UpdateBookingModel
                     {
                         AmoutToPaid = amountToPaid,
@@ -698,6 +694,7 @@ namespace hair_hamony.Business.Services.BookingServices
                     payment.PaymentMethod = "BANK_TRANSFER";
                     payment.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
                     _context.Payments.Update(payment);
+                    await _context.SaveChangesAsync();
                 }
             }
             return status;

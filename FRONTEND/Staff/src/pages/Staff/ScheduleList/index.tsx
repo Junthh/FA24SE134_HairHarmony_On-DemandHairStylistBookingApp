@@ -48,8 +48,9 @@ import { LoadingButton } from '@mui/lab';
 import _ from 'lodash';
 import { systemConfigService } from 'services/systemConfigs.service';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
-import { DetailsOutlined, InfoOutlined } from '@mui/icons-material';
+import { DetailsOutlined, InfoOutlined, QueryStats } from '@mui/icons-material';
 import { formatDate, formatDateTime, formatTime } from 'utils/datetime';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -85,6 +86,7 @@ const STATUS_COLOR = {
 };
 
 export default function ScheduleList() {
+  const { search } = useLocation();
   const dispatch = useDispatch();
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
@@ -167,6 +169,16 @@ export default function ScheduleList() {
       .catch((error) => console.error(error));
   }, []);
 
+  useEffect(() => {
+    const query = new URLSearchParams(search);
+    const paramStatus = query.get('status');
+    if (paramStatus === 'Success') {
+      showToast('success', 'Thanh toán thành công');
+    } else if (paramStatus === 'Failed') {
+      showToast('error', 'Thanh toán thất bại');
+    }
+  }, [search]);
+
   const getSystemConfig = useCallback(() => {
     systemConfigService
       .getByName({ name: 'POINTS_TO_VND' })
@@ -191,22 +203,38 @@ export default function ScheduleList() {
   const handleUpdateBooking = (booking) => {
     setIsLoadingButton(true);
     setIsLoadingButtonCompleted(true);
-    scheduleListServices
-      .update(booking)
-      .then(() => {
-        showToast('success', 'Cập nhật thành công');
-        setIsReloadData(!isReloadData);
-        setIsOpenModalCancel(false);
-        setIsOpenModalFinished(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        showToast('error', error.msg || error.message);
-      })
-      .finally(() => {
-        setIsLoadingButton(false);
-        setIsLoadingButtonCompleted(false);
-      });
+    if (booking.paymentMethod === 'BANK_TRANSFER') {
+      scheduleListServices
+        .payWithVnpay(booking)
+        .then((res) => {
+          window.location.assign(res.data.url);
+        })
+        .catch((error) => {
+          console.error(error);
+          showToast('error', error.msg || error.message);
+        })
+        .finally(() => {
+          setIsLoadingButton(false);
+          setIsLoadingButtonCompleted(false);
+        });
+    } else {
+      // scheduleListServices
+      //   .update(booking)
+      //   .then(() => {
+      //     showToast('success', 'Cập nhật thành công');
+      //     setIsReloadData(!isReloadData);
+      //     setIsOpenModalCancel(false);
+      //     setIsOpenModalFinished(false);
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //     showToast('error', error.msg || error.message);
+      //   })
+      //   .finally(() => {
+      //     setIsLoadingButton(false);
+      //     setIsLoadingButtonCompleted(false);
+      //   });
+    }
   };
 
   return (

@@ -14,8 +14,16 @@ class ScheduleListServices {
   }
   async update(payload: any = {}) {
     try {
-      const resData = await axios.put(
-        `${ENDPOINTS.ApiPrefix}/bookings/${payload.id}`,
+      const resData = await axios.put(`${ENDPOINTS.ApiPrefix}/bookings/${payload.id}`, payload);
+      return resData;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async payWithVnpay(payload: any = {}) {
+    try {
+      const resData = await axios.post(
+        `${ENDPOINTS.ApiPrefix}/bookings/payWithVnpay/${payload.id}`,
         payload,
       );
       return resData;

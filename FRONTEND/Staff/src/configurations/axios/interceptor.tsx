@@ -62,55 +62,55 @@ function Interceptor() {
     }
 
     // Check status request failed to refresh token
-    if (error?.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        return new Promise(function (resolve, reject) {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            originalRequest.headers['Authorization'] = `Bearer ${token}`;
-            return axios(originalRequest);
-          })
-          .catch((err) => {
-            return Promise.reject(err);
-          });
-      }
+    // if (error?.response?.status === 401 && !originalRequest._retry) {
+    //   if (isRefreshing) {
+    //     return new Promise(function (resolve, reject) {
+    //       failedQueue.push({ resolve, reject });
+    //     })
+    //       .then((token) => {
+    //         originalRequest.headers['Authorization'] = `Bearer ${token}`;
+    //         return axios(originalRequest);
+    //       })
+    //       .catch((err) => {
+    //         return Promise.reject(err);
+    //       });
+    //   }
 
-      originalRequest._retry = true;
-      isRefreshing = true;
+    //   originalRequest._retry = true;
+    //   isRefreshing = true;
 
-      return new Promise(function (resolve, reject) {
-        const refreshAccessToken = localStorage.getItem(LOCAL_STORAGE_KEYS.RefreshToken);
-        if (!refreshAccessToken) {
-          return reject(errMessage);
-        }
+    //   return new Promise(function (resolve, reject) {
+    //     const refreshAccessToken = localStorage.getItem(LOCAL_STORAGE_KEYS.RefreshToken);
+    //     if (!refreshAccessToken) {
+    //       return reject(errMessage);
+    //     }
 
-        return authService
-          .refreshAccessToken({ refreshToken: refreshAccessToken })
-          .then(({ data }) => {
-            if (data && data.accessToken) {
-              authContext.saveToken({
-                token: data.token,
-                refreshToken: data.refreshToken,
-              });
-              axios.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
-              originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
-              processQueue(null, data.accessToken);
-              resolve(axios(originalRequest));
-            } else {
-              authContext.logout();
-              reject({ code: 401, message: 'Unauthorized' });
-            }
-          })
-          .catch((err) => {
-            processQueue(err, null);
-            reject(err);
-          })
-          .then(() => {
-            isRefreshing = false;
-          });
-      });
-    }
+    //     return authService
+    //       .refreshAccessToken({ refreshToken: refreshAccessToken })
+    //       .then(({ data }) => {
+    //         if (data && data.accessToken) {
+    //           authContext.saveToken({
+    //             token: data.token,
+    //             refreshToken: data.refreshToken,
+    //           });
+    //           axios.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+    //           originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
+    //           processQueue(null, data.accessToken);
+    //           resolve(axios(originalRequest));
+    //         } else {
+    //           authContext.logout();
+    //           reject({ code: 401, message: 'Unauthorized' });
+    //         }
+    //       })
+    //       .catch((err) => {
+    //         processQueue(err, null);
+    //         reject(err);
+    //       })
+    //       .then(() => {
+    //         isRefreshing = false;
+    //       });
+    //   });
+    // }
 
     return Promise.reject(errMessage);
   };
