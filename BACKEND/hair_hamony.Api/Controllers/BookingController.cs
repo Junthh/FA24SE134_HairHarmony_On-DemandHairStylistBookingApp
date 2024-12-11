@@ -149,8 +149,8 @@ namespace home_travel.API.Controllers
         public async Task<IActionResult> ConfirmPayWithVnpay()
         {
             var status = await _bookingService.ConfirmPayWithVnpay(Request);
-            //return Redirect($"https://thankful-bay-0690dca0f.5.azurestaticapps.net/schedule-list?status={status}");
-            return Redirect($"http://localhost:3000/schedule-list?status={status}");
+            return Redirect($"https://thankful-bay-0690dca0f.5.azurestaticapps.net/schedule-list?status={status}");
+            //return Redirect($"http://localhost:3000/schedule-list?status={status}");
         }
 
         /// <summary>

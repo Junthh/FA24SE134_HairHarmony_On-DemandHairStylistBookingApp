@@ -218,22 +218,22 @@ export default function ScheduleList() {
           setIsLoadingButtonCompleted(false);
         });
     } else {
-      // scheduleListServices
-      //   .update(booking)
-      //   .then(() => {
-      //     showToast('success', 'Cập nhật thành công');
-      //     setIsReloadData(!isReloadData);
-      //     setIsOpenModalCancel(false);
-      //     setIsOpenModalFinished(false);
-      //   })
-      //   .catch((error) => {
-      //     console.error(error);
-      //     showToast('error', error.msg || error.message);
-      //   })
-      //   .finally(() => {
-      //     setIsLoadingButton(false);
-      //     setIsLoadingButtonCompleted(false);
-      //   });
+      scheduleListServices
+        .update(booking)
+        .then(() => {
+          showToast('success', 'Cập nhật thành công');
+          setIsReloadData(!isReloadData);
+          setIsOpenModalCancel(false);
+          setIsOpenModalFinished(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          showToast('error', error.msg || error.message);
+        })
+        .finally(() => {
+          setIsLoadingButton(false);
+          setIsLoadingButtonCompleted(false);
+        });
     }
   };
 
