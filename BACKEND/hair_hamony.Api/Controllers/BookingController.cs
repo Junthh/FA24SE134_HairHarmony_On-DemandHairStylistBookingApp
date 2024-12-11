@@ -125,6 +125,34 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for create payment url
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="requestBody">An obj contains update info of a booking</param>
+        /// <returns>A booking within status 200 or error status</returns>
+        /// <response code="200">Returns the payment url</response>
+        [HttpPost("PayWithVnPay/{id}")]
+        [ProducesResponseType(typeof(BaseResponse<object>), StatusCodes.Status201Created)]
+        public IActionResult PayWithVnPay(Guid id, UpdateBookingModel requestBody)
+        {
+            var url = _bookingService.PayWithVnpay(id, requestBody);
+            return Ok(new BaseResponse<object>(data: new { url }));
+        }
+
+        /// <summary>
+        /// Endpoint for confirm pay with vnpay
+        /// </summary>
+        /// <returns>A booking within status 200 or error status</returns>
+        /// <response code="200">Returns status of payment</response>
+        [HttpGet("ConfirmPayWithVnPay")]
+        [ProducesResponseType(typeof(BaseResponse<object>), StatusCodes.Status201Created)]
+        public async Task<IActionResult> ConfirmPayWithVnpay()
+        {
+            var status = await _bookingService.ConfirmPayWithVnpay(Request);
+            return Redirect($"https://thankful-bay-0690dca0f.5.azurestaticapps.net/schedule-list?status={status}");
+        }
+
+        /// <summary>
         /// Endpoint for init flow booking
         /// </summary>
         /// <param name="requestBody">An obj contains input info of a booking</param>

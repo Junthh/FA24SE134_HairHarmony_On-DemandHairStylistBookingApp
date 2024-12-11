@@ -1,6 +1,7 @@
 ﻿using hair_hamony.Business.Commons.Paging;
 using hair_hamony.Business.Enum;
 using hair_hamony.Business.ViewModels.Bookings;
+using Microsoft.AspNetCore.Http;
 
 namespace hair_hamony.Business.Services.BookingServices
 {
@@ -18,5 +19,7 @@ namespace hair_hamony.Business.Services.BookingServices
         Task<GetBookingModel> Init(CreateInitBookingModel requestBody);
         GetTotalRevenueByMonthModel GetTotalRevenueByMonth(int year, int month);
         GetBookingByStatusModel GetTotalBookingByStatus();
+        string PayWithVnpay(Guid id, UpdateBookingModel requestBody);
+        Task<string> ConfirmPayWithVnpay(HttpRequest request);
     }
 }
