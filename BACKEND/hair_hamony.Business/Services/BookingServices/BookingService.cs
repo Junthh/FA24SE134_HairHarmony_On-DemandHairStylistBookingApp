@@ -138,7 +138,7 @@ namespace hair_hamony.Business.Services.BookingServices
 
         public async Task<GetBookingModel> Init(CreateInitBookingModel requestBody)
         {
-            using var transaction = _context.Database.BeginTransaction();
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 Stylist? stylist;
