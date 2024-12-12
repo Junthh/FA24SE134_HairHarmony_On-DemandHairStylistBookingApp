@@ -1,6 +1,7 @@
 ﻿using hair_hamony.Business.ViewModels.BookingDetails;
 using hair_hamony.Business.ViewModels.Customers;
 using hair_hamony.Business.ViewModels.Feedbacks;
+using hair_hamony.Business.ViewModels.Payments;
 using hair_hamony.Business.ViewModels.Staffs;
 
 namespace hair_hamony.Business.ViewModels.Bookings
@@ -25,5 +26,6 @@ namespace hair_hamony.Business.ViewModels.Bookings
         public GetCustomerModel? Customer { get; set; }
         public GetStaffModel? Staff { get; set; }
         public ICollection<GetFeedbackModel>? Feedbacks { get; set; } = new List<GetFeedbackModel>();
+        public ICollection<GetPaymentModel>? Payments { get; set; } = new List<GetPaymentModel>();
     }
 }
