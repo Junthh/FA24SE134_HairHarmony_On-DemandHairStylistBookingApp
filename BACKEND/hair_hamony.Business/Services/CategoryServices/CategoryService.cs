@@ -45,9 +45,25 @@ namespace hair_hamony.Business.Services.CategoryServices
 
         public async Task Delete(Guid id)
         {
-            var category = _mapper.Map<Category>(await GetById(id));
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var category = _mapper.Map<Category>(await GetById(id));
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                if(ex.InnerException.Message.Contains("REFERENCE constraint"))
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Không thể xoá vì loại dịch vụ đang được sử dụng"
+                    };
+                }
+
+                throw;
+            }
         }
 
         public async Task<(IList<GetCategoryModel>, int)> GetAll(PagingParam<CategoryEnum.CategorySort> paginationModel, SearchCategoryModel searchCategoryModel)
