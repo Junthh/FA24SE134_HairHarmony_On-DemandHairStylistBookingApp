@@ -13,5 +13,7 @@ public partial class PaymentDetail
 
     public Guid? PaymentId { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual Payment? Payment { get; set; }
 }

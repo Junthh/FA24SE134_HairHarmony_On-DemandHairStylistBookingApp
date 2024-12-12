@@ -3,6 +3,7 @@
     public class CreatePaymentDetailModel
     {
         public double? Price { get; set; }
+        public string? Status { get; set; }
         public Guid? PaymentId { get; set; }
     }
 }
