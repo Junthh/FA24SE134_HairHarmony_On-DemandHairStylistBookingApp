@@ -138,7 +138,7 @@ namespace hair_hamony.Business.Services.BookingServices
 
         public async Task<GetBookingModel> Init(CreateInitBookingModel requestBody)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var transaction = _context.Database.BeginTransaction();
             try
             {
                 Stylist? stylist;
@@ -356,12 +356,12 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
 
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                transaction.Commit();
                 return _mapper.Map<GetBookingModel>(booking);
             }
             catch
             {
-                await transaction.RollbackAsync();
+                transaction.Rollback();
                 throw;
             }
         }
