@@ -204,7 +204,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
 
                 var bookingId = Guid.NewGuid();
-                var booking = await _context.Bookings.AddAsync(new Booking
+                var booking = new Booking
                 {
                     Id = bookingId,
                     BookingDate = requestBody.BookingDate,
@@ -218,7 +218,8 @@ namespace hair_hamony.Business.Services.BookingServices
                     Status = "Initialize",
                     CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                     UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
-                });
+                };
+                await _context.Bookings.AddAsync(booking);
 
                 var transactionId = Guid.NewGuid();
                 await _context.Transactions.AddAsync(new Transaction
@@ -271,6 +272,14 @@ namespace hair_hamony.Business.Services.BookingServices
                             var timeSlotNext = await _context.TimeSlots
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
+                            if (timeSlotNext == null)
+                            {
+                                throw new CException
+                                {
+                                    StatusCode = StatusCodes.Status400BadRequest,
+                                    ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
+                                };
+                            }
                             await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
@@ -326,6 +335,14 @@ namespace hair_hamony.Business.Services.BookingServices
                             var timeSlotNext = await _context.TimeSlots
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
+                            if (timeSlotNext == null)
+                            {
+                                throw new CException
+                                {
+                                    StatusCode = StatusCodes.Status400BadRequest,
+                                    ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
+                                };
+                            }
                             await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
