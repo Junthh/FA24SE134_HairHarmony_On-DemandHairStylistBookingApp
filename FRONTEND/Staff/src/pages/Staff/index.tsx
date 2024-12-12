@@ -94,6 +94,8 @@ function Staff() {
       setTabName('Cập nhật thông tin');
     } else if (name === STAFF_PATH.CHANGE_PASSWORD.split('/')[1]) {
       setTabName('Thay đổi mật khẩu');
+    } else if (name === STAFF_PATH.SALARY.split('/')[1]) {
+      setTabName('Lịch sử lương');
     }
   }, [location]);
 
