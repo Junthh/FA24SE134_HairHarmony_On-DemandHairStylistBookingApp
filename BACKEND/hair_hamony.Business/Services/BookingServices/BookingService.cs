@@ -675,7 +675,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
                 var bookingId = Guid.Parse(vnp_OrderInfo.Split(",")[0]);
                 var amountToPaid = double.Parse(vnp_OrderInfo.Split(",")[1]);
-                var loyaltyPoints = vnp_OrderInfo.Split(",")[2] != null ? int.Parse(vnp_OrderInfo.Split(",")[2]) : 0;
+                var loyaltyPoints = vnp_OrderInfo.Split(",")[2] != "" ? int.Parse(vnp_OrderInfo.Split(",")[2]) : 0;
 
                 if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
                 {
