@@ -94,31 +94,37 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
 
         public async Task<IList<GetStylistModel>> GetListStylistFreetime(DateOnly bookingDate, Guid timeSlotId)
         {
-            var timeSlot = _context.TimeSlots.AsNoTracking().FirstOrDefault(timeSlot => timeSlot.Id == timeSlotId);
+            var timeSlot = await _context.TimeSlots
+                .AsNoTracking()
+                .FirstOrDefaultAsync(timeSlot => timeSlot.Id == timeSlotId);
 
             // danh sach stylist da dang ki lam viec
-            var stylistWorkships = _context.StylistWorkships.AsNoTracking()
+            var stylistWorkships = await _context.StylistWorkships.AsNoTracking()
                 .Where(stylistWorkship =>
                     stylistWorkship.RegisterDate.Equals(bookingDate)
                     && stylistWorkship.Workship!.StartTime <= timeSlot!.StartTime
                     && stylistWorkship.Workship!.EndTime > timeSlot!.StartTime
                 )
                 .Select(stylistWorkship => stylistWorkship.StylistId)
-                .ToList();
+                .ToListAsync();
 
             // danh sach stylist da co booking
-            var bookingSlotStylist = _context.BookingSlotStylists
+            var bookingSlotStylist = await _context.BookingSlotStylists
                 .Where(bookingSlotStylist =>
                     bookingSlotStylist.BookingDate.Equals(bookingDate)
                     && bookingSlotStylist.TimeSlotId == timeSlotId
                     && bookingSlotStylist.Status == "Booked")
                 .Select(bookingSlotStylist => bookingSlotStylist.StylistId)
-                .ToList();
+                .ToListAsync();
 
             // danh sach stylist freetime
             var stylistsFreetime = stylistWorkships.Except(bookingSlotStylist).ToList();
 
-            var stylists = _context.Stylists.AsNoTracking().Where(stylist => stylistsFreetime.Contains(stylist.Id) && stylist.Status == "Active");
+            var stylists = await _context.Stylists
+                .AsNoTracking()
+                .Where(stylist => 
+                    stylistsFreetime.Contains(stylist.Id) && stylist.Status == "Active"
+                ).ToListAsync();
 
             var results = _mapper.Map<IList<GetStylistModel>>(stylists);
 
@@ -126,21 +132,22 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
             var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
             foreach (var item in results)
             {
-                var systemConfig = _context.SystemConfigs.FirstOrDefault(systemConfig => systemConfig.Name == "EXPERT_FEE");
+                var systemConfig = await _context.SystemConfigs
+                    .FirstOrDefaultAsync(systemConfig => systemConfig.Name == "EXPERT_FEE");
                 if (item.Level == "Expert")
                 {
                     item.ExpertFee = systemConfig.Value;
                 }
 
-                var stylistSalary = _context.StylistSalarys
-                    .FirstOrDefault(stylistSalary =>
+                var stylistSalary = await _context.StylistSalarys
+                    .FirstOrDefaultAsync(stylistSalary =>
                         stylistSalary.StylistId == item.Id
                         && stylistSalary.Month == monthCurrent
                         && stylistSalary.Year == yearCurrent
                     );
 
-                var stylist = _context.Stylists
-                        .FirstOrDefault(stylist => stylist.Id == item.Id);
+                var stylist = await _context.Stylists
+                        .FirstOrDefaultAsync(stylist => stylist.Id == item.Id);
                 // nếu trong tháng này chưa có booking thì tạo để có dữ liệu so sánh tổng booking trong tháng
                 if (stylistSalary == null)
                 {
