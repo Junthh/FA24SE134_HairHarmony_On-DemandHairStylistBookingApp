@@ -66,6 +66,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 .Include(booking => booking.Customer)
                 .Include(booking => booking.Staff)
                 .Include(booking => booking.Feedbacks)
+                .Include(booking => booking.Payments)
                 .Include(booking => booking.BookingDetails)
                 .ThenInclude(bookingDetail => bookingDetail.Combo)
                 .Include(booking => booking.BookingDetails)
