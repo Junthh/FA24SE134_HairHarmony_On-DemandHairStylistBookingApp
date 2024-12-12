@@ -51,9 +51,9 @@ namespace home_travel.API.Controllers
         [HttpGet("ComboAndService")]
         [ProducesResponseType(typeof(ModelsResponse<GetCategoryOfComboAndServiceModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public IActionResult GetCategoryOfComboAndService()
+        public async Task<IActionResult> GetCategoryOfComboAndService()
         {
-            var categorys = _categoryService.GetCategoryOfComboAndService();
+            var categorys = await _categoryService.GetCategoryOfComboAndService();
 
             return Ok(new ModelsResponse<GetCategoryOfComboAndServiceModel>(
                     paging: new PagingResponse()

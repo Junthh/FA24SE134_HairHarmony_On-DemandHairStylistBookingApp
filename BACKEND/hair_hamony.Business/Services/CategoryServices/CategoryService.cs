@@ -78,16 +78,18 @@ namespace hair_hamony.Business.Services.CategoryServices
             return (results, total);
         }
 
-        public IList<GetCategoryOfComboAndServiceModel> GetCategoryOfComboAndService()
+        public async Task<IList<GetCategoryOfComboAndServiceModel>> GetCategoryOfComboAndService()
         {
-            var categorys = _context.Categories.ToList();
+            var categorys = await _context.Categories.ToListAsync();
 
             var results = new List<GetCategoryOfComboAndServiceModel>();
             foreach (var category in categorys)
             {
                 var services = new List<GetCategoryOfComboAndServiceModel.ServiceModel>();
 
-                var listService = _context.Services.Where(service => service.CategoryId == category.Id).ToList();
+                var listService = await _context.Services
+                    .Where(service => service.CategoryId == category.Id)
+                    .ToListAsync();
                 if (listService.Any())
                 {
                     foreach (var item in listService)
@@ -107,7 +109,9 @@ namespace hair_hamony.Business.Services.CategoryServices
                     }
                 }
 
-                var listCombo = _context.Combos.Where(combo => combo.CategoryId == category.Id).ToList();
+                var listCombo = await _context.Combos
+                    .Where(combo => combo.CategoryId == category.Id)
+                    .ToListAsync();
                 if (listCombo.Any())
                 {
                     foreach (var item in listCombo)
