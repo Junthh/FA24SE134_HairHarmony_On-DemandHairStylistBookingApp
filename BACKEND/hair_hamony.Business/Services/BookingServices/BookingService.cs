@@ -14,7 +14,6 @@ using home_travel.Business.Services.VnPayServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace hair_hamony.Business.Services.BookingServices
 {
@@ -665,7 +664,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
                 var bookingId = Guid.Parse(vnp_OrderInfo.Split(",")[0]);
                 var amountToPaid = double.Parse(vnp_OrderInfo.Split(",")[1]);
-                var loyaltyPoints = int.Parse(vnp_OrderInfo.Split(",")[2]);
+                var loyaltyPoints = vnp_OrderInfo.Split(",")[2] != null ? int.Parse(vnp_OrderInfo.Split(",")[2]) : 0;
 
                 if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
                 {
