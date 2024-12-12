@@ -184,6 +184,27 @@ export default function CustomerList() {
   ) => {
     setPaging((prev) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }));
   };
+
+  const handleUpdate = useCallback(
+    (row) => {
+      dispatch(setLoading(true));
+      setAnchorEl(null);
+      customerServices
+        .update(row.id, row)
+        .then((res: ListEmployeeSuccess) => {
+          getEmployeeList({ ...paging });
+          showToast('success', 'Cập nhật thành công');
+        })
+        .catch((err) => {
+          showToast('error', err.msg || err.message);
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+    },
+    [selectedRow],
+  );
+
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
       <FormContainer formContext={formSearch}>
@@ -239,10 +260,7 @@ export default function CustomerList() {
           <TableBody>
             {rows.map((row, index) => (
               <StyledTableRow key={index}>
-                <StyledTableCell
-                  align="left"
-                  sx={{ display: 'flex', alignItems: 'center' }}
-                >
+                <StyledTableCell align="left" sx={{ display: 'flex', alignItems: 'center' }}>
                   {row.avatar && (
                     <img
                       style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
@@ -258,6 +276,18 @@ export default function CustomerList() {
                 <StyledTableCell align="center">{row.loyaltyPoints}</StyledTableCell>
                 <StyledTableCell align="center">{row.status}</StyledTableCell>
                 <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
+                <StyledTableCell align="center">
+                  <ButtonPrimary
+                    severity={row.status === 'Active' ? 'primary' : 'cancel'}
+                    padding={'7px 14px'}
+                    onClick={() => {
+                      row.status = row.status === 'Active' ? 'Inactive' : 'Active';
+                      handleUpdate(row);
+                    }}
+                  >
+                    {row.status === 'Active' ? 'Khoá tài khoản' : 'Mở khoá tài khoản'}
+                  </ButtonPrimary>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
