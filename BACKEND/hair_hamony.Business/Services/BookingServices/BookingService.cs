@@ -66,6 +66,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 .Include(booking => booking.Customer)
                 .Include(booking => booking.Staff)
                 .Include(booking => booking.Feedbacks)
+                .Include(booking => booking.Payments)
                 .Include(booking => booking.BookingDetails)
                 .ThenInclude(bookingDetail => bookingDetail.Combo)
                 .Include(booking => booking.BookingDetails)
@@ -291,6 +292,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             Price = serviceModel.Price,
                             PaymentId = paymentId,
+                            Status = "Initialize"
                         });
 
                         countTimeSlot += countServiceDuration;
@@ -344,6 +346,7 @@ namespace hair_hamony.Business.Services.BookingServices
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                             Price = comboModel.TotalPrice,
                             PaymentId = paymentId,
+                            Status = "Initalize"
                         });
 
                         countTimeSlot += countServiceDuration;
@@ -510,6 +513,14 @@ namespace hair_hamony.Business.Services.BookingServices
                     payment.PaymentMethod = requestBody.PaymentMethod;
                     payment.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
                     _context.Payments.Update(payment);
+
+                    _context.PaymentDetails.Add(new PaymentDetail
+                    {
+                        CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                        PaymentId = payment.Id,
+                        Price = payment.Price,
+                        Status = "Success",
+                    });
                 }
                 else if (requestBody.Status == "Cancel")
                 {
@@ -688,11 +699,18 @@ namespace hair_hamony.Business.Services.BookingServices
                 else
                 {
                     var payment = _context.Payments.FirstOrDefault(payment => payment.BookingId == bookingId);
-                    payment.Status = status;
                     payment.Price = amountToPaid;
                     payment.PaymentMethod = "BANK_TRANSFER";
                     payment.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
                     _context.Payments.Update(payment);
+
+                    _context.PaymentDetails.Add(new PaymentDetail
+                    {
+                        CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                        PaymentId = payment.Id,
+                        Price = payment.Price,
+                        Status = status,
+                    });
                     await _context.SaveChangesAsync();
                 }
             }

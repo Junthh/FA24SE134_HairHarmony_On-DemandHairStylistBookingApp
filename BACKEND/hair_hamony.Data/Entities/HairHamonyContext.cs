@@ -282,6 +282,9 @@ public partial class HairHamonyContext : DbContext
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Payment).WithMany(p => p.PaymentDetails)
                 .HasForeignKey(d => d.PaymentId)

@@ -23,6 +23,14 @@ function SettingBoard(props: SettingBoardProps) {
       >
         Quản lý tài khoản
       </div>
+      <div
+        className="setting-board-item"
+        onClick={() => {
+          navigate(`${STAFF_PATH.SALARY}/${credentialInfo.Id}`);
+        }}
+      >
+        Lịch sử lương
+      </div>
       <div className="setting-board-item" onClick={onLogout}>
         Đăng xuất
       </div>

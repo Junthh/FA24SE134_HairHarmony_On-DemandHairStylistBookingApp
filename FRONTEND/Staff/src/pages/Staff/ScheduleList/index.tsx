@@ -499,6 +499,39 @@ export default function ScheduleList() {
               <Grid item xs={6}>
                 <b>{currencyFormat(bookingSelected.totalPrice)}</b>
               </Grid>
+              {bookingSelected.payments.length > 0 &&
+                bookingSelected.payments[0].status !== 'Initialize' && (
+                  <>
+                    <Grid item xs={12}>
+                      <b>Thanh toán</b>
+                    </Grid>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={5}>
+                      Số tiền:
+                    </Grid>
+                    <Grid item xs={6}>
+                      {currencyFormat(bookingSelected.payments[0].price)} (
+                      {bookingSelected.payments[0].status === 'Completed' ? 'Thành công' : 'Thất bại'}
+                      )
+                    </Grid>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={5}>
+                      Hình thức thanh toán:
+                    </Grid>
+                    <Grid item xs={6}>
+                      {bookingSelected.payments[0].paymentMethod === 'BANK_TRANSFER'
+                        ? 'Chuyển khoản'
+                        : 'Tiền mặt'}
+                    </Grid>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={5}>
+                      Ngày thanh toán:
+                    </Grid>
+                    <Grid item xs={6}>
+                      {formatDateTime(bookingSelected.payments[0].createdDate)}
+                    </Grid>
+                  </>
+                )}
             </Grid>
           ) : null}
         </DialogContent>

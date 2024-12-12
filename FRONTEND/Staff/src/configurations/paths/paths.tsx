@@ -20,6 +20,7 @@ export enum STAFF_PATH {
   STYLISTS = '/stylists',
   PROFILE = '/profile',
   CHANGE_PASSWORD = '/change-password',
+  SALARY = '/salary',
 }
 
 export enum ADMIN_PATH {
