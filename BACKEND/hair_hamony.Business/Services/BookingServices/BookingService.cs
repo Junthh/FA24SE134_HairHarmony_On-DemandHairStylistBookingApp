@@ -151,7 +151,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
                 else
                 {
-                    stylist = _context.Stylists.FirstOrDefault(stylist => stylist.Id == requestBody.StylistId);
+                    stylist = await _context.Stylists.FirstOrDefaultAsync(stylist => stylist.Id == requestBody.StylistId);
                 }
 
                 double totalPrice = 0;
@@ -184,10 +184,10 @@ namespace hair_hamony.Business.Services.BookingServices
                 // staff đặt lịch hoặc customer đặt lịch nhưng không đăng kí tài khoản
                 if (requestBody.CustomerId == null)
                 {
-                    var customer = _context.Customers.FirstOrDefault(customer => customer.PhoneNumber == requestBody.CustomerPhoneNummber);
+                    var customer = await _context.Customers.FirstOrDefaultAsync(customer => customer.PhoneNumber == requestBody.CustomerPhoneNummber);
                     if (customer == null)
                     {
-                        _context.Customers.Add(new Customer
+                        await _context.Customers.AddAsync(new Customer
                         {
                             Id = customerId,
                             FullName = requestBody.CustomerFullName,
@@ -204,7 +204,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 }
 
                 var bookingId = Guid.NewGuid();
-                var booking = _context.Bookings.Add(new Booking
+                var booking = await _context.Bookings.AddAsync(new Booking
                 {
                     Id = bookingId,
                     BookingDate = requestBody.BookingDate,
@@ -218,10 +218,10 @@ namespace hair_hamony.Business.Services.BookingServices
                     Status = "Initialize",
                     CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
                     UpdatedDate = UtilitiesHelper.DatetimeNowUTC7(),
-                }).Entity;
+                });
 
                 var transactionId = Guid.NewGuid();
-                _context.Transactions.Add(new Transaction
+                await _context.Transactions.AddAsync(new Transaction
                 {
                     Id = transactionId,
                     CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
@@ -231,7 +231,7 @@ namespace hair_hamony.Business.Services.BookingServices
                 });
 
                 var paymentId = Guid.NewGuid();
-                _context.Payments.Add(new Payment
+                await _context.Payments.AddAsync(new Payment
                 {
                     Id = paymentId,
                     PaymentDate = null,
@@ -243,18 +243,18 @@ namespace hair_hamony.Business.Services.BookingServices
                 });
 
                 int countTimeSlot = 0;
-                var timeSlot = _context.TimeSlots.FirstOrDefault(timeSlot => timeSlot.Id == requestBody.TimeSlotId);
+                var timeSlot = await _context.TimeSlots.FirstOrDefaultAsync(timeSlot => timeSlot.Id == requestBody.TimeSlotId);
 
                 if (requestBody.Services != null && requestBody.Services.Any())
                 {
                     foreach (var serviceModel in requestBody.Services)
                     {
-                        var service = _context.Services
+                        var service = await _context.Services
                             .AsNoTracking()
-                            .FirstOrDefault(service => service.Id == serviceModel.Id);
+                            .FirstOrDefaultAsync(service => service.Id == serviceModel.Id);
 
                         var bookingDetailId = Guid.NewGuid();
-                        _context.BookingDetails.Add(new BookingDetail
+                        await _context.BookingDetails.AddAsync(new BookingDetail
                         {
                             Id = bookingDetailId,
                             Price = serviceModel.Price,
@@ -268,11 +268,12 @@ namespace hair_hamony.Business.Services.BookingServices
 
                         for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
-                            var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
+                            var timeSlotNext = await _context.TimeSlots
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
-                            _context.BookingSlotStylists.Add(new BookingSlotStylist
+                            await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
                                 Status = "Booked",
                                 BookingDate = requestBody.BookingDate,
@@ -286,7 +287,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         }
 
                         var paymentDetailId = Guid.NewGuid();
-                        _context.PaymentDetails.Add(new PaymentDetail
+                        await _context.PaymentDetails.AddAsync(new PaymentDetail
                         {
                             Id = paymentDetailId,
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
@@ -303,12 +304,12 @@ namespace hair_hamony.Business.Services.BookingServices
                 {
                     foreach (var comboModel in requestBody.Combos)
                     {
-                        var combo = _context.Combos
+                        var combo = await _context.Combos
                             .AsNoTracking()
-                            .FirstOrDefault(combo => combo.Id == comboModel.Id);
+                            .FirstOrDefaultAsync(combo => combo.Id == comboModel.Id);
 
                         var bookingDetailId = Guid.NewGuid();
-                        _context.BookingDetails.Add(new BookingDetail
+                        await _context.BookingDetails.AddAsync(new BookingDetail
                         {
                             Id = bookingDetailId,
                             Price = comboModel.TotalPrice,
@@ -322,11 +323,12 @@ namespace hair_hamony.Business.Services.BookingServices
 
                         for (int i = countTimeSlot; i < countServiceDuration; i++)
                         {
-                            var timeSlotNext = _context.TimeSlots
-                                .FirstOrDefault(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
+                            var timeSlotNext = await _context.TimeSlots
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
                             await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
-                            _context.BookingSlotStylists.Add(new BookingSlotStylist
+                            await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
                                 Status = "Booked",
                                 BookingDate = requestBody.BookingDate,
@@ -340,7 +342,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         }
 
                         var paymentDetailId = Guid.NewGuid();
-                        _context.PaymentDetails.Add(new PaymentDetail
+                        await _context.PaymentDetails.AddAsync(new PaymentDetail
                         {
                             Id = paymentDetailId,
                             CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
