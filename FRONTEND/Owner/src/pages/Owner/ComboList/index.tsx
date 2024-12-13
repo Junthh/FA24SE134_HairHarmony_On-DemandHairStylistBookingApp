@@ -35,7 +35,7 @@ import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { comboServices } from 'services/combo.service';
-import { currencyFormat, objectToFormData } from 'utils/helper';
+import { currencyFormat, handleError, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import SelectMultiElement from 'components/Form/SelectMultiElement';
@@ -174,7 +174,7 @@ export default function ComboList() {
           dispatch(setLoading(false));
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', handleError(err.msg || err));
           dispatch(setLoading(false));
         });
     },
@@ -215,7 +215,7 @@ export default function ComboList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       } else {
@@ -230,7 +230,7 @@ export default function ComboList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       }
@@ -375,19 +375,19 @@ export default function ComboList() {
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Tên combo
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Mô tả
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Dịch vụ combo
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Trong khoản thời gian
               </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Đơn giá
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="left"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -407,18 +407,18 @@ export default function ComboList() {
                     {row.name}
                   </Typography>
                 </StyledTableCell>
-                <StyledTableCell align="center">{row.description}</StyledTableCell>
-                <StyledTableCell align="center">
+                <StyledTableCell align="left">{row.description}</StyledTableCell>
+                <StyledTableCell align="left">
                   {row.comboServices?.map((item) => item?.service?.name || '').join(', ')}
                 </StyledTableCell>
-                <StyledTableCell align="center">{row.duration}/phút</StyledTableCell>
-                <StyledTableCell align="center">
+                <StyledTableCell align="left">{row.duration}/phút</StyledTableCell>
+                <StyledTableCell align="left">
                   <span style={{ textDecoration: 'line-through' }}>
                     {currencyFormat(row.totalPrice + row.discount)}
                   </span>
                   /{currencyFormat(row.totalPrice)}
                 </StyledTableCell>
-                <StyledTableCell align="center">
+                <StyledTableCell align="left">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                       handleClick(event, row)

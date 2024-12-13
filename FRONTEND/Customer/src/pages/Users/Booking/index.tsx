@@ -606,7 +606,7 @@ export default function Booking() {
           ) : currentStep === 2 ? (
             <>
               <Typography variant="h2" fontWeight={700}>
-                Chọn thời gian
+                Chọn stylist
               </Typography>
               <Box height={25}></Box>
               <Grid container spacing={2}>

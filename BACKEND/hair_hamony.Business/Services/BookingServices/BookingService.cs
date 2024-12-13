@@ -585,36 +585,50 @@ namespace hair_hamony.Business.Services.BookingServices
             }
         }
 
-        public GetTotalRevenueByMonthModel GetTotalRevenueByMonth(int year, int month)
+        public async Task<GetTotalRevenueByMonthModel> GetTotalRevenueByMonth(int year, int month)
         {
-            var lastDayOfMonth = new DateTime(year, month, 1).AddMonths(1).AddDays(-1).Day;
+            var firstDayOfMonth = new DateTime(year, month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
-            var totalRevenueByMonth = _context.Bookings.Where(booking =>
-                booking.BookingDate >= DateOnly.FromDateTime(new DateTime(year, month, 1))
-                && booking.BookingDate <= DateOnly.FromDateTime(new DateTime(year, month, lastDayOfMonth))
-                && booking.Status == "Finished"
-            ).Sum(x => x.TotalPrice);
+            // Lấy tất cả các bookings trong khoảng thời gian của tháng
+            var bookingsInMonth = await _context.Bookings
+                .Where(booking =>
+                    booking.BookingDate >= DateOnly.FromDateTime(firstDayOfMonth) &&
+                    booking.BookingDate <= DateOnly.FromDateTime(lastDayOfMonth) &&
+                    booking.Status == "Finished")
+                .GroupBy(booking => booking.BookingDate)
+                .Select(group => new {
+                    Day = group.Key.Value.Day, // Lấy ngày trong tháng
+                    TotalRevenue = group.Sum(x => x.TotalPrice) // Tổng doanh thu trong ngày đó
+                })
+                .ToListAsync();
 
-            var result = new GetTotalRevenueByMonthModel();
-
-            result.Month = month;
-            result.Year = year;
-            result.TotalRevenue = totalRevenueByMonth.Value;
-
-            for (int i = 0; i < lastDayOfMonth; i++)
-            {
-                var totalRevenueByDay = _context.Bookings
-                    .Where(x =>
-                        x.BookingDate == DateOnly.FromDateTime(new DateTime(year, month, i + 1))
-                        && x.Status == "Finished"
-                    )
-                    .Sum(x => x.TotalPrice);
-                result.TotalRevenueByDay.Add(new GetTotalRevenueByMonthModel.GetTotalRevenueByDayModel
+            // Tạo danh sách tất cả các ngày trong tháng với giá trị mặc định là 0
+            var totalRevenueByDay = Enumerable.Range(1, lastDayOfMonth.Day)
+                .Select(day => new GetTotalRevenueByMonthModel.GetTotalRevenueByDayModel
                 {
-                    Day = i + 1,
-                    TotalRevenue = totalRevenueByDay.Value
-                });
+                    Day = day,
+                    TotalRevenue = 0
+                }).ToList();
+
+            // Hợp nhất dữ liệu từ bookingsInMonth vào danh sách trên
+            foreach (var booking in bookingsInMonth)
+            {
+                var dayEntry = totalRevenueByDay.First(x => x.Day == booking.Day);
+                dayEntry.TotalRevenue = booking.TotalRevenue ?? 0;
             }
+
+            // Tổng doanh thu của tháng
+            var totalRevenueByMonth = totalRevenueByDay.Sum(x => x.TotalRevenue);
+
+            // Tạo model kết quả
+            var result = new GetTotalRevenueByMonthModel
+            {
+                Month = month,
+                Year = year,
+                TotalRevenue = totalRevenueByMonth,
+                TotalRevenueByDay = totalRevenueByDay
+            };
 
             return result;
         }

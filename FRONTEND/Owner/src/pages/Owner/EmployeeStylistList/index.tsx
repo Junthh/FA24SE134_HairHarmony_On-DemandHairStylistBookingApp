@@ -40,7 +40,7 @@ import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
 import { employeeStylistServices } from 'services/employee-stylist.services';
-import { currencyFormat, objectToFormData } from 'utils/helper';
+import { currencyFormat, handleError, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import CurrencyFieldElement from 'components/Form/CurrencyFieldElement/CurrencyFieldElement';
@@ -178,7 +178,7 @@ export default function EmployeeStylistList() {
           showToast('success', res.msg);
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', handleError(err.msg || err));
         })
         .finally(() => {
           dispatch(setLoading(false));
@@ -215,7 +215,7 @@ export default function EmployeeStylistList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
           })
           .finally(() => {
             dispatch(setLoading(false));

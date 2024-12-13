@@ -174,7 +174,7 @@ export default function ScheduleTableGroup() {
           dispatch(setLoading(false));
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', err.msg);
           dispatch(setLoading(false));
         });
     } else {

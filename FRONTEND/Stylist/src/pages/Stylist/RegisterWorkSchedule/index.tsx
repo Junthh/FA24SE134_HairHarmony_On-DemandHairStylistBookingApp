@@ -46,6 +46,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import PopoverContent from 'pages/common/PopoverContent';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import SelectMultiElement from 'components/Form/SelectMultiElement';
+import { handleError } from 'utils/helper';
 const RegisterWorkScheduleStyled = styled(Box)({
   padding: '10px 20px',
   '& .card-total': {
@@ -230,7 +231,7 @@ export default function RegisterWorkSchedule() {
           dispatch(setLoading(false));
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', handleError(err.msg || err));
           dispatch(setLoading(false));
         })
         .finally(() => {

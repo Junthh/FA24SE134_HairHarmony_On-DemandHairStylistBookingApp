@@ -16,7 +16,7 @@ import { setLoading } from 'redux/Reducer';
 import * as colors from 'constants/colors';
 import { STAFF_PATH, USER_PATH } from 'configurations/paths/paths';
 import { showToast } from 'components/Common/Toast';
-import { objectToFormData } from '../../../utils/helper';
+import { handleError, objectToFormData } from '../../../utils/helper';
 const ProfileStyled = styled(Box)({
   marginTop: '40px',
   margin: '40px auto',
@@ -92,7 +92,7 @@ export default function Profile() {
             showToast('success', 'Cập nhật hồ sơ thành công!');
           })
           .catch((err) => {
-            showToast('error', err.msg);
+            showToast('error', handleError(err.msg || err));
           })
           .finally(() => {
             dispatch(setLoading(false));

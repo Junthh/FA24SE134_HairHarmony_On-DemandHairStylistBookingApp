@@ -36,7 +36,7 @@ import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import { stylistSalaryServices } from 'services/stylistSalary.service';
-import { currencyFormat } from 'utils/helper';
+import { currencyFormat, handleError } from 'utils/helper';
 import DatePickerElement from 'components/Form/DatepickerElement';
 import moment from 'moment';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -161,7 +161,7 @@ export default function EmployeeSalary() {
           });
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', handleError(err.msg || err));
           dispatch(setLoading(false));
         });
     },
@@ -214,7 +214,7 @@ export default function EmployeeSalary() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       } else {
@@ -235,7 +235,7 @@ export default function EmployeeSalary() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       }

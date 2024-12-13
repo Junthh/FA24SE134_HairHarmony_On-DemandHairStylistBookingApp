@@ -34,7 +34,7 @@ import { selectServices, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
-import { currencyFormat, objectToFormData } from 'utils/helper';
+import { currencyFormat, handleError, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
 import SelectMultiElement from 'components/Form/SelectMultiElement';
@@ -150,7 +150,7 @@ export default function CategoriesList() {
           dispatch(setLoading(false));
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', handleError(err.msg || err));
           dispatch(setLoading(false));
         })
         .finally(() => {
@@ -189,7 +189,7 @@ export default function CategoriesList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       } else {
@@ -204,7 +204,7 @@ export default function CategoriesList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       }

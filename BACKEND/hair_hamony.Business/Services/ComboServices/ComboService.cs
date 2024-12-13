@@ -70,9 +70,25 @@ namespace hair_hamony.Business.Services.ComboServices
 
         public async Task Delete(Guid id)
         {
-            var combo = _mapper.Map<Combo>(await GetById(id));
-            _context.Combos.Remove(combo);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var combo = _mapper.Map<Combo>(await GetById(id));
+                _context.Combos.Remove(combo);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException.Message.Contains("REFERENCE constraint"))
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Không thể xoá vì combo đang được sử dụng"
+                    };
+                }
+
+                throw;
+            }
         }
 
         public async Task<(IList<GetDetailComboModel>, int)> GetAll(PagingParam<ComboEnum.ComboSort> paginationModel, SearchComboModel searchComboModel)

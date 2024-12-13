@@ -66,11 +66,11 @@ namespace home_travel.API.Controllers
         [HttpGet("TotalRevenueByMonth")]
         [ProducesResponseType(typeof(BaseResponse<GetTotalRevenueByMonthModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public IActionResult GetTotalRevenueByMonth(
+        public async Task<IActionResult> GetTotalRevenueByMonth(
             [FromQuery] int year, [FromQuery] int month
         )
         {
-            var result = _bookingService.GetTotalRevenueByMonth(year, month);
+            var result = await _bookingService.GetTotalRevenueByMonth(year, month);
 
             return Ok(new BaseResponse<GetTotalRevenueByMonthModel>(data: result));
         }

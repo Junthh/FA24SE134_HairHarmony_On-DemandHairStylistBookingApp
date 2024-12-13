@@ -88,7 +88,9 @@ const STATUS_COLOR = {
 export default function ScheduleList() {
   const { search } = useLocation();
   const dispatch = useDispatch();
-  const schema = Yup.object().shape<any>({});
+  const schema = Yup.object().shape<any>({
+    paymentType: Yup.string().required('Vui lòng chọn loại thanh toán'),
+  });
   const formSearch = useForm<any>({
     defaultValues: {},
     mode: 'onChange',
@@ -511,7 +513,9 @@ export default function ScheduleList() {
                     </Grid>
                     <Grid item xs={6}>
                       {currencyFormat(bookingSelected.payments[0].price)} (
-                      {bookingSelected.payments[0].status === 'Completed' ? 'Thành công' : 'Thất bại'}
+                      {bookingSelected.payments[0].status === 'Completed'
+                        ? 'Thành công'
+                        : 'Thất bại'}
                       )
                     </Grid>
                     <Grid item xs={1}></Grid>
@@ -694,11 +698,15 @@ export default function ScheduleList() {
                 if (formSearch.getValues('loyaltyPoints')) {
                   booking.loyaltyPoints = Number(formSearch.getValues('loyaltyPoints'));
                 }
-                booking.totalPrice = totalPrice;
-                booking.amoutToPaid = amoutToPaid;
-                booking.status = 'Finished';
-                booking.paymentMethod = formSearch.getValues('paymentType');
-                handleUpdateBooking(booking);
+                if (!formSearch.getValues('paymentType')) {
+                  formSearch.trigger('paymentType');
+                } else {
+                  booking.totalPrice = totalPrice;
+                  booking.amoutToPaid = amoutToPaid;
+                  booking.status = 'Finished';
+                  booking.paymentMethod = formSearch.getValues('paymentType');
+                  handleUpdateBooking(booking);
+                }
               }}
             >
               Thanh toán

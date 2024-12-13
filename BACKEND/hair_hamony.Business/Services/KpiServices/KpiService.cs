@@ -24,6 +24,18 @@ namespace hair_hamony.Business.Services.KpiServices
 
         public async Task<GetKpiModel> Create(CreateKpiModel requestBody)
         {
+            var isExisted = _context.Kpis.Any(kpi =>
+                (requestBody.StartDate >= kpi.StartDate && requestBody.StartDate <= kpi.EndDate)
+                || (requestBody.EndDate >= kpi.StartDate && requestBody.EndDate <= kpi.EndDate)
+            );
+            if (isExisted)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = "Khoảng thời gian kpi không được nằm trong khoảng thời gian đã tạo"
+                };
+            }
             var kpi = _mapper.Map<Kpi>(requestBody);
             kpi.CreatedDate = UtilitiesHelper.DatetimeNowUTC7();
             kpi.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();

@@ -37,7 +37,7 @@ import PopoverContent from 'pages/common/PopoverContent';
 import { isEmpty } from 'lodash';
 import EditorElement from 'components/Form/EditorElement/EditorElement';
 import AvatarUpload from 'components/Form/AvatarUpload';
-import { objectToFormData } from 'utils/helper';
+import { handleError, objectToFormData } from 'utils/helper';
 export default function News() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -151,7 +151,7 @@ export default function News() {
           dispatch(setLoading(false));
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', handleError(err.msg || err));
           dispatch(setLoading(false));
         });
     },
@@ -191,7 +191,7 @@ export default function News() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       } else {
@@ -206,7 +206,7 @@ export default function News() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       }

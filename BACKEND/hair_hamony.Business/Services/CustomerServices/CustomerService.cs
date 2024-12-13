@@ -115,6 +115,20 @@ namespace hair_hamony.Business.Services.CustomerServices
                     };
                 }
             }
+            if (requestBody.Status != customer.Status && requestBody.Status == "Inactive")
+            {
+                var isExistedBooking = _context.Bookings.Any(booking =>
+                    booking.CustomerId == customer.Id && (booking.Status == "Cancel" || booking.Status == "Finished")
+                );
+                if (isExistedBooking)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Bạn đang đặt lịch cắt tóc nên không khoá tài khoản được, vui lòng hoàn thành hoặc huỷ lịch cắt tóc trước khi khoá tài khoản"
+                    };
+                }
+            }
             var oldAvatar = customer.Avatar;
             _mapper.Map(requestBody, customer);
             if (requestBody.Avatar != null)

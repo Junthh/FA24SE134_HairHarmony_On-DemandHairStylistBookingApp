@@ -36,7 +36,7 @@ import { formatDate } from 'utils/datetime';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
 import AvatarUpload from 'components/Form/AvatarUpload';
-import { currencyFormat, objectToFormData } from 'utils/helper';
+import { currencyFormat, handleError, objectToFormData } from 'utils/helper';
 import TextAreaElement from 'components/Form/TextAreaElement/TextAreaElement';
 export default function ServicesList() {
   const dispatch = useDispatch();
@@ -156,7 +156,7 @@ export default function ServicesList() {
           dispatch(setLoading(false));
         })
         .catch((err) => {
-          showToast('error', err.message);
+          showToast('error', handleError(err.msg || err));
           dispatch(setLoading(false));
         });
     },
@@ -191,7 +191,7 @@ export default function ServicesList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       } else {
@@ -206,7 +206,7 @@ export default function ServicesList() {
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.message);
+            showToast('error', handleError(err.msg || err));
             dispatch(setLoading(false));
           });
       }
@@ -332,25 +332,25 @@ export default function ServicesList() {
               <StyledTableCell style={{ color: 'white' }} align="left">
                 Tên dịch vụ
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Mô tả
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Loại dịch vụ
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Giá
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Trong khoản thời gian
               </StyledTableCell>{' '}
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Ngày tạo
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              <StyledTableCell style={{ color: 'white' }} align="left">
                 Ngày cập nhật
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="left"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -370,13 +370,13 @@ export default function ServicesList() {
                     {row.name}
                   </Typography>
                 </StyledTableCell>
-                <StyledTableCell align="center">{row.description || ''}</StyledTableCell>
-                <StyledTableCell align="center">{categorys[row.categoryId]?.name}</StyledTableCell>
-                <StyledTableCell align="center">{currencyFormat(row.price)}</StyledTableCell>
-                <StyledTableCell align="center">{row.duration}</StyledTableCell>
-                <StyledTableCell align="center">{formatDate(row.createdDate)}</StyledTableCell>
-                <StyledTableCell align="center">{formatDate(row.updatedDate)}</StyledTableCell>
-                <StyledTableCell align="center">
+                <StyledTableCell align="left">{row.description || ''}</StyledTableCell>
+                <StyledTableCell align="left">{categorys[row.categoryId]?.name}</StyledTableCell>
+                <StyledTableCell align="left">{currencyFormat(row.price)}</StyledTableCell>
+                <StyledTableCell align="left">{row.duration}</StyledTableCell>
+                <StyledTableCell align="left">{formatDate(row.createdDate)}</StyledTableCell>
+                <StyledTableCell align="left">{formatDate(row.updatedDate)}</StyledTableCell>
+                <StyledTableCell align="left">
                   <IconButton
                     onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                       handleClick(event, row)
