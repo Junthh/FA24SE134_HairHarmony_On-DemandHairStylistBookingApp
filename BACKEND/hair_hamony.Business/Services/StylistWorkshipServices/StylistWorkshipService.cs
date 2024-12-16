@@ -9,7 +9,6 @@ using hair_hamony.Business.ViewModels.StylistWorkships;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace hair_hamony.Business.Services.StylistWorkshipServices
 {
@@ -98,6 +97,25 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
         public async Task Delete(Guid id)
         {
             var stylistWorkship = _mapper.Map<StylistWorkship>(await GetById(id));
+            var workship = _context.Workships.FirstOrDefault(workship => workship.Id == stylistWorkship.WorkshipId);
+
+            var bookingSlotStylists = await _context.BookingSlotStylists
+                .AnyAsync(x =>
+                    x.TimeSlot!.StartTime > workship!.StartTime &&
+                    x.TimeSlot.StartTime < workship.EndTime &&
+                    x.StylistId == stylistWorkship!.StylistId &&
+                    x.Status == "Booked");
+
+            if (bookingSlotStylists)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = $"Bạn đang có khách hàng đặt lịch trong khoảng thời gian {workship.StartTime.Value.ToString("HH:mm")} " +
+                        $"- {workship.EndTime.Value.ToString("HH:mm")} ngày " +
+                        $"{stylistWorkship.RegisterDate.Value.ToString("dd/MM/yyyy")} nên không thể xoá lịch làm việc"
+                };
+            }
             _context.StylistWorkships.Remove(stylistWorkship);
             await _context.SaveChangesAsync();
         }
@@ -172,6 +190,27 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
             }
 
             var updateStylistWorkship = _mapper.Map<StylistWorkship>(await GetById(id));
+
+            var oldWorkship = _context.Workships.FirstOrDefault(workship => workship.Id == updateStylistWorkship.WorkshipId);
+
+            var bookingSlotStylists = await _context.BookingSlotStylists
+                .AnyAsync(x =>
+                    x.TimeSlot!.StartTime > oldWorkship!.StartTime &&
+                    x.TimeSlot.StartTime < oldWorkship.EndTime &&
+                    x.StylistId == updateStylistWorkship!.StylistId &&
+                    x.Status == "Booked");
+
+            if (bookingSlotStylists)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = $"Bạn đang có khách hàng đặt lịch trong khoảng thời gian {oldWorkship.StartTime.Value.ToString("HH:mm")} " +
+                        $"- {oldWorkship.EndTime.Value.ToString("HH:mm")} ngày " +
+                        $"{updateStylistWorkship.RegisterDate.Value.ToString("dd/MM/yyyy")} nên không thể cập nhật lịch làm việc"
+                };
+            }
+
             _mapper.Map(requestBody, updateStylistWorkship);
             updateStylistWorkship.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 

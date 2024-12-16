@@ -160,6 +160,23 @@ namespace hair_hamony.Business.Services.StylistServices
                     };
                 }
             }
+            if (requestBody.Status != stylist.Status && requestBody.Status == "Inactive")
+            {
+                var isExistedBooking = await _context.BookingSlotStylists
+                    .AsNoTracking()
+                    .AnyAsync(x =>
+                        (x.BookingDetail.Booking.Status == "Cancel" || x.BookingDetail.Booking.Status == "Finished") &&
+                        x.StylistId == requestBody.Id
+                    );
+                if (isExistedBooking)
+                {
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Bạn đang có lịch cắt tóc nên không khoá tài khoản được, vui lòng hoàn thành lịch cắt tóc trước khi khoá tài khoản"
+                    };
+                }
+            }
 
             var oldAvatar = stylist.Avatar;
             _mapper.Map(requestBody, stylist);
