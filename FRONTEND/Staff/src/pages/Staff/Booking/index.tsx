@@ -201,12 +201,14 @@ export default function Booking() {
       bookingServices
         .listTimeSlots()
         .then((res) => {
+          const currentHours = new Date().getHours();
           let timeSlots = res.data
             .map((item) => ({
               ...item,
               startTime: item.startTime.split(':').slice(0, 2).join(':'),
               endTime: item.endTime.split(':').slice(0, 2).join(':'),
               isActive: false,
+              disabled: item.startTime < currentHours,
             }))
             .sort((a, b) => a.startTime.localeCompare(b.startTime));
           setTimes(timeSlots);
@@ -544,7 +546,7 @@ export default function Booking() {
                     },
                   }}
                   disableHighlightToday
-                  // disablePast
+                  disablePast
                   showDaysOutsideCurrentMonth
                   value={date}
                   onChange={(newValue) => setDate(newValue)}
@@ -573,6 +575,7 @@ export default function Booking() {
                                 ),
                               );
                             }}
+                            disabled={item.disabled}
                           >
                             {item.startTime}
                           </ButtonPrimary>

@@ -27,7 +27,7 @@ import { ReactComponent as IconStylist } from 'assets/pics/icons/icon-stylist.sv
 import { ICONS } from 'configurations/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { active } from '../../../constants/colors';
-import { formatDate } from 'utils/datetime';
+import { formatDate, formatTime } from 'utils/datetime';
 import { isEmpty } from 'lodash';
 import { bookingServices } from 'services/booking.service';
 import { currencyFormat } from 'utils/helper';
@@ -201,12 +201,14 @@ export default function Booking() {
       bookingServices
         .listTimeSlots()
         .then((res) => {
+          const currentHours = new Date().getHours();
           let timeSlots = res.data
             .map((item) => ({
               ...item,
               startTime: item.startTime.split(':').slice(0, 2).join(':'),
               endTime: item.endTime.split(':').slice(0, 2).join(':'),
               isActive: false,
+              disabled: item.startTime < currentHours,
             }))
             .sort((a, b) => a.startTime.localeCompare(b.startTime));
           setTimes(timeSlots);
@@ -565,6 +567,7 @@ export default function Booking() {
                   showDaysOutsideCurrentMonth
                   value={date}
                   onChange={(newValue) => setDate(newValue)}
+                  disablePast
                 />
               </LocalizationProvider>
               {!isLoading ? (
@@ -590,6 +593,7 @@ export default function Booking() {
                                 ),
                               );
                             }}
+                            disabled={item.disabled}
                           >
                             {item.startTime}
                           </ButtonPrimary>
