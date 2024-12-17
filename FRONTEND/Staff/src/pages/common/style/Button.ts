@@ -52,5 +52,10 @@ export const ButtonPrimary = styled(Button)<{
       background: colors.dark,
       color: `${colors.white} !important`,
     },
+    '&.Mui-disabled': {
+      background: '#e5e5e5',
+      borderColor: '#e5e5e5',
+      color: `${colors.white} !important`,
+    },
   }),
 );
