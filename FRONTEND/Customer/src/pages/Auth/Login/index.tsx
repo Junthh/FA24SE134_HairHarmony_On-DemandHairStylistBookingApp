@@ -214,7 +214,7 @@ function Login() {
               textTransform: 'none',
               // width: '25%',
             }}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/home')}
           >
             Quay về trang chủ
           </ButtonPrimary>

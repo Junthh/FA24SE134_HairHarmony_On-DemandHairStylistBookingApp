@@ -4,7 +4,7 @@ export const SettingBoardContainer = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   borderRadius: '8px',
-  height: '150px',
+  height: '100px',
   background: colors.white,
   boxShadow: '0px 4px 20px 5px rgba(0, 0, 0, 0.14)',
   '& .setting-board-item': {

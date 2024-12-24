@@ -260,7 +260,7 @@ export default function Salary() {
                 Lương cơ bản
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Tổng lương
+                Lương tạm tính
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
             </TableRow>

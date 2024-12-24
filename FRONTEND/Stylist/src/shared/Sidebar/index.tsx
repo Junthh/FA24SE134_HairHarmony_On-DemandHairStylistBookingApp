@@ -7,11 +7,11 @@ import SidebarMenu from './SidebarMenu';
 import { SidebarStyled } from './styles';
 
 const routes = [
-  {
-    path: STYLIST_PATH.TIMEKEEPING,
-    name: 'Đăng kí lịch làm',
-    icon: <ICONS.IconTimekeeping />,
-  },
+  // {
+  //   path: STYLIST_PATH.TIMEKEEPING,
+  //   name: 'Đăng kí lịch làm',
+  //   icon: <ICONS.IconTimekeeping />,
+  // },
   {
     path: STYLIST_PATH.SCHEDULE_LIST,
     name: 'Danh sách đặt lịch',

@@ -211,7 +211,7 @@ export default function Dashboard() {
             </Typography>
           </Box>
         </Box>
-        <Divider orientation="vertical" variant="middle" flexItem></Divider>
+        {/* <Divider orientation="vertical" variant="middle" flexItem></Divider>
         <Box className="card-total_content">
           <Avatar sx={{ background: '#FFC733', width: 60, height: 60 }}>
             {' '}
@@ -225,7 +225,7 @@ export default function Dashboard() {
               Tổng lương nhân viên
             </Typography>
           </Box>
-        </Box>
+        </Box> */}
         <Divider orientation="vertical" variant="middle" flexItem></Divider>
         <Box className="card-total_content">
           <Avatar sx={{ background: '#285d9a48', width: 60, height: 60 }}>

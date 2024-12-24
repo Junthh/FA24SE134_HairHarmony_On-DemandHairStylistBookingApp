@@ -298,14 +298,14 @@ export default function EmployeeStylistList() {
                 placeholder="Nhập experience"
                 label={'Experience'}
               ></TextFieldElement>
-              <TextFieldElement
+              {/* <TextFieldElement
                 name="kpi"
                 control={control}
                 type="number"
                 placeholder="Nhập KPI"
                 label={'Số KPI'}
                 //   onKeyUp={handleKeyup}
-              />
+              /> */}
               <CurrencyFieldElement
                 name="salary"
                 control={control}
@@ -397,9 +397,9 @@ export default function EmployeeStylistList() {
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Experience
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              {/* <StyledTableCell style={{ color: 'white' }} align="center">
                 KPI
-              </StyledTableCell>
+              </StyledTableCell> */}
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Lương
               </StyledTableCell>
@@ -445,7 +445,7 @@ export default function EmployeeStylistList() {
                 <StyledTableCell align="center">{row.phoneNumber}</StyledTableCell>
                 <StyledTableCell align="center">{row.level}</StyledTableCell>
                 <StyledTableCell align="center">{row.experience}</StyledTableCell>
-                <StyledTableCell align="center">{row.kpi}</StyledTableCell>
+                {/* <StyledTableCell align="center">{row.kpi}</StyledTableCell> */}
                 <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell>
                 <StyledTableCell align="center">
                   <Rating readOnly precision={0.5} name="read-only" value={row.rating} />

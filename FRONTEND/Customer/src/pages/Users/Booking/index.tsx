@@ -614,69 +614,77 @@ export default function Booking() {
               </Typography>
               <Box height={25}></Box>
               <Grid container spacing={2}>
-                {stylists.map((item, index) => {
-                  return index === 0 ? (
-                    <Grid item xs={4}>
-                      <BoxStylistCard
-                        className={item.isActive ? 'active' : ''}
-                        onClick={() => {
-                          setStylists((prevStylist) =>
-                            prevStylist.map((sty) =>
-                              sty.id === item.id
-                                ? { ...sty, isActive: true }
-                                : { ...sty, isActive: false },
-                            ),
-                          );
-                        }}
-                      >
-                        <IconStylist className={item.isActive ? 'active' : ''} />
-                        <Typography variant="h4" fontWeight={700}>
-                          Chọn stylist bất kỳ
-                        </Typography>
-                      </BoxStylistCard>
-                    </Grid>
-                  ) : (
-                    <Grid item xs={4}>
-                      <BoxStylistCard
-                        className={item.isActive ? 'active' : ''}
-                        onClick={() => {
-                          setStylists((prevStylist) =>
-                            prevStylist.map((sty) =>
-                              sty.id === item.id
-                                ? { ...sty, isActive: true }
-                                : { ...sty, isActive: false },
-                            ),
-                          );
-                        }}
-                      >
-                        <Avatar src={item.avatar} sx={{ width: 70, height: 70 }}></Avatar>
-                        <Box height={20}></Box>
-                        <Typography variant="h4" fontWeight={700}>
-                          {item.fullName}
-                        </Typography>
-                        <Typography variant="body1" color={colors.grey2}>
-                          {item.level}
-                        </Typography>
-                        <Rating precision={0.5} value={item.rating} />
-                        {item.expertFee && (
-                          <Box
-                            display={'flex'}
-                            flexDirection={'column'}
-                            justifyContent={'center'}
-                            alignItems={'center'}
-                          >
-                            <Typography variant="small1" color={colors.grey2}>
-                              Phí chuyên gia
-                            </Typography>
-                            <Typography variant="small1" color={colors.grey2}>
-                              {item.expertFee}%
-                            </Typography>
-                          </Box>
-                        )}
-                      </BoxStylistCard>
-                    </Grid>
-                  );
-                })}
+                {stylists.length === 1 ? (
+                  <>
+                    <Typography variant="h4" fontWeight={700} color="red">
+                      Không có stylist nào phù hợp
+                    </Typography>
+                  </>
+                ) : (
+                  stylists.map((item, index) => {
+                    return index === 0 ? (
+                      <Grid item xs={4}>
+                        <BoxStylistCard
+                          className={item.isActive ? 'active' : ''}
+                          onClick={() => {
+                            setStylists((prevStylist) =>
+                              prevStylist.map((sty) =>
+                                sty.id === item.id
+                                  ? { ...sty, isActive: true }
+                                  : { ...sty, isActive: false },
+                              ),
+                            );
+                          }}
+                        >
+                          <IconStylist className={item.isActive ? 'active' : ''} />
+                          <Typography variant="h4" fontWeight={700}>
+                            Chọn stylist bất kỳ
+                          </Typography>
+                        </BoxStylistCard>
+                      </Grid>
+                    ) : (
+                      <Grid item xs={4}>
+                        <BoxStylistCard
+                          className={item.isActive ? 'active' : ''}
+                          onClick={() => {
+                            setStylists((prevStylist) =>
+                              prevStylist.map((sty) =>
+                                sty.id === item.id
+                                  ? { ...sty, isActive: true }
+                                  : { ...sty, isActive: false },
+                              ),
+                            );
+                          }}
+                        >
+                          <Avatar src={item.avatar} sx={{ width: 70, height: 70 }}></Avatar>
+                          <Box height={20}></Box>
+                          <Typography variant="h4" fontWeight={700}>
+                            {item.fullName}
+                          </Typography>
+                          <Typography variant="body1" color={colors.grey2}>
+                            {item.level}
+                          </Typography>
+                          <Rating precision={0.5} value={item.rating} />
+                          {item.expertFee && (
+                            <Box
+                              display={'flex'}
+                              flexDirection={'column'}
+                              justifyContent={'center'}
+                              alignItems={'center'}
+                            >
+                              <Typography variant="small1" color={colors.grey2}>
+                                Phí chuyên gia
+                              </Typography>
+                              <Typography variant="small1" color={colors.grey2}>
+                                {item.expertFee}%
+                              </Typography>
+                            </Box>
+                          )}
+                        </BoxStylistCard>
+                      </Grid>
+                    );
+                  })
+                )}
               </Grid>
             </>
           ) : currentStep === 3 ? (
@@ -897,6 +905,7 @@ export default function Booking() {
                 padding={'9px 40px'}
                 borderradius={9}
                 onClick={() => handleChangeStep()}
+                disabled={stylists.length === 1 && currentStep === 2}
               >
                 {currentStep === 3 || currentStep === 4 ? 'Xác nhận' : 'Tiếp tục'}
               </ButtonPrimary>

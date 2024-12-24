@@ -59,7 +59,7 @@ function Login() {
         authContext.saveToken({ token, refreshToken });
       }
       dispatch(setLoading(false));
-      navigate(STYLIST_PATH.TIMEKEEPING);
+      navigate(STYLIST_PATH.SCHEDULE_LIST);
     } catch (error) {
       dispatch(setLoading(false));
       showToast('error', handleError(error.msg || error));
