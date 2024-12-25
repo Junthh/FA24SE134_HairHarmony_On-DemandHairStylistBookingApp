@@ -13,6 +13,8 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import PixIcon from '@mui/icons-material/Pix';
 import CategoryIcon from '@mui/icons-material/Category';
 import NetworkPingIcon from '@mui/icons-material/NetworkPing';
+import AccessTime from '@mui/icons-material/AccessTime';
+
 import { CalendarIcon } from '@mui/x-date-pickers';
 //
 export enum OWNER_PATH {
@@ -34,6 +36,7 @@ export enum OWNER_PATH {
   FEEDBACK = '/feed-back',
   TRANSACTION = '/transaction',
   KPI_LIST = '/kpis',
+  TIMEKEEPING = '/timekeeping',
 }
 
 export const OWNER_PATH_SIDEBAR = [
@@ -41,6 +44,11 @@ export const OWNER_PATH_SIDEBAR = [
     title: 'Thống kê',
     path: OWNER_PATH.DASHBOARD,
     icon: <DashboardIcon />,
+  },
+  {
+    path: OWNER_PATH.TIMEKEEPING,
+    title: 'Đăng kí lịch làm việc',
+    icon: <AccessTime />,
   },
   {
     title: 'Danh sách đặt lịch',

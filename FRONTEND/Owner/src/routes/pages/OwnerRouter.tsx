@@ -1,6 +1,7 @@
 import { LoadingOverlay } from 'components/Common/Spinner';
 import { OWNER_PATH } from 'configurations/paths/paths';
 import AuthProvider from 'pages/Auth/AuthProvider';
+import RegisterWorkSchedule from 'pages/Owner/RegisterWorkSchedule';
 import StaffSalary from 'pages/Owner/StaffSalary';
 import React, { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
@@ -115,6 +116,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.KPI_LIST}`,
       element: <KpiList />,
+    },
+    {
+      path: `${OWNER_PATH.TIMEKEEPING}`,
+      element: <RegisterWorkSchedule />,
     },
   ],
 };

@@ -8,11 +8,20 @@ import SettingBoard from 'pages/common/SettingAccount/SettingBoard';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
-import { selectCredentialInfo, setCategorys, setRoles, setServices } from 'redux/Reducer';
+import {
+  selectCredentialInfo,
+  setCategorys,
+  setRoles,
+  setServices,
+  setStylists,
+  setWorkShip,
+} from 'redux/Reducer';
 import { categorysServices } from 'services/categorys.service';
 import { rolesServices } from 'services/roles.service';
 import { servicesService } from 'services/services.service';
 import SideBar from 'shared/Sidebar';
+import { workshipService } from 'services/workship.service';
+import { employeeStylistServices } from 'services/employee-stylist.services';
 
 const HeaderStyled = styled(Box)({
   height: 80,
@@ -97,10 +106,43 @@ function Owner() {
     }
   };
 
+  const fetchAndSetWorkshipData = async (service, setter, dispatch) => {
+    try {
+      const res = await service.list();
+      const data = res.data.reduce((acc, item) => {
+        acc[item.id] = {
+          startTime: item.startTime,
+          endTime: item.endTime,
+          id: item.id,
+        };
+        return acc;
+      }, {});
+      dispatch(setter(data));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  const fetchAndSetStylistData = async (service, setter, dispatch) => {
+    try {
+      const res = await service.list();
+      const data = res.data.reduce((acc, item) => {
+        acc[item.id] = {
+          fullName: item.fullName,
+          id: item.id,
+        };
+        return acc;
+      }, {});
+      dispatch(setter(data));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([
-        // fetchAndSetData(rolesServices, setRoles, dispatch),
+        fetchAndSetStylistData(employeeStylistServices, setStylists, dispatch),
+        fetchAndSetWorkshipData(workshipService, setWorkShip, dispatch),
         fetchAndSetData(categorysServices, setCategorys, dispatch),
         fetchAndSetData(servicesService, setServices, dispatch),
       ]);
@@ -118,7 +160,6 @@ function Owner() {
       }
     });
   }, [location]);
-
 
   return (
     <SideBar>

@@ -14,6 +14,12 @@ interface AppState {
   services: {
     [key: string]: { name: string; createdDate: string };
   };
+  workShip: {
+    [key: string]: { id: string; startTime: string; endTime: string };
+  };
+  stylists: {
+    [key: string]: { id: string; fullName: string };
+  };
 }
 
 // Init state
@@ -24,6 +30,8 @@ const initialState: AppState = {
   roles: {},
   categorys: {},
   services: {},
+  workShip: {},
+  stylists: {},
 };
 
 // reducer callback
@@ -46,6 +54,15 @@ const reducers = {
   setServices(state: AppState, action: PayloadAction<{}>) {
     state.services = action.payload;
   },
+  setWorkShip(
+    state: AppState,
+    action: PayloadAction<{ [key: string]: { id: string; startTime: string; endTime: string } }>,
+  ) {
+    state.workShip = action.payload;
+  },
+  setStylists(state: AppState, action: PayloadAction<{}>) {
+    state.stylists = action.payload;
+  },
 };
 
 export const appSlice = createSlice({
@@ -54,14 +71,25 @@ export const appSlice = createSlice({
   reducers,
 });
 
-export const { setLoading, setActiveStep, setCredentialInfo, setRoles, setCategorys, setServices } =
-  appSlice.actions;
+export const {
+  setLoading,
+  setActiveStep,
+  setCredentialInfo,
+  setRoles,
+  setCategorys,
+  setServices,
+  setStylists,
+  setWorkShip,
+} = appSlice.actions;
 
 // Selector
 export const selectLoading = (state: { app: AppState }) => state.app?.loading;
 export const selectCredentialInfo = (state: { app: AppState }) => state.app?.credentialInfo;
 export const selectRoles = (state: { app: AppState }) => state.app?.roles;
 export const selectCategorys = (state: { app: AppState }) => state.app?.categorys;
+export const selectWorkship = (state: { app: AppState }) => state.app?.workShip;
+export const selectStylist = (state: { app: AppState }) => state.app?.stylists;
+
 export const selectServices = (state: { app: AppState }) => state.app?.services;
 
 export const appSelector = (state: { app: AppState }) => state.app;
