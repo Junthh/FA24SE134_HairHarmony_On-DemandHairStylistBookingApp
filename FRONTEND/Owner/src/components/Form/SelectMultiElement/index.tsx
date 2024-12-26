@@ -1,82 +1,154 @@
-import React from 'react';
-import { Control, Controller } from 'react-hook-form';
-import {
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Checkbox,
-  ListItemText,
-  OutlinedInput,
-  FormHelperText,
-  Typography,
-} from '@mui/material';
+import styled from '@emotion/styled';
+import CloseIcon from '@mui/icons-material/Close';
+import { FormControl, IconButton, InputAdornment, MenuItem, Typography } from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
 import { BaseSelect } from 'components/Base/BaseSelect';
-
-interface ISelectMultiElementProps {
+import * as colors from 'constants/colors';
+import { isEmpty } from 'lodash';
+import { useEffect, useRef, useState } from 'react';
+import { Control, Controller } from 'react-hook-form';
+export interface ISelectElementProps {
   name: string;
-  label: string;
-  control: Control<any>;
-  options: { value: any; label: string }[];
+  label?: any;
   placeholder?: string;
-  disabled?: boolean;
+  control: Control;
+  options: any;
+  handleChange?: (e: any) => void;
 }
 
-const SelectMultiElement: React.FC<ISelectMultiElementProps> = ({
-  name,
-  label,
-  control,
-  options,
-  placeholder = 'Select...',
-  disabled = false,
-}) => {
+interface options {
+  value: any;
+  label: any;
+}
+const PlaceholderStyled = styled(`div`)<{ isLabel; error }>(({ isLabel, error }) => ({
+  color: colors.placeholder,
+  position: 'absolute',
+  top:
+    isLabel === 'false' && !error
+      ? '62%'
+      : error && isLabel === 'true'
+      ? '20%'
+      : error && isLabel === 'false'
+      ? '50%'
+      : '25%',
+  left: '15px',
+  fontWeight: 100,
+}));
+
+const Placeholder = ({ children, isLabel, error }) => {
   return (
-    <FormControl fullWidth variant="outlined" sx={{ position: 'relative' }}>
-      {label && (
-        <Typography
-          sx={{
-            marginLeft: 1,
-            marginBottom: '6px',
-            color: '#666666',
-          }}
-        >
-          {label}
-        </Typography>
-      )}
-      <Controller
-        name={name}
-        control={control}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <>
+    <PlaceholderStyled isLabel={isLabel} error={error}>
+      {children}
+    </PlaceholderStyled>
+  );
+};
+const SelectElement: React.FunctionComponent<ISelectElementProps> = ({
+  label,
+  placeholder = '',
+  options,
+  props,
+  disabled = false,
+  name,
+  control,
+  handleChange,
+}: any) => {
+  const [reSize, setReSize] = useState<number>(0);
+  const [width, setWidth] = useState<number>(0);
+  const selectRef: any = useRef();
+  useEffect(() => {
+    const listener = () => {
+      setTimeout(() => {
+        setReSize(window.innerWidth);
+      }, 1000);
+    };
+
+    window.addEventListener('resize', listener);
+
+    return () => {
+      window.removeEventListener('resize', listener);
+    };
+  }, []);
+  useEffect(() => {
+    setWidth(selectRef && selectRef.current?.offsetWidth - 38);
+  }, [reSize]);
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, onBlur, value, ...fieldRest }, fieldState: { error } }) => {
+        // set margin paper when have value
+        const getMenuProps = (selectRef: any) => {
+          return {
+            PaperProps: {
+              style: {
+                width: selectRef.current?.offsetWidth,
+              },
+            },
+          };
+        };
+        return (
+          <FormControl fullWidth sx={{ position: 'relative' }}>
+            {label && (
+              <Typography
+                sx={{
+                  marginLeft: 1,
+                  marginBottom: '6px',
+                  color: '#666666',
+                }}
+              >
+                {label}
+              </Typography>
+            )}
+            {placeholder && isEmpty(value) && (
+              <Placeholder isLabel={isEmpty(label) ? 'true' : 'false'} error={!!error}>
+                {placeholder}
+              </Placeholder>
+            )}
             <BaseSelect
-              multiple
+              onChange={(e) => {
+                onChange(e);
+                handleChange && handleChange(e);
+              }}
               displayEmpty
-              value={value || []}
-              onChange={(event) => onChange(event.target.value)}
-              renderValue={(selected) =>
-                (selected as string[])
-                  ?.map((value) => {
-                    const selectedOption = options.find((option) => option.value === value);
-                    return selectedOption ? selectedOption.label : value;
-                  })
-                  .join(', ')
-              }
+              onBlur={onBlur}
+              value={value || ''}
               disabled={disabled}
               error={!!error}
+              ref={selectRef}
+              endAdornment={
+                value && !disabled ? (
+                  <InputAdornment position="end" sx={{ paddingRight: '12px' }}>
+                    <IconButton onClick={onChange}>
+                      <CloseIcon sx={{ fontSize: '15px' }} />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null
+              }
+              // set style for paper
+              MenuProps={getMenuProps(selectRef)}
+              {...props}
             >
-              {options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  <Checkbox checked={(value || []).includes(option.value)} />
-                  <ListItemText primary={option.label} />
-                </MenuItem>
-              ))}
+              {options &&
+                options.map((option: options, index: any) => (
+                  <MenuItem key={index} value={option.value}>
+                    <Typography
+                      sx={{
+                        width: width,
+                        whiteSpace: 'initial',
+                      }}
+                    >
+                      {option.label}
+                    </Typography>
+                  </MenuItem>
+                ))}
             </BaseSelect>
             {error && <FormHelperText error>{error.message}</FormHelperText>}
-          </>
-        )}
-      />
-    </FormControl>
+          </FormControl>
+        );
+      }}
+    />
   );
 };
 
-export default SelectMultiElement;
+export default SelectElement;

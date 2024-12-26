@@ -451,7 +451,7 @@ export default function RegisterWorkSchedule() {
                 <TableBody>
                   {rows.map((row, i) => (
                     <StyledTableRow key={i}>
-                      <StyledTableCell align="left">{row.stylist.fullName}</StyledTableCell>
+                      <StyledTableCell align="left">{row?.stylist?.fullName}</StyledTableCell>
                       <StyledTableCell align="center">
                         {formatDate(row.registerDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
