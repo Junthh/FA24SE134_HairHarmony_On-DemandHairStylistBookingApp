@@ -8,6 +8,7 @@ using hair_hamony.Business.Services.StylistSalaryServices;
 using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.Bookings;
+using hair_hamony.Business.ViewModels.Stylists;
 using hair_hamony.Business.ViewModels.TimeSlots;
 using hair_hamony.Data.Entities;
 using home_travel.Business.Services.VnPayServices;
@@ -144,8 +145,33 @@ namespace hair_hamony.Business.Services.BookingServices
                 Stylist? stylist;
                 if (requestBody.IsRandomStylist == true)
                 {
-                    var stylistFreeTimes = await _bookingSlotStylistService
-                       .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
+                    List<GetStylistModel> stylistFreeTimes = [];
+                    if(requestBody.Services != null)
+                    {
+                        for (int i = 0; i < requestBody.Services.Count; i++)
+                        {
+                            var stylistFreeTime = await _bookingSlotStylistService
+                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId, requestBody.Services[i].Id.Value);
+
+                            foreach (var item in stylistFreeTime)
+                            {
+                                stylistFreeTimes.Add(item);
+                            }
+                        }
+                    }
+                    if (requestBody.Combos != null)
+                    {
+                        for (int i = 0; i < requestBody.Combos.Count; i++)
+                        {
+                            var stylistFreeTime = await _bookingSlotStylistService
+                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId, requestBody.Combos[i].Id.Value);
+
+                            foreach (var item in stylistFreeTime)
+                            {
+                                stylistFreeTimes.Add(item);
+                            }
+                        }
+                    }
 
                     stylist = _mapper.Map<Stylist>(stylistFreeTimes.FirstOrDefault());
                 }
@@ -280,7 +306,7 @@ namespace hair_hamony.Business.Services.BookingServices
                                     ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
                                 };
                             }
-                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id, serviceModel.Id.Value);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
@@ -343,7 +369,7 @@ namespace hair_hamony.Business.Services.BookingServices
                                     ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
                                 };
                             }
-                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id, comboModel.Id.Value);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
@@ -383,10 +409,10 @@ namespace hair_hamony.Business.Services.BookingServices
             }
         }
 
-        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
+        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId, Guid serviceId)
         {
             var stylists = await _bookingSlotStylistService
-                    .GetListStylistFreetime(bookingDate, timeSlotId);
+                    .GetListStylistFreetime(bookingDate, timeSlotId, serviceId);
 
             var isStylistFreeTime = stylists.Any(stylist => stylist.Id == stylistId);
 
