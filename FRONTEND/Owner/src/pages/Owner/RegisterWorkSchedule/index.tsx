@@ -48,6 +48,7 @@ import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement'
 import SelectMultiElement from 'components/Form/SelectMultiElement';
 import { handleError } from 'utils/helper';
 import AutocompleteElement from 'components/Form/AutocompleteElement';
+import { isEmpty } from 'lodash';
 const RegisterWorkScheduleStyled = styled(Box)({
   padding: '10px 20px',
   '& .card-total': {
@@ -105,13 +106,18 @@ export default function RegisterWorkSchedule() {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   //
-  const schemaUser = Yup.object().shape<any>({});
   const defaultValues = {
     id: '',
     registerDate: new Date(),
-    workshipIds: '',
+    workshipIds: null,
     stylistId: '',
   };
+  const schemaUser = Yup.object().shape<any>({
+    workshipIds: isEmpty(selectedRow)
+      ? Yup.array().required(`Vui lòng chọn ca làm việc.`)
+      : Yup.string().required(`Vui lòng chọn ca làm việc.`),
+    stylistId: Yup.string().required(`Vui lòng chọn ca làm việc.`),
+  });
   const formRegisterWorkship = useForm<any>({
     defaultValues,
     mode: 'onChange',
@@ -324,19 +330,19 @@ export default function RegisterWorkSchedule() {
                   placeholder="Chọn ca làm việc"
                 />
               )}
-              <AutocompleteElement
+              <SelectElement
                 label={'Chọn stylist'}
                 name="stylistId"
-                matchId
+                control={control}
                 options={
                   (stylists &&
                     Object.keys(stylists).map((id) => ({
-                      id: id,
+                      value: id,
                       label: `${stylists[id].fullName}`,
                     }))) ||
                   []
                 }
-              ></AutocompleteElement>
+              ></SelectElement>
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
                   Lưu

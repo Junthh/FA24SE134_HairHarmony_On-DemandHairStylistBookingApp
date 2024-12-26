@@ -55,7 +55,7 @@ const SelectMultiElement: React.FC<ISelectMultiElementProps> = ({
               onChange={(event) => onChange(event.target.value)}
               renderValue={(selected) =>
                 (selected as string[])
-                  .map((value) => {
+                  ?.map((value) => {
                     const selectedOption = options.find((option) => option.value === value);
                     return selectedOption ? selectedOption.label : value;
                   })
