@@ -46,7 +46,9 @@ function CardContentImage(props: CardContentImageProps) {
   return type === 'NEWS' ? (
     <CardContentAboutImagesSyled>
       <img src={item.thumbnail} alt="" />
-      <Typography padding={2}>{item.title}</Typography>
+      <Typography padding={2} sx={{ minHeight: '100px' }}>
+        {item.title}
+      </Typography>
       <Divider variant="fullWidth" style={{ width: '100%' }} />
       <Typography
         display={'flex'}

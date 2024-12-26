@@ -80,11 +80,11 @@ export const OWNER_PATH_SIDEBAR = [
     path: OWNER_PATH.EMPLOYEE_SALARY,
     icon: <PaidIcon />,
   },
-  {
-    title: 'Lương staff',
-    path: OWNER_PATH.STAFF_SALARY,
-    icon: <PaidIcon />,
-  },
+  // {
+  //   title: 'Lương staff',
+  //   path: OWNER_PATH.STAFF_SALARY,
+  //   icon: <PaidIcon />,
+  // },
   {
     title: 'Loại dịch vụ',
     path: OWNER_PATH.CATEGORIES,

@@ -80,7 +80,7 @@ export default function EmployeeStylistList() {
     password: Yup.string().required(`Vui lòng nhập mật khẩu.`),
     level: Yup.string().required(`Vui lòng nhập cấp.`),
     experience: Yup.string().required(`Vui lòng nhập kinh nghiệm.`),
-    kpi: Yup.string().required(`Vui lòng nhập kpi.`),
+    // kpi: Yup.string().required(`Vui lòng nhập kpi.`),
     salary: Yup.string().required(`Vui lòng nhập lương.`),
     status: Yup.string().required(`Vui lòng nhập trạng thái.`),
   });
@@ -91,7 +91,7 @@ export default function EmployeeStylistList() {
     password: '',
     level: '',
     experience: '',
-    kpi: '',
+    // kpi: '',
     salary: '',
     status: '',
   };
@@ -162,6 +162,7 @@ export default function EmployeeStylistList() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
+      delete row.kpi;
       formUser.reset(row);
       setImage(row.avatar);
       openModal();
@@ -202,6 +203,7 @@ export default function EmployeeStylistList() {
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       const id = data.id;
+      console.log(data);
       data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));

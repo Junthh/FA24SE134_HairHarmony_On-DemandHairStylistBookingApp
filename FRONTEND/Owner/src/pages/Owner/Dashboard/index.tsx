@@ -283,7 +283,7 @@ export default function Dashboard() {
             />
           </Box>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <Box className="card-analyst">
             <Typography variant="h4" fontWeight={700} fontFamily={'Lato !important'}>
               Tổng lương stylist
@@ -302,7 +302,7 @@ export default function Dashboard() {
             /> */}
           </Box>
         </Grid>
-        <Grid item xs={6}>
+        {/* <Grid item xs={6}>
           <Box className="card-analyst">
             <Typography variant="h4" fontWeight={700} fontFamily={'Lato !important'}>
               Tổng lương nhân viên
@@ -313,14 +313,14 @@ export default function Dashboard() {
               type="bar"
               height={350}
             />
-            {/* <ReactApexChart
+            <ReactApexChart
               options={optionsArea}
               series={optionsArea.series} // Series data
               type="area"
               height={optionsArea.chart.height}
-            /> */}
+            />
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </TimekeepingStyled>
   );
