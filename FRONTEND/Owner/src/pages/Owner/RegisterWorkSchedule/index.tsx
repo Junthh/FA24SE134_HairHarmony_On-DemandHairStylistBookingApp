@@ -115,7 +115,7 @@ export default function RegisterWorkSchedule() {
     workshipIds: isEmpty(selectedRow)
       ? Yup.array().required(`Vui lòng chọn ca làm việc.`)
       : Yup.string().required(`Vui lòng chọn ca làm việc.`),
-    stylistId: Yup.string().required(`Vui lòng chọn ca làm việc.`),
+    stylistId: Yup.string().required(`Vui lòng chọn stylist.`),
   });
   const formRegisterWorkship = useForm<any>({
     defaultValues,
