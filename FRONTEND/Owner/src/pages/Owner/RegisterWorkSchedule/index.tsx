@@ -107,7 +107,6 @@ export default function RegisterWorkSchedule() {
   //
   const schemaUser = Yup.object().shape<any>({});
   const defaultValues = {
-    id: '',
     registerDate: new Date(),
     workshipIds: '',
     stylistId: '',
@@ -324,19 +323,20 @@ export default function RegisterWorkSchedule() {
                   placeholder="Chọn ca làm việc"
                 />
               )}
-              <AutocompleteElement
+              <SelectElement
                 label={'Chọn stylist'}
                 name="stylistId"
-                matchId
+                control={control}
+                // matchId
                 options={
                   (stylists &&
                     Object.keys(stylists).map((id) => ({
-                      id: id,
+                      value: id,
                       label: `${stylists[id].fullName}`,
                     }))) ||
                   []
                 }
-              ></AutocompleteElement>
+              ></SelectElement>
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
                   Lưu
@@ -417,6 +417,9 @@ export default function RegisterWorkSchedule() {
                 <TableHead style={{ background: '#2D3748' }}>
                   <TableRow>
                     <StyledTableCell style={{ color: 'white' }} align="left">
+                      Stylist
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày đăng ký
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
@@ -443,7 +446,8 @@ export default function RegisterWorkSchedule() {
                 <TableBody>
                   {rows.map((row, i) => (
                     <StyledTableRow key={i}>
-                      <StyledTableCell align="left">
+                      <StyledTableCell align="left">{row.stylist.fullName}</StyledTableCell>
+                      <StyledTableCell align="center">
                         {formatDate(row.registerDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
                       <StyledTableCell align="center">

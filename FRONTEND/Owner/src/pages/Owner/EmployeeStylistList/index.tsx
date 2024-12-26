@@ -91,7 +91,7 @@ export default function EmployeeStylistList() {
     password: '',
     level: '',
     experience: '',
-    kpi: '',
+    // kpi: '',
     salary: '',
     status: '',
   };
@@ -162,6 +162,7 @@ export default function EmployeeStylistList() {
   const handleEdit = useCallback(
     (row) => {
       setAnchorEl(null);
+      delete row.kpi;
       formUser.reset(row);
       setImage(row.avatar);
       openModal();
@@ -202,6 +203,7 @@ export default function EmployeeStylistList() {
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       const id = data.id;
+      console.log(data);
       data = objectToFormData(data);
       if (selectedRow) {
         dispatch(setLoading(true));

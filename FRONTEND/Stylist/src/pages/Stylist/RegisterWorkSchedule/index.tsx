@@ -351,7 +351,7 @@ export default function RegisterWorkSchedule() {
           </FormContainer>
         </Box>
         <Box className="search-right">
-          <ButtonPrimary
+          {/* <ButtonPrimary
             severity="primary"
             padding={'9px 14px'}
             onClick={() => {
@@ -362,7 +362,7 @@ export default function RegisterWorkSchedule() {
           >
             <ControlPointIcon />
             &nbsp; Đăng ký lịch làm việc
-          </ButtonPrimary>
+          </ButtonPrimary> */}
         </Box>
       </BoxHeaderSearch>
       <Box height={20}></Box>
@@ -412,7 +412,7 @@ export default function RegisterWorkSchedule() {
                     <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày cập nhật
                     </StyledTableCell>
-                    <StyledTableCell
+                    {/* <StyledTableCell
                       style={{
                         color: 'white',
                         position: 'sticky',
@@ -421,7 +421,7 @@ export default function RegisterWorkSchedule() {
                         zIndex: 1,
                       }}
                       align="left"
-                    ></StyledTableCell>
+                    ></StyledTableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -440,7 +440,7 @@ export default function RegisterWorkSchedule() {
                       <StyledTableCell align="center">
                         {formatDate(row.updatedDate, 'dd/MM/yyyy HH:mm')}
                       </StyledTableCell>
-                      <StyledTableCell
+                      {/* <StyledTableCell
                         style={{
                           color: 'white',
                           position: 'sticky',
@@ -458,7 +458,7 @@ export default function RegisterWorkSchedule() {
                             <ICONS.IconThreeDot />
                           </IconButton>
                         ) : null}
-                      </StyledTableCell>
+                      </StyledTableCell> */}
                     </StyledTableRow>
                   ))}
                 </TableBody>
