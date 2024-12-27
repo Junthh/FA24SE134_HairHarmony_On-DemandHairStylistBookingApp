@@ -179,6 +179,11 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                 // nếu trong tháng này chưa có booking thì tạo để có dữ liệu so sánh tổng booking trong tháng
                 if (stylistSalary == null)
                 {
+                    var kpi = _context.Kpis.FirstOrDefault(x =>
+                                x.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                                && x.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()
+                                )
+                            );
                     await _stylistSalaryService.Create(new ViewModels.StylistSalarys.CreateStylistSalaryModel
                     {
                         Month = monthCurrent,
@@ -186,7 +191,8 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                         StylistId = item.Id,
                         TotalBooking = 0,
                         TotalCommission = 0,
-                        TotalSalary = 0
+                        TotalSalary = 0,
+                        Kpi = kpi.Value.Value
                     });
                 }
             }

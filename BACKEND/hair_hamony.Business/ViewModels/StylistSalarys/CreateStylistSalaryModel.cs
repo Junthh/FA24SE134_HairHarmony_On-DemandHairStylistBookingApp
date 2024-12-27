@@ -8,5 +8,6 @@
         public double? TotalCommission { get; set; }
         public double? TotalSalary { get; set; }
         public Guid? StylistId { get; set; }
+        public int Kpi { get; set; }
     }
 }
