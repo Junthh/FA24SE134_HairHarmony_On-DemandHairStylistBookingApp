@@ -151,7 +151,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = 0; i < requestBody.Services.Count; i++)
                         {
                             var stylistFreeTime = await _bookingSlotStylistService
-                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId, requestBody.Services[i].Id.Value);
+                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
 
                             foreach (var item in stylistFreeTime)
                             {
@@ -164,7 +164,7 @@ namespace hair_hamony.Business.Services.BookingServices
                         for (int i = 0; i < requestBody.Combos.Count; i++)
                         {
                             var stylistFreeTime = await _bookingSlotStylistService
-                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId, requestBody.Combos[i].Id.Value);
+                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
 
                             foreach (var item in stylistFreeTime)
                             {
@@ -306,7 +306,7 @@ namespace hair_hamony.Business.Services.BookingServices
                                     ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
                                 };
                             }
-                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id, serviceModel.Id.Value);
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
@@ -369,7 +369,7 @@ namespace hair_hamony.Business.Services.BookingServices
                                     ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
                                 };
                             }
-                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id, comboModel.Id.Value);
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
@@ -409,10 +409,10 @@ namespace hair_hamony.Business.Services.BookingServices
             }
         }
 
-        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId, Guid serviceId)
+        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
         {
             var stylists = await _bookingSlotStylistService
-                    .GetListStylistFreetime(bookingDate, timeSlotId, serviceId);
+                    .GetListStylistFreetime(bookingDate, timeSlotId);
 
             var isStylistFreeTime = stylists.Any(stylist => stylist.Id == stylistId);
 
