@@ -166,10 +166,21 @@ export default function Booking() {
       const timeSlotId = times.filter((time) => time.isActive)[0]?.id;
       const bookingDate = formatDate(new Date(date.toString()), 'yyyy-MM-dd');
       dispatch(setLoading(true));
+      const serviceChecked = Object.entries(services)
+        .filter(([, option]: any) => option.checked)
+        .map(([id, option]: any) => ({ id, ...option }));
+      const combos = serviceChecked
+        .filter((item) => item.categoryId === categories[0].id)
+        .map((item) => item.id);
+      const servicesResult = serviceChecked
+        .filter((item) => item.categoryId !== categories[0].id)
+        .map((item) => item.id);
+      dispatch(setLoading(true));
       bookingServices
         .listStylistFreeTime({
           timeSlotId,
           bookingDate,
+          serviceIds: [...combos, ...servicesResult],
         })
         .then((res) => {
           const defaultStylist = [
