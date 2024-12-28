@@ -146,30 +146,48 @@ namespace hair_hamony.Business.Services.BookingServices
                 if (requestBody.IsRandomStylist == true)
                 {
                     List<GetStylistModel> stylistFreeTimes = [];
-                    if(requestBody.Services != null)
+                    if (requestBody.Services != null)
                     {
-                        for (int i = 0; i < requestBody.Services.Count; i++)
-                        {
-                            var stylistFreeTime = await _bookingSlotStylistService
-                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
+                        //for (int i = 0; i < requestBody.Services.Count; i++)
+                        //{
+                        //    var stylistFreeTime = await _bookingSlotStylistService
+                        //        .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
 
-                            foreach (var item in stylistFreeTime)
-                            {
-                                stylistFreeTimes.Add(item);
-                            }
+                        //    foreach (var item in stylistFreeTime)
+                        //    {
+                        //        stylistFreeTimes.Add(item);
+                        //    }
+                        //}
+
+                        var serviceIds = requestBody.Services.Select(service => service.Id!.Value).ToList();
+                        var stylistFreeTime = await _bookingSlotStylistService
+                            .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId, serviceIds);
+
+                        foreach (var item in stylistFreeTime)
+                        {
+                            stylistFreeTimes.Add(item);
                         }
                     }
                     if (requestBody.Combos != null)
                     {
-                        for (int i = 0; i < requestBody.Combos.Count; i++)
-                        {
-                            var stylistFreeTime = await _bookingSlotStylistService
-                                .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
+                        //for (int i = 0; i < requestBody.Combos.Count; i++)
+                        //{
+                        //    var stylistFreeTime = await _bookingSlotStylistService
+                        //        .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId);
 
-                            foreach (var item in stylistFreeTime)
-                            {
-                                stylistFreeTimes.Add(item);
-                            }
+                        //    foreach (var item in stylistFreeTime)
+                        //    {
+                        //        stylistFreeTimes.Add(item);
+                        //    }
+                        //}
+
+                        var comboIds = requestBody.Combos.Select(combo => combo.Id!.Value).ToList();
+                        var stylistFreeTime = await _bookingSlotStylistService
+                            .GetListStylistFreetime(requestBody.BookingDate, requestBody.TimeSlotId, comboIds);
+
+                        foreach (var item in stylistFreeTime)
+                        {
+                            stylistFreeTimes.Add(item);
                         }
                     }
 
@@ -306,7 +324,11 @@ namespace hair_hamony.Business.Services.BookingServices
                                     ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
                                 };
                             }
-                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            List<Guid> serviceIds = new()
+                            {
+                                serviceModel.Id!.Value
+                            };
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id, serviceIds);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
@@ -369,7 +391,11 @@ namespace hair_hamony.Business.Services.BookingServices
                                     ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
                                 };
                             }
-                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id);
+                            List<Guid> serviceIds = new()
+                            {
+                                comboModel.Id!.Value
+                            };
+                            await IsStylistBusy(requestBody.BookingDate, timeSlotNext!.Id, stylist!.Id, serviceIds);
 
                             await _context.BookingSlotStylists.AddAsync(new BookingSlotStylist
                             {
@@ -409,10 +435,10 @@ namespace hair_hamony.Business.Services.BookingServices
             }
         }
 
-        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId)
+        private async Task IsStylistBusy(DateOnly bookingDate, Guid timeSlotId, Guid stylistId, List<Guid> serviceIds)
         {
             var stylists = await _bookingSlotStylistService
-                    .GetListStylistFreetime(bookingDate, timeSlotId);
+                    .GetListStylistFreetime(bookingDate, timeSlotId, serviceIds);
 
             var isStylistFreeTime = stylists.Any(stylist => stylist.Id == stylistId);
 
@@ -623,7 +649,8 @@ namespace hair_hamony.Business.Services.BookingServices
                     booking.BookingDate <= DateOnly.FromDateTime(lastDayOfMonth) &&
                     booking.Status == "Finished")
                 .GroupBy(booking => booking.BookingDate)
-                .Select(group => new {
+                .Select(group => new
+                {
                     Day = group.Key.Value.Day, // Lấy ngày trong tháng
                     TotalRevenue = group.Sum(x => x.TotalPrice) // Tổng doanh thu trong ngày đó
                 })
