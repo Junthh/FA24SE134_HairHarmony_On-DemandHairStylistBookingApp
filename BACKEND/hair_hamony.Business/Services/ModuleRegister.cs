@@ -5,6 +5,7 @@ using hair_hamony.Business.Services.CategoryServices;
 using hair_hamony.Business.Services.ComboServices;
 using hair_hamony.Business.Services.ComboServiceServices;
 using hair_hamony.Business.Services.CustomerServices;
+using hair_hamony.Business.Services.DayOffServices;
 using hair_hamony.Business.Services.FeedbackServices;
 using hair_hamony.Business.Services.File;
 using hair_hamony.Business.Services.KpiServices;
@@ -66,6 +67,7 @@ namespace hair_hamony.Business.Services
             services.AddScoped<IKpiService, KpiService>();
             services.AddScoped<IStylistSalaryDetailService, StylistSalaryDetailService>();
             services.AddScoped<ITimekeepingService, TimekeepingService>();
+            services.AddScoped<IDayOffService, DayOffService>();
         }
     }
 }

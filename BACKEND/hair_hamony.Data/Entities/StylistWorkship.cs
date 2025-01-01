@@ -23,6 +23,8 @@ public partial class StylistWorkship
 
     public virtual ICollection<BookingSlotStylist> BookingSlotStylists { get; set; } = new List<BookingSlotStylist>();
 
+    public virtual ICollection<DayOff> DayOffs { get; set; } = new List<DayOff>();
+
     public virtual Stylist? Stylist { get; set; }
 
     public virtual Timekeeping? Timekeeping { get; set; }

@@ -35,6 +35,7 @@ public static class AutoMapperConfig
             mc.ConfigKpi();
             mc.ConfigStylistSalaryDetail();
             mc.ConfigTimekeeping();
+            mc.ConfigDayOff();
         });
 
         IMapper mapper = mappingConfig.CreateMapper();

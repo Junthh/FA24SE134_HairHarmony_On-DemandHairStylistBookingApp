@@ -29,6 +29,8 @@ public partial class HairHamonyContext : DbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<DayOff> DayOffs { get; set; }
+
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
     public virtual DbSet<Kpi> Kpis { get; set; }
@@ -196,6 +198,23 @@ public partial class HairHamonyContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<DayOff>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__DayOffs__3214EC07480B1C81");
+
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.ApprovalDate).HasColumnType("datetime");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Stylist).WithMany(p => p.DayOffs)
+                .HasForeignKey(d => d.StylistId)
+                .HasConstraintName("FK__DayOffs__Stylist__1D7B6025");
+
+            entity.HasOne(d => d.StylistWorkship).WithMany(p => p.DayOffs)
+                .HasForeignKey(d => d.StylistWorkshipId)
+                .HasConstraintName("FK__DayOffs__Stylist__1E6F845E");
         });
 
         modelBuilder.Entity<Feedback>(entity =>
