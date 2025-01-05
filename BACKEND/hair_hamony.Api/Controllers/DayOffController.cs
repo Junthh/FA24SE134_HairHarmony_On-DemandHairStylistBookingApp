@@ -69,7 +69,7 @@ namespace home_travel.API.Controllers
         /// <response code="201">Returns the dayOff</response>
         [HttpPost]
         [ProducesResponseType(typeof(BaseResponse<GetDayOffModel>), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Create([FromForm] CreateDayOffModel requestBody)
+        public async Task<IActionResult> Create(CreateDayOffModel requestBody)
         {
             return Ok(new BaseResponse<GetDayOffModel>(
                     statusCode: 201, data: await _dayOffService.Create(requestBody),
@@ -89,7 +89,7 @@ namespace home_travel.API.Controllers
         [ProducesResponseType(typeof(BaseResponse<GetDayOffModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateDayOffModel requestBody)
+        public async Task<IActionResult> Update(Guid id, UpdateDayOffModel requestBody)
         {
             return Ok(new BaseResponse<GetDayOffModel>(
                     data: await _dayOffService.Update(id, requestBody),
