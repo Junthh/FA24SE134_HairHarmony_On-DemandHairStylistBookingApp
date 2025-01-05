@@ -6,7 +6,7 @@ namespace hair_hamony.Business.Services.StylistSalaryDetailServices
 {
     public interface IStylistSalaryDetailService
     {
-        Task<(IList<GetStylistSalaryDetailModel>, int)> GetAll(PagingParam<StylistSalaryDetailEnum.StylistSalaryDetailSort> paginationModel,
+        Task<(IList<GetDetailStylistSalaryDetailModel>, int)> GetAll(PagingParam<StylistSalaryDetailEnum.StylistSalaryDetailSort> paginationModel,
             SearchStylistSalaryDetailModel searchStylistSalaryDetailModel);
         Task<GetStylistSalaryDetailModel> GetById(Guid id);
         Task<GetStylistSalaryDetailModel> Create(CreateStylistSalaryDetailModel requestBody);

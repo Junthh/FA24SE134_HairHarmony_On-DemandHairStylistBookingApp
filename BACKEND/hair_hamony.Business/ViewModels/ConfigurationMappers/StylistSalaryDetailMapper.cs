@@ -11,6 +11,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
             configuration.CreateMap<StylistSalaryDetail, GetStylistSalaryDetailModel>().ReverseMap();
             configuration.CreateMap<StylistSalaryDetail, CreateStylistSalaryDetailModel>().ReverseMap();
             configuration.CreateMap<StylistSalaryDetail, UpdateStylistSalaryDetailModel>().ReverseMap();
+            configuration.CreateMap<StylistSalaryDetail, GetDetailStylistSalaryDetailModel>().ReverseMap();
         }
     }
 }

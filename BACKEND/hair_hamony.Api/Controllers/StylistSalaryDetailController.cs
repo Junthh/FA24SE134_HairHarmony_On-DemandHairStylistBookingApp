@@ -24,7 +24,7 @@ namespace home_travel.API.Controllers
         /// <returns>List of stylistSalaryDetail</returns>
         /// <response code="200">Returns the list of stylistSalaryDetail</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetStylistSalaryDetailModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailStylistSalaryDetailModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<StylistSalaryDetailEnum.StylistSalaryDetailSort> paginationModel,
@@ -32,7 +32,7 @@ namespace home_travel.API.Controllers
         {
             var (stylistSalaryDetails, total) = await _stylistSalaryDetailService.GetAll(paginationModel, searchStylistSalaryDetailModel);
 
-            return Ok(new ModelsResponse<GetStylistSalaryDetailModel>(
+            return Ok(new ModelsResponse<GetDetailStylistSalaryDetailModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,
