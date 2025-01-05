@@ -6,6 +6,7 @@
         public int? Month { get; set; }
         public int? Year { get; set; }
         public bool? IsApprove { get; set; }
+        public string? Type { get; set; }
         public Guid? StylistId { get; set; }
         public Guid? StylistWorkshipId { get; set; }
     }

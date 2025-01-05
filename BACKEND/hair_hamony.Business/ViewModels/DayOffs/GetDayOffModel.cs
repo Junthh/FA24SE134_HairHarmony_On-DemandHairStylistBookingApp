@@ -8,6 +8,7 @@
         public bool? IsApprove { get; set; }
         public DateTime? ApprovalDate { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string? Type { get; set; }
         public Guid? StylistId { get; set; }
         public Guid? StylistWorkshipId { get; set; }
     }

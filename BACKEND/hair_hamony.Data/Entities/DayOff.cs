@@ -21,6 +21,8 @@ public partial class DayOff
 
     public Guid? StylistWorkshipId { get; set; }
 
+    public string? Type { get; set; }
+
     public virtual Stylist? Stylist { get; set; }
 
     public virtual StylistWorkship? StylistWorkship { get; set; }

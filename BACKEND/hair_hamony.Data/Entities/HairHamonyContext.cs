@@ -207,6 +207,9 @@ public partial class HairHamonyContext : DbContext
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.ApprovalDate).HasColumnType("datetime");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Stylist).WithMany(p => p.DayOffs)
                 .HasForeignKey(d => d.StylistId)

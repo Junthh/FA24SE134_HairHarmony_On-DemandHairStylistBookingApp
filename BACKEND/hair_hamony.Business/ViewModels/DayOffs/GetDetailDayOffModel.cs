@@ -13,6 +13,7 @@ namespace hair_hamony.Business.ViewModels.DayOffs
         public DateTime? CreatedDate { get; set; }
         public Guid? StylistId { get; set; }
         public Guid? StylistWorkshipId { get; set; }
+        public string? Type { get; set; }
         public GetStylistModel? Stylist { get; set; }
         public GetDetailStylistWorkshipModel? StylistWorkship { get; set; }
     }
