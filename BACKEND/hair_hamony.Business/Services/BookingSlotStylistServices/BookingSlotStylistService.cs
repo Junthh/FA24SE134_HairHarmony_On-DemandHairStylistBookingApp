@@ -123,7 +123,7 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                     stylistWorkship.RegisterDate.Equals(bookingDate)
                     && stylistWorkship.Workship!.StartTime <= timeSlot!.StartTime
                     && stylistWorkship.Workship!.EndTime > timeSlot!.StartTime
-                    && stylistWorkship.DayOffs.Any(x => x.IsApprove != true)
+                    && (stylistWorkship.DayOffs.Count > 0 ? !stylistWorkship.DayOffs.Any(x => x.IsApprove == true) : stylistWorkship.DayOffs.Count == 0)
                 )
                 .Select(stylistWorkship => stylistWorkship.StylistId)
                 .ToListAsync();
