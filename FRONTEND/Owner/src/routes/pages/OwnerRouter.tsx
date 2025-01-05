@@ -17,6 +17,7 @@ const EmployeeStaffList = lazy(() => import('pages/Owner/EmployeeStaffList'));
 const EmployeeStylistList = lazy(() => import('pages/Owner/EmployeeStylistList'));
 const EmployeeSalary = lazy(() => import('pages/Owner/EmployeeSalary'));
 const EmployeeWorkSchedulePage = lazy(() => import('pages/Owner/SalaryStylistV2'));
+const DayOff = lazy(() => import('pages/Owner/DayOff'));
 
 const Feedback = lazy(() => import('pages/Owner/Feedback'));
 const News = lazy(() => import('pages/Owner/News'));
@@ -120,6 +121,10 @@ export const OwnerRouter = {
     {
       path: `${OWNER_PATH.TIMEKEEPING}`,
       element: <RegisterWorkSchedule />,
+    },
+    {
+      path: `${OWNER_PATH.DAY_OFF}`,
+      element: <DayOff />,
     },
   ],
 };

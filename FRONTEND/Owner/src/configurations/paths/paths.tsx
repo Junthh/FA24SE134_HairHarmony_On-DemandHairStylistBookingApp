@@ -16,6 +16,7 @@ import NetworkPingIcon from '@mui/icons-material/NetworkPing';
 import AccessTime from '@mui/icons-material/AccessTime';
 
 import { CalendarIcon } from '@mui/x-date-pickers';
+import { EventAvailableOutlined } from '@mui/icons-material';
 //
 export enum OWNER_PATH {
   EMPLOYEE_WORK_SCHEDULE = '/employee-work-schedule',
@@ -37,6 +38,7 @@ export enum OWNER_PATH {
   TRANSACTION = '/transaction',
   KPI_LIST = '/kpis',
   TIMEKEEPING = '/timekeeping',
+  DAY_OFF = '/day-off',
 }
 
 export const OWNER_PATH_SIDEBAR = [
@@ -49,6 +51,11 @@ export const OWNER_PATH_SIDEBAR = [
     path: OWNER_PATH.TIMEKEEPING,
     title: 'Đăng kí lịch làm việc',
     icon: <AccessTime />,
+  },
+  {
+    path: OWNER_PATH.DAY_OFF,
+    title: 'Nghỉ phép',
+    icon: <EventAvailableOutlined />,
   },
   {
     title: 'Danh sách đặt lịch',

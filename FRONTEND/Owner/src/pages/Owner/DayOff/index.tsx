@@ -35,7 +35,7 @@ import * as Yup from 'yup';
 import DatePickerElement from 'components/Form/DatepickerElement';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import { Dialog } from 'components/Common/Dialog';
-import { selectCredentialInfo, selectWorkship, setLoading } from 'redux/Reducer';
+import { selectCredentialInfo, selectStylist, selectWorkship, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import { workshipService } from 'services/workship.service';
 import { showToast } from 'components/Common/Toast';
@@ -47,7 +47,10 @@ import PopoverContent from 'pages/common/PopoverContent';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import SelectMultiElement from 'components/Form/SelectMultiElement';
 import { handleError } from 'utils/helper';
-import { dayOffService } from 'services/dayoff.service';
+import AutocompleteElement from 'components/Form/AutocompleteElement';
+import { isEmpty } from 'lodash';
+import { dayOffServices } from 'services/dayoff.service';
+import moment from 'moment';
 const RegisterWorkScheduleStyled = styled(Box)({
   padding: '10px 20px',
   '& .card-total': {
@@ -85,11 +88,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-export default function RegisterWorkSchedule() {
+export default function DayOff() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedRow, setSelectedRow] = useState(null);
   const workships = useSelector(selectWorkship);
+  const stylists = useSelector(selectStylist);
+
   const credentialInfo = useSelector(selectCredentialInfo);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -103,13 +108,17 @@ export default function RegisterWorkSchedule() {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   //
-  const schemaUser = Yup.object().shape<any>({});
   const defaultValues = {
-    id: '',
     registerDate: new Date(),
-    workshipIds: '',
+    workshipIds: null,
     stylistId: '',
   };
+  const schemaUser = Yup.object().shape<any>({
+    workshipIds: isEmpty(selectedRow)
+      ? Yup.array().required(`Vui lòng chọn ca làm việc.`)
+      : Yup.string().required(`Vui lòng chọn ca làm việc.`),
+    stylistId: Yup.string().required(`Vui lòng chọn stylist.`),
+  });
   const formRegisterWorkship = useForm<any>({
     defaultValues,
     mode: 'onChange',
@@ -117,7 +126,7 @@ export default function RegisterWorkSchedule() {
   });
   const schema = Yup.object().shape<any>({});
   const formSearch = useForm<any>({
-    defaultValues: {},
+    defaultValues: { registerDate: new Date() },
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
@@ -131,11 +140,11 @@ export default function RegisterWorkSchedule() {
     handleSubmit,
   } = formRegisterWorkship;
 
-  const getWorkshipStylistList = useCallback(
-    ({ size, page, stylistId, registerDate }: any) => {
+  const getDayOffList = useCallback(
+    ({ size, page, month, year }: any) => {
       dispatch(setLoading(true));
-      workshipService
-        .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, stylistId, registerDate })
+      dayOffServices
+        .list({ pageSize: size, pageIndex: page + 1, month, year })
         .then((resultList: any) => {
           setPaging((prev) => ({
             ...prev,
@@ -150,21 +159,21 @@ export default function RegisterWorkSchedule() {
 
   useEffect(() => {
     if (credentialInfo.Id) {
-      getWorkshipStylistList({
+      const registerDate = formSearch.getValues('registerDate');
+      getDayOffList({
         size: paging.size,
         page: paging.page,
-        stylistId: credentialInfo.Id,
-        registerDate: formSearch.getValues('registerDate'),
+        month: registerDate ? moment(registerDate).month() + 1 : null,
+        year: registerDate ? moment(registerDate).year() : null,
       });
     }
-  }, [getWorkshipStylistList]);
+  }, [getDayOffList]);
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
       data = {
         ...data,
         registerDate: formatDate(data.registerDate, 'yyyy-MM-dd'),
-        stylistId: credentialInfo.Id,
       };
       if (selectedRow) {
         data.workshipId = data.workshipIds;
@@ -174,12 +183,13 @@ export default function RegisterWorkSchedule() {
           .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
+            getDayOffList({ size, page });
             handleClose();
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.msg);
+            console.log(err);
+            showToast('error', err.msg || err.message);
             dispatch(setLoading(false));
           });
       } else {
@@ -189,12 +199,14 @@ export default function RegisterWorkSchedule() {
           .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
+            getDayOffList({ size, page });
             handleClose();
             closeModal();
           })
           .catch((err) => {
-            showToast('error', err.msg);
+            console.log(err);
+
+            showToast('error', err.msg || err.message);
             dispatch(setLoading(false));
           });
       }
@@ -237,7 +249,7 @@ export default function RegisterWorkSchedule() {
         })
         .finally(() => {
           const { size, page } = paging;
-          getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
+          getDayOffList({ size, page });
         });
     },
     [selectedRow, paging],
@@ -256,33 +268,17 @@ export default function RegisterWorkSchedule() {
   const handleSearch = useCallback(
     handleSubmitSearch((data: any) => {
       if (data) {
-        getWorkshipStylistList({
+        const registerDate = formSearch.getValues('registerDate');
+        getDayOffList({
           ...paging,
-          stylistId: credentialInfo.Id,
-          registerDate: formatDate(data.registerDate, 'yyyy-MM-dd'),
+          month: registerDate ? moment(registerDate).month() + 1 : null,
+          year: registerDate ? moment(registerDate).year() : null,
         });
       }
     }),
     [paging],
   );
-  const handleRegisterDayOff = (data) => {
-    dispatch(setLoading(false));
-    dayOffService
-      .create({
-        stylistId: credentialInfo.Id,
-        stylistWorkshipId: data.id,
-      })
-      .then(() => {
-        showToast('success', 'Đăng kí nghỉ phép thành công');
-        const { size, page } = paging;
-        getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
-      })
-      .catch((err) => {
-        console.log(err);
-        showToast('error', handleError(err.msg || err));
-      })
-      .finally(() => dispatch(setLoading(false)));
-  };
+
   const renderDialog = useMemo(() => {
     return (
       <Dialog
@@ -339,7 +335,19 @@ export default function RegisterWorkSchedule() {
                   placeholder="Chọn ca làm việc"
                 />
               )}
-
+              <SelectElement
+                label={'Chọn stylist'}
+                name="stylistId"
+                control={control}
+                options={
+                  (stylists &&
+                    Object.keys(stylists).map((id) => ({
+                      value: id,
+                      label: `${stylists[id].fullName}`,
+                    }))) ||
+                  []
+                }
+              ></SelectElement>
               <Box display={'flex'} justifyContent={'flex-end'}>
                 <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
                   Lưu
@@ -351,6 +359,49 @@ export default function RegisterWorkSchedule() {
       ></Dialog>
     );
   }, [isOpen, workships, selectedRow]);
+  const handleApprove = (data) => {
+    dispatch(setLoading(true));
+    data.isApprove = true;
+    dayOffServices
+      .update(data.id, data)
+      .then(() => {
+        showToast('success', 'Duyệt thành công');
+        dispatch(setLoading(false));
+        const registerDate = formSearch.getValues('registerDate');
+        const { size, page } = paging;
+        getDayOffList({
+          size,
+          page,
+          month: registerDate ? moment(registerDate).month() + 1 : null,
+          year: registerDate ? moment(registerDate).year() : null,
+        });
+      })
+      .catch((err) => {
+        showToast('error', handleError(err.msg || err));
+        dispatch(setLoading(false));
+      });
+  };
+  const handleRefuse = (data) => {
+    data.isApprove = false;
+    dayOffServices
+      .update(data.id, data)
+      .then(() => {
+        showToast('success', 'Duyệt thành công');
+        dispatch(setLoading(false));
+        const registerDate = formSearch.getValues('registerDate');
+        const { size, page } = paging;
+        getDayOffList({
+          size,
+          page,
+          month: registerDate ? moment(registerDate).month() + 1 : null,
+          year: registerDate ? moment(registerDate).year() : null,
+        });
+      })
+      .catch((err) => {
+        showToast('error', handleError(err.msg || err));
+        dispatch(setLoading(false));
+      });
+  };
   return (
     <RegisterWorkScheduleStyled>
       <BoxHeaderSearch>
@@ -358,10 +409,11 @@ export default function RegisterWorkSchedule() {
           <FormContainer formContext={formSearch}>
             <Box width={'100%'} display={'flex'} gap={2}>
               <DatePickerElement
-                disableHighlightToday
                 name="registerDate"
                 label={''}
                 control={controlSearch}
+                views={['month', 'year']}
+                inputFormat="MM/yyyy"
               />
               <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={() => handleSearch()}>
                 <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
@@ -420,24 +472,21 @@ export default function RegisterWorkSchedule() {
                 <TableHead style={{ background: '#2D3748' }}>
                   <TableRow>
                     <StyledTableCell style={{ color: 'white' }} align="left">
+                      Stylist
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày đăng ký
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
                       Ca làm
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
-                      Ngày tạo
-                    </StyledTableCell>
-                    <StyledTableCell style={{ color: 'white' }} align="center">
-                      Ngày cập nhật
+                      Ngày duyệt
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
                       Trạng thái
                     </StyledTableCell>
-                    <StyledTableCell style={{ color: 'white' }} align="center">
-                      Hành động
-                    </StyledTableCell>
-                    {/* <StyledTableCell
+                    <StyledTableCell
                       style={{
                         color: 'white',
                         position: 'sticky',
@@ -445,78 +494,56 @@ export default function RegisterWorkSchedule() {
                         backgroundColor: '#2d3748',
                         zIndex: 1,
                       }}
-                      align="left"
-                    ></StyledTableCell> */}
+                      align="center"
+                    >
+                      Hành động
+                    </StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {rows.map((row, i) => (
                     <StyledTableRow key={i}>
-                      <StyledTableCell align="left">
-                        {formatDate(row.registerDate, 'dd/MM/yyyy')}
+                      <StyledTableCell align="left">{row?.stylist?.fullName}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {formatDate(row.createdDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {workships[row.workshipId]?.startTime} -{' '}
-                        {workships[row.workshipId]?.endTime}
+                        {row?.stylistWorkship?.workship?.startTime} -{' '}
+                        {row?.stylistWorkship?.workship?.endTime}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
+                        {row.approvalDate ? formatDate(row.approvalDate, 'dd/MM/yyyy HH:mm') : ''}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {formatDate(row.updatedDate, 'dd/MM/yyyy HH:mm')}
+                        {row.isApprove
+                          ? 'Duyệt'
+                          : row.isApprove === false
+                          ? 'Từ chối'
+                          : row.isApprove === null
+                          ? 'Chờ duyệt'
+                          : ''}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {row.dayOffs && row.dayOffs.filter((value) => value.isApprove).length > 0
-                          ? 'Nghỉ phép'
-                          : row.dayOffs &&
-                            row.dayOffs.filter((value) => value.isApprove === null).length > 0
-                          ? 'Đang duyệt nghỉ phép'
-                          : 'Làm việc'}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        align="center"
-                        style={{ display: 'flex', justifyContent: 'center' }}
-                      >
-                        {row.dayOffs &&
-                        (row.dayOffs.filter((value) => value.isApprove).length > 0 ||
-                          row.dayOffs.filter((value) => value.isApprove === null).length > 0) ? (
-                          <ButtonPrimary
-                            severity="transparent"
-                            padding={'9px 20px'}
-                            onClick={() => handleRegisterDayOff(row)}
-                            disabled={true}
-                          >
-                            Đăng kí nghỉ phép
-                          </ButtonPrimary>
-                        ) : (
-                          <ButtonPrimary
-                            severity="primary"
-                            padding={'9px 20px'}
-                            onClick={() => handleRegisterDayOff(row)}
-                          >
-                            Đăng kí nghỉ phép
-                          </ButtonPrimary>
+                      <StyledTableCell style={{ display: 'flex', justifyContent: 'center' }}>
+                        {row.isApprove === null && (
+                          <>
+                            <ButtonPrimary
+                              severity="primary"
+                              padding={'9px 20px'}
+                              onClick={() => handleApprove(row)}
+                            >
+                              Duyệt
+                            </ButtonPrimary>
+                            <ButtonPrimary
+                              style={{ marginLeft: '10px' }}
+                              severity="cancel"
+                              padding={'9px 20px'}
+                              onClick={() => handleRefuse(row)}
+                            >
+                              Từ chối
+                            </ButtonPrimary>
+                          </>
                         )}
                       </StyledTableCell>
-                      {/* <StyledTableCell
-                        style={{
-                          color: 'white',
-                          position: 'sticky',
-                          right: 0,
-                          zIndex: 1,
-                        }}
-                        align="center"
-                      >
-                        {!row.isTimekeeping ? (
-                          <IconButton
-                            onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                              handleClick(event, row)
-                            }
-                          >
-                            <ICONS.IconThreeDot />
-                          </IconButton>
-                        ) : null}
-                      </StyledTableCell> */}
                     </StyledTableRow>
                   ))}
                 </TableBody>

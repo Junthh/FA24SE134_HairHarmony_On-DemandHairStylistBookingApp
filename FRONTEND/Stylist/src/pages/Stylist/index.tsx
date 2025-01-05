@@ -86,13 +86,15 @@ function Staff() {
     } else if (name === STYLIST_PATH.FEEDBACK.split('/')[1]) {
       setTabName('Đánh giá');
     } else if (name === STYLIST_PATH.TIMEKEEPING.split('/')[1]) {
-      setTabName('Đăng kí lịch làm');
+      setTabName('Lịch làm');
     } else if (name === STYLIST_PATH.PROFILE.split('/')[1]) {
       setTabName('Cập nhật thông tin');
     } else if (name === STYLIST_PATH.CHANGE_PASSWORD.split('/')[1]) {
       setTabName('Thay đổi mật khẩu');
     }else if (name === STYLIST_PATH.SALARY.split('/')[1]) {
       setTabName('Lịch sử lương');
+    }else if (name === STYLIST_PATH.DAY_OFF.split('/')[1]) {
+      setTabName('Đăng kí nghỉ phép');
     }
   }, [location]);
 

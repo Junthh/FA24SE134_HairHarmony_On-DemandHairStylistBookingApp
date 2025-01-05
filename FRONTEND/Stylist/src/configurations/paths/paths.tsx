@@ -25,6 +25,7 @@ export enum STYLIST_PATH {
   PROFILE = '/profile',
   SALARY = '/salary',
   CHANGE_PASSWORD = '/change-password',
+  DAY_OFF = '/day-off',
 }
 
 export enum ADMIN_PATH {
