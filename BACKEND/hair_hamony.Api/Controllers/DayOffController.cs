@@ -24,7 +24,7 @@ namespace home_travel.API.Controllers
         /// <returns>List of dayOff</returns>
         /// <response code="200">Returns the list of dayOff</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ModelsResponse<GetDayOffModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ModelsResponse<GetDetailDayOffModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<DayOffEnum.DayOffSort> paginationModel,
@@ -32,7 +32,7 @@ namespace home_travel.API.Controllers
         {
             var (dayOffs, total) = await _dayOffService.GetAll(paginationModel, searchDayOffModel);
 
-            return Ok(new ModelsResponse<GetDayOffModel>(
+            return Ok(new ModelsResponse<GetDetailDayOffModel>(
                     paging: new PagingResponse()
                     {
                         Page = paginationModel.PageIndex,

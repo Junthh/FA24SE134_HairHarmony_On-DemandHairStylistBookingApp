@@ -28,7 +28,7 @@ namespace hair_hamony.Business.Services.DayOffServices
                 .Include(x => x.StylistWorkship)
                 .ThenInclude(stylistWorkship => stylistWorkship.Workship)
                 .FirstOrDefaultAsync(x => x.StylistId == requestBody.StylistId && x.StylistWorkshipId == requestBody.StylistWorkshipId);
-            if(dayOffExisted != null && dayOffExisted.IsApprove == true)
+            if (dayOffExisted != null && dayOffExisted.IsApprove == true)
             {
                 throw new CException
                 {
@@ -49,7 +49,7 @@ namespace hair_hamony.Business.Services.DayOffServices
                 .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true)
                 .ToList();
 
-            if(dayoffs.Count == 2)
+            if (dayoffs.Count == 2)
             {
                 throw new CException
                 {
@@ -74,14 +74,18 @@ namespace hair_hamony.Business.Services.DayOffServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<(IList<GetDayOffModel>, int)> GetAll(PagingParam<DayOffEnum.DayOffSort> paginationModel, SearchDayOffModel searchDayOffModel)
+        public async Task<(IList<GetDetailDayOffModel>, int)> GetAll(PagingParam<DayOffEnum.DayOffSort> paginationModel, SearchDayOffModel searchDayOffModel)
         {
-            var query = _context.DayOffs.AsQueryable();
+            var query = _context.DayOffs
+                .Include(dayOff => dayOff.Stylist)
+                .Include(dayOff => dayOff.StylistWorkship)
+                .ThenInclude(stylistWorkship => stylistWorkship.Workship)
+                .AsQueryable();
             query = query.GetWithSearch(searchDayOffModel);
             query = query.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             var total = await query.CountAsync();
             query = query.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize).AsQueryable();
-            var results = _mapper.Map<IList<GetDayOffModel>>(query);
+            var results = _mapper.Map<IList<GetDetailDayOffModel>>(query);
 
             return (results, total);
         }
@@ -110,19 +114,6 @@ namespace hair_hamony.Business.Services.DayOffServices
                 };
             }
 
-            var dayOffExisted = await _context.DayOffs.AsNoTracking()
-                .Include(x => x.StylistWorkship)
-                .ThenInclude(stylistWorkship => stylistWorkship.Workship)
-                .FirstOrDefaultAsync(x => x.StylistId == requestBody.StylistId && x.StylistWorkshipId == requestBody.StylistWorkshipId);
-            if (dayOffExisted != null && dayOffExisted.IsApprove == true)
-            {
-                throw new CException
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Ca làm việc ngày {dayOffExisted.StylistWorkship.RegisterDate} {dayOffExisted.StylistWorkship.Workship.StartTime.Value.ToString("HH:mm")} - {dayOffExisted.StylistWorkship.Workship.EndTime.Value.ToString("HH:mm")} đã xin nghỉ phép"
-                };
-            }
-
             int monthRegister = requestBody.Month.Value;
             int yearRegister = requestBody.Year.Value;
 
@@ -136,6 +127,19 @@ namespace hair_hamony.Business.Services.DayOffServices
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
                     ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép cho tháng này"
+                };
+            }
+
+            var dayOffExisted = await _context.DayOffs.AsNoTracking()
+                .Include(x => x.StylistWorkship)
+                .ThenInclude(stylistWorkship => stylistWorkship.Workship)
+                .FirstOrDefaultAsync(x => x.StylistId == requestBody.StylistId && x.StylistWorkshipId == requestBody.StylistWorkshipId);
+            if (dayOffExisted != null && dayOffExisted.IsApprove == true)
+            {
+                throw new CException
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    ErrorMessage = $"Ca làm việc ngày {dayOffExisted.StylistWorkship.RegisterDate} {dayOffExisted.StylistWorkship.Workship.StartTime.Value.ToString("HH:mm")} - {dayOffExisted.StylistWorkship.Workship.EndTime.Value.ToString("HH:mm")} đã xin nghỉ phép"
                 };
             }
 

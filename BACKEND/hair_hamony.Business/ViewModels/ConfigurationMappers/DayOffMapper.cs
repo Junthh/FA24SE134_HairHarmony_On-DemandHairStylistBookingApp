@@ -11,6 +11,7 @@ namespace home_travel.Business.ViewModels.ConfigurationMappers
             configuration.CreateMap<DayOff, GetDayOffModel>().ReverseMap();
             configuration.CreateMap<DayOff, CreateDayOffModel>().ReverseMap();
             configuration.CreateMap<DayOff, UpdateDayOffModel>().ReverseMap();
+            configuration.CreateMap<DayOff, GetDetailDayOffModel>().ReverseMap();
         }
     }
 }

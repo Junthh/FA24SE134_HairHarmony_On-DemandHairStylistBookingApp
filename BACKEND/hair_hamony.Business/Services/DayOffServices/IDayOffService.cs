@@ -6,7 +6,7 @@ namespace hair_hamony.Business.Services.DayOffServices
 {
     public interface IDayOffService
     {
-        Task<(IList<GetDayOffModel>, int)> GetAll(PagingParam<DayOffEnum.DayOffSort> paginationModel, SearchDayOffModel searchDayOffModel);
+        Task<(IList<GetDetailDayOffModel>, int)> GetAll(PagingParam<DayOffEnum.DayOffSort> paginationModel, SearchDayOffModel searchDayOffModel);
         Task<GetDayOffModel> GetById(Guid id);
         Task<GetDayOffModel> Create(CreateDayOffModel requestBody);
         Task<GetDayOffModel> Update(Guid id, UpdateDayOffModel requestBody);
