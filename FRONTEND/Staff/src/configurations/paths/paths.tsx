@@ -21,6 +21,7 @@ export enum STAFF_PATH {
   PROFILE = '/profile',
   CHANGE_PASSWORD = '/change-password',
   SALARY = '/salary',
+  REGISTER_WORK_SHIP = '/register-work-ship',
 }
 
 export enum ADMIN_PATH {

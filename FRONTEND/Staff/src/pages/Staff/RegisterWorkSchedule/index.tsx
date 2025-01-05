@@ -35,7 +35,7 @@ import * as Yup from 'yup';
 import DatePickerElement from 'components/Form/DatepickerElement';
 import SelectElement from 'components/Form/SelectElement/SelectElement';
 import { Dialog } from 'components/Common/Dialog';
-import { selectCredentialInfo, selectWorkship, setLoading } from 'redux/Reducer';
+import { selectCredentialInfo, setLoading } from 'redux/Reducer';
 import { formatDate } from 'utils/datetime';
 import { workshipService } from 'services/workship.service';
 import { showToast } from 'components/Common/Toast';
@@ -45,7 +45,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PopoverContent from 'pages/common/PopoverContent';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
-import SelectMultiElement from 'components/Form/SelectMultiElement';
 import { handleError } from 'utils/helper';
 import { dayOffService } from 'services/dayoff.service';
 const RegisterWorkScheduleStyled = styled(Box)({
@@ -89,7 +88,6 @@ export default function RegisterWorkSchedule() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const [selectedRow, setSelectedRow] = useState(null);
-  const workships = useSelector(selectWorkship);
   const credentialInfo = useSelector(selectCredentialInfo);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -108,7 +106,6 @@ export default function RegisterWorkSchedule() {
     id: '',
     registerDate: new Date(),
     workshipIds: '',
-    stylistId: '',
   };
   const formRegisterWorkship = useForm<any>({
     defaultValues,
@@ -132,10 +129,10 @@ export default function RegisterWorkSchedule() {
   } = formRegisterWorkship;
 
   const getWorkshipStylistList = useCallback(
-    ({ size, page, stylistId, registerDate }: any) => {
+    ({ size, page, registerDate }: any) => {
       dispatch(setLoading(true));
       workshipService
-        .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, stylistId, registerDate })
+        .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, registerDate })
         .then((resultList: any) => {
           setPaging((prev) => ({
             ...prev,
@@ -153,7 +150,6 @@ export default function RegisterWorkSchedule() {
       getWorkshipStylistList({
         size: paging.size,
         page: paging.page,
-        stylistId: credentialInfo.Id,
         registerDate: formSearch.getValues('registerDate'),
       });
     }
@@ -164,7 +160,6 @@ export default function RegisterWorkSchedule() {
       data = {
         ...data,
         registerDate: formatDate(data.registerDate, 'yyyy-MM-dd'),
-        stylistId: credentialInfo.Id,
       };
       if (selectedRow) {
         data.workshipId = data.workshipIds;
@@ -174,7 +169,7 @@ export default function RegisterWorkSchedule() {
           .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
+            getWorkshipStylistList({ size, page: page });
             handleClose();
             closeModal();
           })
@@ -189,7 +184,7 @@ export default function RegisterWorkSchedule() {
           .then((res: any) => {
             showToast('success', res.msg);
             const { size, page } = paging;
-            getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
+            getWorkshipStylistList({ size, page });
             handleClose();
             closeModal();
           })
@@ -237,7 +232,7 @@ export default function RegisterWorkSchedule() {
         })
         .finally(() => {
           const { size, page } = paging;
-          getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
+          getWorkshipStylistList({ size, page });
         });
     },
     [selectedRow, paging],
@@ -258,7 +253,6 @@ export default function RegisterWorkSchedule() {
       if (data) {
         getWorkshipStylistList({
           ...paging,
-          stylistId: credentialInfo.Id,
           registerDate: formatDate(data.registerDate, 'yyyy-MM-dd'),
         });
       }
@@ -269,14 +263,14 @@ export default function RegisterWorkSchedule() {
     dispatch(setLoading(true));
     dayOffService
       .create({
-        stylistId: credentialInfo.Id,
         stylistWorkshipId: data.id,
-        type: 'P',
+        stylistId: data.stylistId,
+        type: 'KP',
       })
       .then(() => {
         showToast('success', 'Đăng kí nghỉ phép thành công');
         const { size, page } = paging;
-        getWorkshipStylistList({ size, page, stylistId: credentialInfo.Id });
+        getWorkshipStylistList({ size, page });
       })
       .catch((err) => {
         console.log(err);
@@ -284,74 +278,74 @@ export default function RegisterWorkSchedule() {
       })
       .finally(() => dispatch(setLoading(false)));
   };
-  const renderDialog = useMemo(() => {
-    return (
-      <Dialog
-        open={isOpen}
-        onClose={() => {
-          closeModal();
-        }}
-        width="100%"
-        title={selectedRow ? 'Edit' : 'Create'}
-        content={
-          <FormContainer formContext={formRegisterWorkship}>
-            <Box
-              display={'flex'}
-              justifyContent={'center'}
-              flexDirection={'column'}
-              gap={2}
-              padding={'0 20px 20px 20px'}
-              width={'550px'}
-            >
-              <DatePickerElement
-                name="registerDate"
-                control={control}
-                label={'Ngày đăng ký'}
-                format="dd-MM-yyyy"
-                //   onKeyUp={handleKeyup}
-              />
-              {selectedRow ? (
-                <SelectElement
-                  name="workshipIds"
-                  label="Ca làm việc"
-                  control={control}
-                  options={
-                    workships &&
-                    Object.keys(workships).map((id) => ({
-                      value: id,
-                      label: `${workships[id].startTime} - ${workships[id].endTime}`,
-                    }))
-                  }
-                  placeholder="Chọn ca làm việc"
-                />
-              ) : (
-                <SelectMultiElement
-                  name="workshipIds"
-                  label="Ca làm việc"
-                  control={control}
-                  options={
-                    (workships &&
-                      Object.keys(workships).map((id) => ({
-                        value: id,
-                        label: `${workships[id].startTime} - ${workships[id].endTime}`,
-                      }))) ||
-                    []
-                  }
-                  placeholder="Chọn ca làm việc"
-                />
-              )}
+  // const renderDialog = useMemo(() => {
+  //   return (
+  //     <Dialog
+  //       open={isOpen}
+  //       onClose={() => {
+  //         closeModal();
+  //       }}
+  //       width="100%"
+  //       title={selectedRow ? 'Edit' : 'Create'}
+  //       content={
+  //         <FormContainer formContext={formRegisterWorkship}>
+  //           <Box
+  //             display={'flex'}
+  //             justifyContent={'center'}
+  //             flexDirection={'column'}
+  //             gap={2}
+  //             padding={'0 20px 20px 20px'}
+  //             width={'550px'}
+  //           >
+  //             <DatePickerElement
+  //               name="registerDate"
+  //               control={control}
+  //               label={'Ngày đăng ký'}
+  //               format="dd-MM-yyyy"
+  //               //   onKeyUp={handleKeyup}
+  //             />
+  //             {selectedRow ? (
+  //               <SelectElement
+  //                 name="workshipIds"
+  //                 label="Ca làm việc"
+  //                 control={control}
+  //                 options={
+  //                   workships &&
+  //                   Object.keys(workships).map((id) => ({
+  //                     value: id,
+  //                     label: `${workships[id].startTime} - ${workships[id].endTime}`,
+  //                   }))
+  //                 }
+  //                 placeholder="Chọn ca làm việc"
+  //               />
+  //             ) : (
+  //               <SelectMultiElement
+  //                 name="workshipIds"
+  //                 label="Ca làm việc"
+  //                 control={control}
+  //                 options={
+  //                   (workships &&
+  //                     Object.keys(workships).map((id) => ({
+  //                       value: id,
+  //                       label: `${workships[id].startTime} - ${workships[id].endTime}`,
+  //                     }))) ||
+  //                   []
+  //                 }
+  //                 placeholder="Chọn ca làm việc"
+  //               />
+  //             )}
 
-              <Box display={'flex'} justifyContent={'flex-end'}>
-                <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
-                  Lưu
-                </ButtonPrimary>
-              </Box>
-            </Box>
-          </FormContainer>
-        }
-      ></Dialog>
-    );
-  }, [isOpen, workships, selectedRow]);
+  //             <Box display={'flex'} justifyContent={'flex-end'}>
+  //               <ButtonPrimary severity="primary" padding={'9px 20px'} onClick={() => handleSave()}>
+  //                 Lưu
+  //               </ButtonPrimary>
+  //             </Box>
+  //           </Box>
+  //         </FormContainer>
+  //       }
+  //     ></Dialog>
+  //   );
+  // }, [isOpen, workships, selectedRow]);
   return (
     <RegisterWorkScheduleStyled>
       <BoxHeaderSearch>
@@ -429,9 +423,9 @@ export default function RegisterWorkSchedule() {
                     <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày tạo
                     </StyledTableCell>
-                    <StyledTableCell style={{ color: 'white' }} align="center">
+                    {/* <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày cập nhật
-                    </StyledTableCell>
+                    </StyledTableCell> */}
                     <StyledTableCell style={{ color: 'white' }} align="center">
                       Trạng thái
                     </StyledTableCell>
@@ -457,15 +451,14 @@ export default function RegisterWorkSchedule() {
                         {formatDate(row.registerDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {workships[row.workshipId]?.startTime} -{' '}
-                        {workships[row.workshipId]?.endTime}
+                        {row?.workship?.startTime} - {row?.workship?.endTime}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
+                      {/* <StyledTableCell align="center">
                         {formatDate(row.updatedDate, 'dd/MM/yyyy HH:mm')}
-                      </StyledTableCell>
+                      </StyledTableCell> */}
                       <StyledTableCell align="center">
                         {row.dayOffs &&
                         row.dayOffs.filter((value) => value.isApprove && value.type === 'P')
@@ -500,7 +493,7 @@ export default function RegisterWorkSchedule() {
                             onClick={() => handleRegisterDayOff(row)}
                             disabled={true}
                           >
-                            Đăng kí nghỉ phép
+                            Đăng kí nghỉ không phép
                           </ButtonPrimary>
                         ) : (
                           <ButtonPrimary
@@ -508,7 +501,7 @@ export default function RegisterWorkSchedule() {
                             padding={'9px 20px'}
                             onClick={() => handleRegisterDayOff(row)}
                           >
-                            Đăng kí nghỉ phép
+                            Đăng kí nghỉ không phép
                           </ButtonPrimary>
                         )}
                       </StyledTableCell>
@@ -591,7 +584,7 @@ export default function RegisterWorkSchedule() {
           </Box>
         </Grid>
       </Grid>
-      {renderDialog}
+      {/* {renderDialog} */}
     </RegisterWorkScheduleStyled>
   );
 }

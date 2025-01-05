@@ -144,7 +144,14 @@ export default function DayOff() {
     ({ size, page, month, year }: any) => {
       dispatch(setLoading(true));
       dayOffServices
-        .list({ pageSize: size, pageIndex: page + 1, month, year })
+        .list({
+          pageSize: size,
+          pageIndex: page + 1,
+          month,
+          year,
+          sortKey: 'createdDate',
+          sortOrder: 'desc',
+        })
         .then((resultList: any) => {
           setPaging((prev) => ({
             ...prev,
@@ -382,6 +389,7 @@ export default function DayOff() {
       });
   };
   const handleRefuse = (data) => {
+    dispatch(setLoading(true));
     data.isApprove = false;
     dayOffServices
       .update(data.id, data)
@@ -481,6 +489,12 @@ export default function DayOff() {
                       Ca làm
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
+                      Loại nghỉ phép
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Ngày tạo
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày duyệt
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
@@ -512,6 +526,12 @@ export default function DayOff() {
                         {row?.stylistWorkship?.workship?.endTime}
                       </StyledTableCell>
                       <StyledTableCell align="center">
+                        {row.type === 'P' ? 'Có phép' : row.type === 'KP' ? 'Không phép' : ''}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {formatDate(row.createdDate, 'dd/MM/yyyy HH:mm')}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
                         {row.approvalDate ? formatDate(row.approvalDate, 'dd/MM/yyyy HH:mm') : ''}
                       </StyledTableCell>
                       <StyledTableCell align="center">
@@ -524,7 +544,7 @@ export default function DayOff() {
                           : ''}
                       </StyledTableCell>
                       <StyledTableCell style={{ display: 'flex', justifyContent: 'center' }}>
-                        {row.isApprove === null && (
+                        {row.isApprove === null ? (
                           <>
                             <ButtonPrimary
                               severity="primary"
@@ -538,6 +558,26 @@ export default function DayOff() {
                               severity="cancel"
                               padding={'9px 20px'}
                               onClick={() => handleRefuse(row)}
+                            >
+                              Từ chối
+                            </ButtonPrimary>
+                          </>
+                        ) : (
+                          <>
+                            <ButtonPrimary
+                              severity="transparent"
+                              padding={'9px 20px'}
+                              onClick={() => handleApprove(row)}
+                              disabled={true}
+                            >
+                              Duyệt
+                            </ButtonPrimary>
+                            <ButtonPrimary
+                              style={{ marginLeft: '10px' }}
+                              severity="cancel"
+                              padding={'9px 20px'}
+                              onClick={() => handleRefuse(row)}
+                              disabled={true}
                             >
                               Từ chối
                             </ButtonPrimary>

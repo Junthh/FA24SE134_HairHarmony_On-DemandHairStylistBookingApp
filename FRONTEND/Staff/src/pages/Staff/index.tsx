@@ -96,6 +96,8 @@ function Staff() {
       setTabName('Thay đổi mật khẩu');
     } else if (name === STAFF_PATH.SALARY.split('/')[1]) {
       setTabName('Lịch sử lương');
+    } else if (name === STAFF_PATH.REGISTER_WORK_SHIP.split('/')[1]) {
+      setTabName('Nghỉ không phép');
     }
   }, [location]);
 

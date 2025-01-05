@@ -11,6 +11,7 @@ import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { EventAvailableOutlined } from '@mui/icons-material';
 const routes = [
   {
     path: STAFF_PATH.BOOKING,
@@ -36,6 +37,11 @@ const routes = [
     path: STAFF_PATH.NEWS,
     name: 'Tin tức',
     icon: <NewspaperIcon />,
+  },
+  {
+    path: STAFF_PATH.REGISTER_WORK_SHIP,
+    name: 'Nghỉ không phép',
+    icon: <EventAvailableOutlined />,
   },
 ];
 

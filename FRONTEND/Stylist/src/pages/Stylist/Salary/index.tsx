@@ -170,6 +170,15 @@ export default function Salary() {
                 <TableHead style={{ background: '#2D3748' }}>
                   <TableRow>
                     <StyledTableCell style={{ color: 'white' }} align="center">
+                      Khách hàng
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Ngày đặt lịch
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Tổng tiền
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Hoa hồng
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
@@ -180,6 +189,15 @@ export default function Salary() {
                 <TableBody>
                   {stylistSalaryDetails.map((row, index) => (
                     <StyledTableRow key={index}>
+                      <StyledTableCell align="center">
+                        {row?.booking?.customer.fullName}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {formatDate(row?.booking?.bookingDate, 'dd/MM/yyyy')}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {currencyFormat(row?.booking?.totalPrice)}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {currencyFormat(row.commission)}
                       </StyledTableCell>
@@ -275,12 +293,14 @@ export default function Salary() {
                 <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
                 <StyledTableCell align="center">{row.kpi}</StyledTableCell>
                 <StyledTableCell align="center">
-                  {currencyFormat(row.totalCommission)}
+                  {row.totalCommission && currencyFormat(row.totalCommission)}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {currencyFormat(row.stylist.salary)}
                 </StyledTableCell>
-                <StyledTableCell align="center">{currencyFormat(row.totalSalary)}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.totalSalary && currencyFormat(row.totalSalary)}
+                </StyledTableCell>
                 <StyledTableCell
                   style={{
                     color: 'white',

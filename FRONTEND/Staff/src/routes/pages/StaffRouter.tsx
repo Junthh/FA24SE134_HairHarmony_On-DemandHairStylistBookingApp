@@ -15,6 +15,7 @@ const News = lazy(() => import('pages/Staff/News'));
 const ChangePassword = lazy(() => import('pages/Staff/ChangePassword'));
 const Profile = lazy(() => import('pages/Staff/Profile'));
 const Salary = lazy(() => import('pages/Staff/Salary'));
+const RegisterWorkSchedule = lazy(() => import('pages/Staff/RegisterWorkSchedule'));
 export const StaffRouter = {
   path: '/',
   element: (
@@ -73,6 +74,10 @@ export const StaffRouter = {
     {
       path: `${STAFF_PATH.NEWS}`,
       element: <News />,
+    },
+    {
+      path: `${STAFF_PATH.REGISTER_WORK_SHIP}`,
+      element: <RegisterWorkSchedule />,
     },
   ],
 };
