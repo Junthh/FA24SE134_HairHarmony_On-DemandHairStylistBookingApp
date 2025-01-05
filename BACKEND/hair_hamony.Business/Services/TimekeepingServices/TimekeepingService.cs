@@ -89,6 +89,27 @@ namespace hair_hamony.Business.Services.TimekeepingServices
                             stylistWorkship.IsTimekeeping, true
                             )
                         );
+
+                    var stylistSalarys = await _context.StylistSalarys
+                        .Where(x => x.Year == requestBody.Year && x.Month == requestBody.Month)
+                        .ToListAsync();
+
+                    foreach (var stylistSalary in stylistSalarys)
+                    {
+                        var count = await _context.DayOffs
+                            .CountAsync(x => x.Year == requestBody.Year &&
+                                x.Month == requestBody.Month && x.IsApprove == true &&
+                                x.Type == "KP" && x.StylistId == stylistSalary.StylistId
+                            );
+
+                        if (count > 0)
+                        {
+                            var stylist = await _context.Stylists.FirstOrDefaultAsync(x => x.Id == stylistSalary.StylistId);
+                            var salary = stylist!.Salary * (50 - count) / 50;
+                            stylistSalary.TotalSalary = salary + stylistSalary.TotalCommission;
+                            _context.StylistSalarys.Update(stylistSalary);
+                        }
+                    }
                 }
 
                 _mapper.Map(requestBody, timekeeping);

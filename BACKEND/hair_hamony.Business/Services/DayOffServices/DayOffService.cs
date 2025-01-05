@@ -46,7 +46,7 @@ namespace hair_hamony.Business.Services.DayOffServices
             int yearRegister = stylistWorkship.RegisterDate.Value.Year;
 
             var dayoffs = _context.DayOffs
-                .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true)
+                .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
                 .ToList();
 
             if (dayoffs.Count == 2)
@@ -54,7 +54,7 @@ namespace hair_hamony.Business.Services.DayOffServices
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Bạn đã đăng kí 2 ngày nghỉ phép cho tháng này"
+                    ErrorMessage = $"Bạn đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
                 };
             }
 
@@ -118,7 +118,7 @@ namespace hair_hamony.Business.Services.DayOffServices
             int yearRegister = requestBody.Year.Value;
 
             var dayoffs = _context.DayOffs
-                .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true)
+                .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
                 .ToList();
 
             if (dayoffs.Count == 2)
@@ -126,7 +126,7 @@ namespace hair_hamony.Business.Services.DayOffServices
                 throw new CException
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép cho tháng này"
+                    ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
                 };
             }
 

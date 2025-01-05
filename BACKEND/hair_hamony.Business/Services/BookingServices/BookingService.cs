@@ -510,8 +510,8 @@ namespace hair_hamony.Business.Services.BookingServices
                             );
 
                         var stylistSalaryId = Guid.NewGuid();
-                        var totalKpi = kpi.Value;
-                        var totalSalary = stylist.Salary * 1 / totalKpi;
+                        var totalKpi = kpi!.Value;
+                        var totalSalary = stylist!.Salary * 1 / totalKpi;
                         _context.StylistSalarys.Add(new StylistSalary
                         {
                             Id = stylistSalaryId,
