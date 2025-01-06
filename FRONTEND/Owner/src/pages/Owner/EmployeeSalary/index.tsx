@@ -456,12 +456,12 @@ export default function EmployeeSalary() {
                 <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
                 <StyledTableCell align="center">{row.kpi}</StyledTableCell>
                 <StyledTableCell align="center">
-                  {currencyFormat(row?.totalCommission)}
+                  {row.totalCommission && currencyFormat(row.totalCommission)}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {currencyFormat(row?.stylist?.salary)}
+                  {row.stylist.salary && currencyFormat(row.stylist.salary)}
                 </StyledTableCell>
-                <StyledTableCell align="center">{currencyFormat(row?.totalSalary)}</StyledTableCell>
+                <StyledTableCell align="center">{row.totalSalary && currencyFormat(row.totalSalary)}</StyledTableCell>
                 <StyledTableCell
                   style={{
                     color: 'white',
