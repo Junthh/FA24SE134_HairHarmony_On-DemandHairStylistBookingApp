@@ -420,9 +420,6 @@ export default function RegisterWorkSchedule() {
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead style={{ background: '#2D3748' }}>
                   <TableRow>
-                    <StyledTableCell style={{ color: 'white' }} align="left">
-                      Stylist
-                    </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
                       Ngày đăng ký
                     </StyledTableCell>
@@ -456,7 +453,6 @@ export default function RegisterWorkSchedule() {
                 <TableBody>
                   {rows.map((row, i) => (
                     <StyledTableRow key={i}>
-                      <StyledTableCell align="left">{row.stylist.name}</StyledTableCell>
                       <StyledTableCell align="center">
                         {formatDate(row.registerDate, 'dd/MM/yyyy')}
                       </StyledTableCell>
