@@ -814,7 +814,7 @@ export default function Booking() {
                   <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
                     <Box>
                       <Typography variant="h5" fontWeight={700}>
-                        Ngày cắt Giờ cắt
+                        Ngày đến làm dịch vụ
                       </Typography>
 
                       <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>

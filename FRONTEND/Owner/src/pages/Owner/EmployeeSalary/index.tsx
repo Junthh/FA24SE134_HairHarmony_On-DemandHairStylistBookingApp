@@ -340,6 +340,15 @@ export default function EmployeeSalary() {
                 <TableHead style={{ background: '#2D3748' }}>
                   <TableRow>
                     <StyledTableCell style={{ color: 'white' }} align="center">
+                      Khách hàng
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Ngày đặt lịch
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
+                      Tổng tiền
+                    </StyledTableCell>
+                    <StyledTableCell style={{ color: 'white' }} align="center">
                       Hoa hồng
                     </StyledTableCell>
                     <StyledTableCell style={{ color: 'white' }} align="center">
@@ -350,6 +359,15 @@ export default function EmployeeSalary() {
                 <TableBody>
                   {stylistSalaryDetails.map((row, index) => (
                     <StyledTableRow key={index}>
+                      <StyledTableCell align="center">
+                        {row?.booking?.customer.fullName}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {formatDate(row?.booking?.bookingDate, 'dd/MM/yyyy')}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {currencyFormat(row?.booking?.totalPrice)}
+                      </StyledTableCell>
                       <StyledTableCell align="center">
                         {currencyFormat(row.commission)}
                       </StyledTableCell>
@@ -461,7 +479,9 @@ export default function EmployeeSalary() {
                 <StyledTableCell align="center">
                   {row.stylist.salary && currencyFormat(row.stylist.salary)}
                 </StyledTableCell>
-                <StyledTableCell align="center">{row.totalSalary && currencyFormat(row.totalSalary)}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.totalSalary && currencyFormat(row.totalSalary)}
+                </StyledTableCell>
                 <StyledTableCell
                   style={{
                     color: 'white',
