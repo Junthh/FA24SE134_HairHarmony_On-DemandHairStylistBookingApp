@@ -33,7 +33,7 @@ namespace hair_hamony.Business.Services.StylistSalaryServices
                 .FirstOrDefault(x => x.Id == requestBody.StylistId);
 
             stylistSalary.CreatedDate = datetimeNow;
-            stylistSalary.Kpi = kpi.Value + stylist.Kpi;
+            stylistSalary.Kpi = kpi.Value;
 
             await _context.StylistSalarys.AddAsync(stylistSalary);
             await _context.SaveChangesAsync();
