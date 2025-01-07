@@ -7,6 +7,7 @@ import {
 import { AuthConsumer } from 'pages/Auth/AuthProvider';
 import { authService } from 'services/auth.service';
 import { AUTH_PATH } from 'configurations/paths/paths';
+import qs from 'qs';
 
 function Interceptor() {
   const authContext = AuthConsumer();
@@ -123,6 +124,11 @@ function Interceptor() {
 
   // Handle axios response
   axios.interceptors.response.use(onResponseSuccess, onResponseError);
+
+  // Cấu hình Axios để không hiển thị []
+  axios.defaults.paramsSerializer = (params) => {
+    return qs.stringify(params, { arrayFormat: 'repeat' });
+  };
 }
 
 export default Interceptor;

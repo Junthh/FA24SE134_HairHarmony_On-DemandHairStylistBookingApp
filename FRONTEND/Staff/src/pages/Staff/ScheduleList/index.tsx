@@ -51,6 +51,7 @@ import SelectElement from 'components/Form/SelectElement/SelectElement';
 import { DetailsOutlined, InfoOutlined, QueryStats } from '@mui/icons-material';
 import { formatDate, formatDateTime, formatTime } from 'utils/datetime';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { bookingServices } from 'services/booking.service';
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -114,8 +115,10 @@ export default function ScheduleList() {
   const [isOpenModalCancel, setIsOpenModalCancel] = useState(false);
   const [isOpenModalFinished, setIsOpenModalFinished] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
+  const [isOpenModalChangeStylist, setIsOpenModalChangeStylist] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLoadingButtonCompleted, setIsLoadingButtonCompleted] = useState(false);
+  const [isLoadingButtonChangeStylist, setIsLoadingButtonChangeStylist] = useState(false);
   const [isReloadData, setIsReloadData] = useState(false);
   const [bookingSelected, setBookingSelected] = useState<any>();
   const [isPointsErrorMessage, setIsPointErrorMessage] = useState(null);
@@ -125,6 +128,8 @@ export default function ScheduleList() {
   const [amoutToPaid, setAmoutToPaid] = useState(0);
   const [expertFee, setExpertFee] = useState(0);
   const [paymentType, setPaymentType] = useState('');
+  const [stylists, setStylists] = useState([]);
+  const [stylistId, setStylistId] = useState('');
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPaging((prev) => ({
@@ -205,6 +210,7 @@ export default function ScheduleList() {
   const handleUpdateBooking = (booking) => {
     setIsLoadingButton(true);
     setIsLoadingButtonCompleted(true);
+    setIsLoadingButtonChangeStylist(true);
     if (booking.paymentMethod === 'BANK_TRANSFER') {
       scheduleListServices
         .payWithVnpay(booking)
@@ -227,6 +233,7 @@ export default function ScheduleList() {
           setIsReloadData(!isReloadData);
           setIsOpenModalCancel(false);
           setIsOpenModalFinished(false);
+          setIsOpenModalChangeStylist(false);
         })
         .catch((error) => {
           console.error(error);
@@ -235,9 +242,36 @@ export default function ScheduleList() {
         .finally(() => {
           setIsLoadingButton(false);
           setIsLoadingButtonCompleted(false);
+          setIsLoadingButtonChangeStylist(false);
         });
     }
   };
+
+  const getListStylistFreeTime = useCallback((data) => {
+    dispatch(setLoading(true));
+
+    const { timeSlotId, bookingDate, bookingDetails } = data;
+    let services = [];
+    bookingDetails.map((bookingDetail) => {
+      return services.push(bookingDetail.serviceId || bookingDetail.comboId);
+    });
+
+    bookingServices
+      .listStylistFreeTime({
+        timeSlotId,
+        bookingDate,
+        serviceIds: services,
+      })
+      .then((res) => {
+        setStylists(res.data);
+
+        setIsOpenModalChangeStylist(true);
+      })
+      .catch((err) => {})
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  }, []);
 
   return (
     <Box marginRight={'20px'} marginTop={'40px'}>
@@ -401,16 +435,28 @@ export default function ScheduleList() {
                       </Button>
                     )}
                     {(row.status === 'Initialize' || row.status === 'Confirmed') && (
-                      <Button
-                        variant="contained"
-                        color="error"
-                        onClick={() => {
-                          setBookingSelected(row);
-                          setIsOpenModalCancel(true);
-                        }}
-                      >
-                        Huỷ
-                      </Button>
+                      <>
+                        <Button
+                          variant="contained"
+                          color="warning"
+                          onClick={() => {
+                            setBookingSelected(row);
+                            getListStylistFreeTime(row);
+                          }}
+                        >
+                          Đổi stylist
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => {
+                            setBookingSelected(row);
+                            setIsOpenModalCancel(true);
+                          }}
+                        >
+                          Huỷ
+                        </Button>
+                      </>
                     )}
                   </Box>
                 </StyledTableCell>
@@ -712,6 +758,54 @@ export default function ScheduleList() {
               Thanh toán
             </LoadingButton>
             <Button color="error" variant="contained" onClick={() => setIsOpenModalFinished(false)}>
+              Huỷ
+            </Button>
+          </Box>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={isOpenModalChangeStylist}
+        onClose={() => setIsOpenModalChangeStylist(false)}
+      >
+        <DialogTitle>Thay đổi stylist</DialogTitle>
+        <DialogContent>
+          <SelectElement
+            name="stylistId"
+            label="Stylist"
+            control={control}
+            options={
+              stylists &&
+              stylists.map((stylist) => ({
+                value: stylist.id,
+                label: stylist.fullName,
+              }))
+            }
+            placeholder="Chọn stylist"
+            handleChange={(event) => setStylistId(event.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Box sx={{ '& > *': { mr: '8px!important' } }}>
+            <LoadingButton
+              loading={isLoadingButtonChangeStylist}
+              variant="contained"
+              color="success"
+              onClick={() => {
+                const booking = bookingSelected;
+                booking.stylistId = stylistId;
+                handleUpdateBooking(booking);
+              }}
+            >
+              Lưu
+            </LoadingButton>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={() => setIsOpenModalChangeStylist(false)}
+            >
               Huỷ
             </Button>
           </Box>
