@@ -57,14 +57,14 @@ export const StylistRouter = {
         </AuthProvider>
       ),
     },
-    // {
-    //   path: `${STYLIST_PATH.TIMEKEEPING}`,
-    //   element: <RegisterWorkSchedule />,
-    // },
     {
       path: `${STYLIST_PATH.TIMEKEEPING}`,
-      element: <RegisterWorkScheduleV2 />,
+      element: <RegisterWorkSchedule />,
     },
+    // {
+    //   path: `${STYLIST_PATH.TIMEKEEPING}`,
+    //   element: <RegisterWorkScheduleV2 />,
+    // },
     {
       path: `${STYLIST_PATH.SCHEDULE_LIST}`,
       element: <ScheduleList />,

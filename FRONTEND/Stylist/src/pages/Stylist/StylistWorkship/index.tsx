@@ -6,7 +6,7 @@ import {
   GridRenderCellParams,
 } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectLoading, setLoading } from 'redux/Reducer';
+import { selectCredentialInfo, selectLoading, setLoading } from 'redux/Reducer';
 import { Box, Button, TableContainer } from '@mui/material';
 import { formatDate } from 'utils/datetime';
 import { stylistSalaryServices } from 'services/stylistSalary.service';
@@ -70,6 +70,8 @@ const generateDynamicColumnsAndGrouping = (data) => {
 };
 
 export default function StylistWorkship() {
+    const credentialInfo = useSelector(selectCredentialInfo);
+  
   const [rows, setRows] = useState<any[]>([]);
   const [timekeeping, setTimekeeping] = useState<any>();
   const [columns, setColumns] = useState<GridColDef[]>([]);
@@ -111,7 +113,7 @@ export default function StylistWorkship() {
     year = moment().get('years').toString(),
   }) => {
     dispatch(setLoading(true));
-    const res: any = await stylistSalaryServices.listStylistWorkship({ month, year });
+    const res: any = await stylistSalaryServices.listStylistWorkship({ month, year, stylistId: credentialInfo.Id });
     const { columns, columnGroupingModel } = generateDynamicColumnsAndGrouping(res.data);
 
     const rows: any[] = [];
