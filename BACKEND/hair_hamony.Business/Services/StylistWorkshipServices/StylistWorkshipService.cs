@@ -221,13 +221,15 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
             return _mapper.Map<GetStylistWorkshipModel>(updateStylistWorkship);
         }
 
-        public IList<GetStylistWorkshipByMonthModel> GetByMonthAndYear(int month, int year)
+        public IList<GetStylistWorkshipByMonthModel> GetByMonthAndYear(int month, int year, Guid? stylistId)
         {
             var results = new List<GetStylistWorkshipByMonthModel>();
             var firstDayOfMonth = new DateTime(year, month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
 
-            var stylists = _context.Stylists.Where(x => x.Status == "Active").OrderBy(x => x.FullName).ToList();
+            var stylists = stylistId == null
+                ? _context.Stylists.Where(x => x.Status == "Active").OrderBy(x => x.FullName).ToList()
+                : _context.Stylists.Where(x => x.Id == stylistId).ToList();
             var workships = _context.Workships.OrderBy(x => x.StartTime).ToList();
             //for (int i = 0; i < lastDayOfMonth.Day; i++)
             //{

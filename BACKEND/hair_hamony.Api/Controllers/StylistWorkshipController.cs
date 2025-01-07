@@ -59,9 +59,9 @@ namespace home_travel.API.Controllers
         [HttpGet("MonthAndYear")]
         [ProducesResponseType(typeof(ModelsResponse<GetStylistWorkshipByMonthModel>), StatusCodes.Status200OK)]
         [Produces("application/json")]
-        public IActionResult GetByMonthAndYear([FromQuery] int month, [FromQuery] int year)
+        public IActionResult GetByMonthAndYear([FromQuery] int month, [FromQuery] int year, [FromQuery] Guid? stylistId)
         {
-            var stylistWorkships = _stylistWorkshipService.GetByMonthAndYear(month, year);
+            var stylistWorkships = _stylistWorkshipService.GetByMonthAndYear(month, year, stylistId);
 
             return Ok(new ModelsResponse<GetStylistWorkshipByMonthModel>(
                     paging: new PagingResponse()
