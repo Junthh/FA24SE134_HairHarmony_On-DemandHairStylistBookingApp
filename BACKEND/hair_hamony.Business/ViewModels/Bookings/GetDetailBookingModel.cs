@@ -20,6 +20,7 @@ namespace hair_hamony.Business.ViewModels.Bookings
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public TimeOnly? StartTime { get; set; }
+        public Guid? TimeSlotId { get; set; }
         public Guid? CustomerId { get; set; }
         public Guid? StaffId { get; set; }
         public ICollection<GetDetailBookingDetailModel>? BookingDetails { get; set; } = new List<GetDetailBookingDetailModel>();

@@ -119,7 +119,9 @@ namespace hair_hamony.Business.Services.BookingServices
                     }
                 }
 
-                item.StartTime = timeSlots.OrderBy(x => x.StartTime).FirstOrDefault().StartTime;
+                var timeSlotFisrt = timeSlots.OrderBy(x => x.StartTime).FirstOrDefault();
+                item.StartTime = timeSlotFisrt.StartTime;
+                item.TimeSlotId = timeSlotFisrt.Id;
             }
 
             return (results, total);
