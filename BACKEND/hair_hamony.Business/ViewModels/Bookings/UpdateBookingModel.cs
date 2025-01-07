@@ -12,5 +12,6 @@
         public Guid? CustomerId { get; set; }
         public Guid? StaffId { get; set; }
         public string? PaymentMethod { get; set; }
+        public Guid? StylistId { get; set; }
     }
 }

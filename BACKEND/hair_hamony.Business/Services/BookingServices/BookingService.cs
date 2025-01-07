@@ -622,6 +622,22 @@ namespace hair_hamony.Business.Services.BookingServices
                         );
                 }
 
+                if (requestBody.StylistId != null)
+                {
+                    var bookingDetails = await _context.BookingDetails
+                        .Where(x => x.BookingId == requestBody.Id)
+                        .ToListAsync();
+
+                    foreach (var bookingDetail in bookingDetails)
+                    {
+                        await _context.BookingSlotStylists
+                            .Where(x => x.BookingDetailId == bookingDetail.Id)
+                            .ExecuteUpdateAsync(setters => setters.SetProperty(bookingSlotStylist
+                                => bookingSlotStylist.StylistId, requestBody.StylistId)
+                            );
+                    }
+                }
+
                 _mapper.Map(requestBody, booking);
                 booking.UpdatedDate = UtilitiesHelper.DatetimeNowUTC7();
 
