@@ -39,6 +39,7 @@ import moment from 'moment';
 import { current } from '@reduxjs/toolkit';
 import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { dayOffService } from 'services/dayoff.service';
 export default function Salary() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -52,6 +53,7 @@ export default function Salary() {
     page: 0,
     total: 0,
   });
+  const [dayOffs, setDayOffs] = useState([]);
   //
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -75,6 +77,11 @@ export default function Salary() {
         year: moment(formSearch.getValues('monthYear')).year().toString(),
         stylistId: credentialInfo.Id,
       });
+      getDayOffList({
+        stylistId: credentialInfo.Id,
+        month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
+        year: moment(formSearch.getValues('monthYear')).year().toString(),
+      });
     }
   }, [paging.size, paging.page, credentialInfo.Id]);
   const getSalaryList = useCallback(({ size, page, stylistId = '', month = '', year = '' }) => {
@@ -96,6 +103,22 @@ export default function Salary() {
         }));
         setRows(resultList.data);
         dispatch(setLoading(false));
+      });
+  }, []);
+
+  const getDayOffList = useCallback(({ stylistId = '', month = '', year = '' }) => {
+    dispatch(setLoading(true));
+    dayOffService
+      .list({
+        stylistId,
+        month,
+        year,
+      })
+      .then((result) => {
+        setDayOffs(result.data);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, []);
 
@@ -272,6 +295,15 @@ export default function Salary() {
                 KPI
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                Số ngày nghỉ có phép
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Số ngày nghỉ không phép
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                KPI
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng hoa hồng
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
@@ -292,6 +324,12 @@ export default function Salary() {
                 <StyledTableCell align="center">{row.year}</StyledTableCell>
                 <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
                 <StyledTableCell align="center">{row.kpi}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {dayOffs.filter((x) => x.type === 'P' && x.isApprove).length}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {dayOffs.filter((x) => x.type === 'KP' && x.isApprove).length}
+                </StyledTableCell>
                 <StyledTableCell align="center">
                   {row.totalCommission && currencyFormat(row.totalCommission)}
                 </StyledTableCell>

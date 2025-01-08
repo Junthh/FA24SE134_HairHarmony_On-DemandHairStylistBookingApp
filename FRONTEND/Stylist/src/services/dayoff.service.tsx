@@ -4,7 +4,7 @@ import { ENDPOINTS } from 'configurations/constants/globalConstants';
 class DayOffService {
   async list(params = {}) {
     try {
-      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/Workships`, { params });
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/dayoffs`, { params });
       return resData;
     } catch (error) {
       throw error;
