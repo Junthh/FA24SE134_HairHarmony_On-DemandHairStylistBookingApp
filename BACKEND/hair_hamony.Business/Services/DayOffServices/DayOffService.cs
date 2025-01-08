@@ -114,20 +114,29 @@ namespace hair_hamony.Business.Services.DayOffServices
                 };
             }
 
-            int monthRegister = requestBody.Month.Value;
-            int yearRegister = requestBody.Year.Value;
-
-            var dayoffs = _context.DayOffs
-                .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
-                .ToList();
-
-            if (dayoffs.Count == 2)
+            var dayOff = _mapper.Map<DayOff>(await GetById(id));
+            if (requestBody.IsApprove != null && requestBody.IsApprove != dayOff.IsApprove)
             {
-                throw new CException
+                dayOff.ApprovalDate = UtilitiesHelper.DatetimeNowUTC7();
+
+                if (requestBody.IsApprove != dayOff.IsApprove && requestBody.IsApprove == true)
                 {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
-                };
+                    int monthRegister = requestBody.Month.Value;
+                    int yearRegister = requestBody.Year.Value;
+
+                    var dayoffs = _context.DayOffs
+                        .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
+                        .ToList();
+
+                    if (dayoffs.Count == 2)
+                    {
+                        throw new CException
+                        {
+                            StatusCode = StatusCodes.Status400BadRequest,
+                            ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
+                        };
+                    }
+                }
             }
 
             var dayOffExisted = await _context.DayOffs.AsNoTracking()
@@ -143,11 +152,6 @@ namespace hair_hamony.Business.Services.DayOffServices
                 };
             }
 
-            var dayOff = _mapper.Map<DayOff>(await GetById(id));
-            if (requestBody.IsApprove != null && requestBody.IsApprove != dayOff.IsApprove)
-            {
-                dayOff.ApprovalDate = UtilitiesHelper.DatetimeNowUTC7();
-            }
             _mapper.Map(requestBody, dayOff);
 
             _context.DayOffs.Update(dayOff);
