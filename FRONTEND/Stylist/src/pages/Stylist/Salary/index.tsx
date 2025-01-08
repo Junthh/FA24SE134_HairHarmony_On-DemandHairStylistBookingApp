@@ -301,9 +301,6 @@ export default function Salary() {
                 Số ngày nghỉ không phép
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                KPI
-              </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng hoa hồng
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
