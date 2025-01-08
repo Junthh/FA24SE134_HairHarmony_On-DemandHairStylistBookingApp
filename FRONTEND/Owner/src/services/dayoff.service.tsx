@@ -16,10 +16,7 @@ class DayOffServices {
       });
       return resData;
     } catch (error) {
-      return {
-        success: false,
-        errors: error.errors || errorDefault,
-      } as DataEmployeeError;
+      throw error;
     }
   }
 

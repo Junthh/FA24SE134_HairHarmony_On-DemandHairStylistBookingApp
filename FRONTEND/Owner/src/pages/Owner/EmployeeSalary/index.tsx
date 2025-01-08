@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Box,
   IconButton,
@@ -18,13 +18,13 @@ import {
 } from '@mui/material';
 import { Dialog } from 'components/Common/Dialog';
 import { showToast } from 'components/Common/Toast';
+import DatePickerElement from 'components/Form/DatepickerElement';
 import { FormContainer } from 'components/Form/FormContainer';
-import SelectElement from 'components/Form/SelectElement/SelectElement';
 import TextFieldElement from 'components/Form/TextFieldElement/TextFieldElement';
 import { ICONS } from 'configurations/icons';
-import { STATUS_USER } from 'constants/status';
 import useModal from 'hooks/useModal';
 import { ListEmployeeSuccess } from 'models/EmployeeResponse.model';
+import moment from 'moment';
 import PopoverContent from 'pages/common/PopoverContent';
 import { ButtonPrimary } from 'pages/common/style/Button';
 import { StyledTableCell, StyledTableRow } from 'pages/common/style/TableStyled';
@@ -32,15 +32,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectRoles, setLoading } from 'redux/Reducer';
+import { dayOffServices } from 'services/dayoff.service';
+import { stylistSalaryServices } from 'services/stylistSalary.service';
 import { formatDate } from 'utils/datetime';
+import { currencyFormat, handleError } from 'utils/helper';
 import * as Yup from 'yup';
 import { BoxHeaderSearch } from '../Styles/common';
-import { stylistSalaryServices } from 'services/stylistSalary.service';
-import { currencyFormat, handleError } from 'utils/helper';
-import DatePickerElement from 'components/Form/DatepickerElement';
-import moment from 'moment';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { current } from '@reduxjs/toolkit';
 export default function EmployeeSalary() {
   const dispatch = useDispatch();
   const { isOpen, openModal, closeModal } = useModal();
@@ -54,6 +51,7 @@ export default function EmployeeSalary() {
     page: 0,
     total: 0,
   });
+  const [dayOffs, setDayOffs] = useState([]);
   //
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -97,6 +95,10 @@ export default function EmployeeSalary() {
       month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
       year: moment(formSearch.getValues('monthYear')).year().toString(),
       stylistName: formSearch.getValues('stylistName'),
+    });
+    getDayOffList({
+      month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
+      year: moment(formSearch.getValues('monthYear')).year().toString(),
     });
   }, [paging.size, paging.page]);
   const getSalaryList = useCallback(({ size, page, stylistName = '', month = '', year = '' }) => {
@@ -193,6 +195,22 @@ export default function EmployeeSalary() {
       dispatch(setLoading(false));
     }
   };
+
+  const getDayOffList = useCallback(({ stylistId = '', month = '', year = '' }) => {
+    dispatch(setLoading(true));
+    dayOffServices
+      .list({
+        stylistId,
+        month,
+        year,
+      })
+      .then((result) => {
+        setDayOffs(result.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
@@ -452,13 +470,19 @@ export default function EmployeeSalary() {
                 KPI
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
+                Số ngày nghỉ có phép
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
+                Số ngày nghỉ không phép
+              </StyledTableCell>
+              <StyledTableCell style={{ color: 'white' }} align="center">
                 Tổng hoa hồng
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Lương cơ bản
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center">
-                Tổng lương
+                Tổng tạm tính
               </StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
               <StyledTableCell style={{ color: 'white' }} align="center"></StyledTableCell>
@@ -473,6 +497,20 @@ export default function EmployeeSalary() {
                 <StyledTableCell align="center">{row.year}</StyledTableCell>
                 <StyledTableCell align="center">{row.totalBooking}</StyledTableCell>
                 <StyledTableCell align="center">{row.kpi}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {
+                    dayOffs.filter(
+                      (x) => x.stylistId === row.stylistId && x.type === 'P' && x.isApprove,
+                    ).length
+                  }
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {
+                    dayOffs.filter(
+                      (x) => x.stylistId === row.stylistId && x.type === 'KP' && x.isApprove,
+                    ).length
+                  }
+                </StyledTableCell>
                 <StyledTableCell align="center">
                   {row.totalCommission && currencyFormat(row.totalCommission)}
                 </StyledTableCell>
