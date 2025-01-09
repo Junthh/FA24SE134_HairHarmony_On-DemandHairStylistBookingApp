@@ -1,11 +1,12 @@
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using hair_hamony.API.Configurations;
 using hair_hamony.API.Middleware.ErrorHandling;
 using hair_hamony.Business;
 using hair_hamony.Data;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
-using Newtonsoft.Json.Converters;
+using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services.AddCors(options =>
     {
         builder.SetIsOriginAllowed(_ => true).AllowAnyHeader().AllowAnyMethod();
     });
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueCountLimit = int.MaxValue;
 });
 
 // add swagger config
