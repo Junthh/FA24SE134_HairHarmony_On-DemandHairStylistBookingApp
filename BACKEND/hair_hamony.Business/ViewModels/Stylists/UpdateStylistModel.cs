@@ -15,6 +15,5 @@ namespace hair_hamony.Business.ViewModels.Stylists
         public string? PhoneNumber { get; set; }
         public string? Status { get; set; }
         public IFormFile? Avatar { get; set; }
-        public int? Kpi { get; set; }
     }
 }
