@@ -117,7 +117,7 @@ namespace hair_hamony.Business.Services.TimekeepingServices
                         {
                             var salaryOneDay = stylist!.Salary / 50;
 
-                            salaryOffMinus = salaryOneDay * (50 - count);
+                            salaryOffMinus = salaryOneDay * count;
                         }
 
                         stylistSalary.TotalSalary = (totalSalary - salaryOffMinus - salaryKpiMinus) + stylistSalary.TotalCommission;
