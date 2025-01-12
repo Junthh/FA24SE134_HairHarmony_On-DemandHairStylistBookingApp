@@ -123,7 +123,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
         public async Task<(IList<GetDetailStylistWorkshipModel>, int)> GetAll(
             PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
             SearchStylistWorkshipModel searchStylistWorkshipModel,
-            DateOnly? startDate, DateOnly? endDate)
+            DateOnly? startDate, DateOnly? endDate, string? stylistName)
         {
             var query = _context.StylistWorkships
                 .Include(stylistWorkship => stylistWorkship.Workship)
@@ -136,6 +136,13 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
             {
                 query = query.Where(stylistWorkship =>
                     stylistWorkship.RegisterDate >= startDate && stylistWorkship.RegisterDate <= endDate
+                );
+            }
+
+            if (stylistName != null)
+            {
+                query = query.Where(stylistWorkship =>
+                    stylistWorkship.Stylist.FullName.Contains(stylistName)
                 );
             }
 

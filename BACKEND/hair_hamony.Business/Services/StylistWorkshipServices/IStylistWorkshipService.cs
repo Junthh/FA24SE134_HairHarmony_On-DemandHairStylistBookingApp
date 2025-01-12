@@ -9,7 +9,7 @@ namespace hair_hamony.Business.Services.StylistWorkshipServices
         Task<(IList<GetDetailStylistWorkshipModel>, int)> GetAll(
             PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
             SearchStylistWorkshipModel searchStylistWorkshipModel,
-            DateOnly? startDate, DateOnly? endDate);
+            DateOnly? startDate, DateOnly? endDate, string? stylistName);
         Task<GetStylistWorkshipModel> GetById(Guid id);
         Task<IList<GetStylistWorkshipModel>> Create(CreateStylistWorkshipModel requestBody);
         Task<GetStylistWorkshipModel> Update(Guid id, UpdateStylistWorkshipModel requestBody);

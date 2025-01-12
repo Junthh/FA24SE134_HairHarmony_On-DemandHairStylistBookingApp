@@ -31,12 +31,12 @@ namespace home_travel.API.Controllers
         public async Task<IActionResult> GetAll(
             [FromQuery] PagingParam<StylistWorkshipEnum.StylistWorkshipSort> paginationModel,
             [FromQuery] SearchStylistWorkshipModel searchStylistWorkshipModel,
-            [FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
+            [FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate, [FromQuery] string? stylistName)
         {
             var (stylistWorkships, total) = await _stylistWorkshipService.GetAll(
                 paginationModel,
                 searchStylistWorkshipModel,
-                startDate, endDate);
+                startDate, endDate, stylistName);
 
             return Ok(new ModelsResponse<GetDetailStylistWorkshipModel>(
                     paging: new PagingResponse()
