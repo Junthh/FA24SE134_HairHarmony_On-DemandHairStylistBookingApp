@@ -200,7 +200,7 @@ export default function ScheduleTableGroup() {
             <Box width={'50%'}></Box>
           </Box>
           <Box className="search-right">
-            {!timekeeping?.isTimekeepping && (
+            {/* {!timekeeping?.isTimekeepping && (
               <ButtonPrimary
                 severity="primary"
                 padding={'7px 14px'}
@@ -208,7 +208,7 @@ export default function ScheduleTableGroup() {
               >
                 Chốt chấm công
               </ButtonPrimary>
-            )}
+            )} */}
           </Box>
         </BoxHeaderSearch>
       </FormContainer>

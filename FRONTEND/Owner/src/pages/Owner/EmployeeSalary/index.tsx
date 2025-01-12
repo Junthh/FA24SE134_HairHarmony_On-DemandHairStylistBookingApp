@@ -34,6 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectRoles, setLoading } from 'redux/Reducer';
 import { dayOffServices } from 'services/dayoff.service';
 import { stylistSalaryServices } from 'services/stylistSalary.service';
+import { timekeepingServices } from 'services/timekeeping.service';
 import { formatDate } from 'utils/datetime';
 import { currencyFormat, handleError } from 'utils/helper';
 import * as Yup from 'yup';
@@ -52,6 +53,7 @@ export default function EmployeeSalary() {
     total: 0,
   });
   const [dayOffs, setDayOffs] = useState([]);
+  const [timekeeping, setTimekeeping] = useState<any>();
   //
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -100,6 +102,10 @@ export default function EmployeeSalary() {
       month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
       year: moment(formSearch.getValues('monthYear')).year().toString(),
     });
+    handleGetTimekeeping({
+      month: String(Number(moment(formSearch.getValues('monthYear')).month()) + 1),
+      year: moment(formSearch.getValues('monthYear')).year().toString(),
+    });
   }, [paging.size, paging.page]);
   const getSalaryList = useCallback(({ size, page, stylistName = '', month = '', year = '' }) => {
     dispatch(setLoading(true));
@@ -114,6 +120,14 @@ export default function EmployeeSalary() {
         dispatch(setLoading(false));
       });
   }, []);
+
+  const handleGetTimekeeping = async ({
+    month = String(Number(moment().get('M').toString()) + 1),
+    year = moment().get('years').toString(),
+  }) => {
+    const res: any = await timekeepingServices.list({ month, year });
+    setTimekeeping(res.data[0]);
+  };
 
   const handleSearch = useCallback(
     handleSubmitSearch((data: any) => {
@@ -342,6 +356,27 @@ export default function EmployeeSalary() {
   //   );
   // }, [isOpen]);
 
+  const handleClickTimekeeping = () => {
+    if (timekeeping) {
+      dispatch(setLoading(true));
+      const updateTimekeeping = timekeeping;
+      updateTimekeeping.isTimekeepping = true;
+      timekeepingServices
+        .update(updateTimekeeping.id, updateTimekeeping)
+        .then(() => {
+          showToast('success', 'Chấm công thành công');
+          dispatch(setLoading(false));
+          handleSearch();
+        })
+        .catch((err) => {
+          showToast('error', err.msg);
+          dispatch(setLoading(false));
+        });
+    } else {
+      showToast('error', 'Không có ngày công để chấm công');
+    }
+  };
+
   const renderDialog = useMemo(() => {
     return (
       <Dialog
@@ -431,6 +466,15 @@ export default function EmployeeSalary() {
             <Box width={'50%'}></Box>
           </Box>
           <Box className="search-right">
+            {!timekeeping?.isTimekeepping && (
+              <ButtonPrimary
+                severity="primary"
+                padding={'7px 14px'}
+                onClick={handleClickTimekeeping}
+              >
+                Chốt chấm công
+              </ButtonPrimary>
+            )}
             {/* <ButtonPrimary
               severity="primary"
               padding={'9px 14px'}
