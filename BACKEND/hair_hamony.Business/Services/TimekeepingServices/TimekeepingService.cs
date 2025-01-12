@@ -96,19 +96,31 @@ namespace hair_hamony.Business.Services.TimekeepingServices
 
                     foreach (var stylistSalary in stylistSalarys)
                     {
+                        var stylist = await _context.Stylists.FirstOrDefaultAsync(x => x.Id == stylistSalary.StylistId);
+
+                        var totalSalary = stylist!.Salary;
+                        if (stylistSalary.TotalBooking < stylistSalary.Kpi)
+                        {
+                            var salaryKpiOneBooking = stylist!.Salary / stylistSalary.Kpi;
+                            totalSalary = totalSalary - (salaryKpiOneBooking * (stylistSalary.Kpi - stylistSalary.TotalBooking));
+                        }
+
                         var count = await _context.DayOffs
                             .CountAsync(x => x.Year == requestBody.Year &&
                                 x.Month == requestBody.Month && x.IsApprove == true &&
                                 x.Type == "KP" && x.StylistId == stylistSalary.StylistId
                             );
 
+                        double? salaryMinus = 0;
                         if (count > 0)
                         {
-                            var stylist = await _context.Stylists.FirstOrDefaultAsync(x => x.Id == stylistSalary.StylistId);
-                            var salary = stylist!.Salary * (50 - count) / 50;
-                            stylistSalary.TotalSalary = salary + stylistSalary.TotalCommission;
-                            _context.StylistSalarys.Update(stylistSalary);
+                            var salaryOneDay = stylist!.Salary / 50;
+
+                            salaryMinus = salaryOneDay * (50 - count);
                         }
+
+                        stylistSalary.TotalSalary = (totalSalary - salaryMinus) + stylistSalary.TotalCommission;
+                        _context.StylistSalarys.Update(stylistSalary);
                     }
                 }
 
