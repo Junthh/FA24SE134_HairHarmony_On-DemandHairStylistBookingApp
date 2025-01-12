@@ -129,20 +129,22 @@ export default function RegisterWorkSchedule() {
   } = formRegisterWorkship;
 
   const getWorkshipStylistList = useCallback(
-    ({ size, page, registerDate }: any) => {
+    ({ size, page, registerDate, stylistName }: any) => {
       dispatch(setLoading(true));
       workshipService
-        .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, registerDate })
+        .listWorkshipStylist({ pageSize: size, pageIndex: page + 1, registerDate, stylistName })
         .then((resultList: any) => {
           setPaging((prev) => ({
             ...prev,
+            size,
+            page,
             total: resultList.paging.total,
           }));
           setRows(resultList.data);
           dispatch(setLoading(false));
         });
     },
-    [paging.size, paging.page, credentialInfo.Id],
+    [credentialInfo.Id],
   );
 
   useEffect(() => {
@@ -151,9 +153,10 @@ export default function RegisterWorkSchedule() {
         size: paging.size,
         page: paging.page,
         registerDate: formSearch.getValues('registerDate'),
+        stylistName: formSearch.getValues('stylistName'),
       });
     }
-  }, [getWorkshipStylistList]);
+  }, [getWorkshipStylistList, paging.size, paging.page]);
 
   const handleSave = useCallback(
     handleSubmit((data: any) => {
@@ -252,8 +255,10 @@ export default function RegisterWorkSchedule() {
     handleSubmitSearch((data: any) => {
       if (data) {
         getWorkshipStylistList({
-          ...paging,
-          registerDate: formatDate(data.registerDate, 'yyyy-MM-dd'),
+          size: 10,
+          page: 0,
+          registerDate: data.registerDate && formatDate(data.registerDate, 'yyyy-MM-dd'),
+          stylistName: data.stylistName,
         });
       }
     }),
@@ -357,6 +362,15 @@ export default function RegisterWorkSchedule() {
                 name="registerDate"
                 label={''}
                 control={controlSearch}
+              />
+              <TextFieldElement
+                name="stylistName"
+                control={controlSearch}
+                placeholder="Tìm theo tên stylist"
+                InputProps={{
+                  startAdornment: <ICONS.IconMagnifyingGlass></ICONS.IconMagnifyingGlass>,
+                }}
+                //   onKeyUp={handleKeyup}
               />
               <ButtonPrimary severity="primary" padding={'7px 14px'} onClick={() => handleSearch()}>
                 <ICONS.IconFilter width={24} height={24}></ICONS.IconFilter>
