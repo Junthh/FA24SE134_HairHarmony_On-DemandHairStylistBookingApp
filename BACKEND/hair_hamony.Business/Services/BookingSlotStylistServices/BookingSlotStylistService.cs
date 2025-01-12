@@ -117,20 +117,21 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                 }
             }
 
-            // danh sach stylist da dang ki lam viec
-            var stylistWorkships = await _context.StylistWorkships.AsNoTracking()
-                .Where(stylistWorkship =>
-                    stylistWorkship.RegisterDate.Equals(bookingDate)
-                    && stylistWorkship.Workship!.StartTime <= timeSlot!.StartTime
-                    && stylistWorkship.Workship!.EndTime > timeSlot!.StartTime
-                    && (stylistWorkship.DayOffs.Count > 0 ? !stylistWorkship.DayOffs.Any(x => x.IsApprove == true) : stylistWorkship.DayOffs.Count == 0)
-                )
-                .Select(stylistWorkship => stylistWorkship.StylistId)
-                .ToListAsync();
+            //// danh sach stylist da dang ki lam viec
+            //var stylistWorkships = await _context.StylistWorkships.AsNoTracking()
+            //.Where(stylistWorkship =>
+            //    stylistWorkship.RegisterDate.Equals(bookingDate)
+            //    && stylistWorkship.Workship!.StartTime <= timeSlot!.StartTime
+            //    && stylistWorkship.Workship!.EndTime > timeSlot!.StartTime
+            //    && (stylistWorkship.DayOffs.Count > 0 ? !stylistWorkship.DayOffs.Any(x => x.IsApprove == true) : stylistWorkship.DayOffs.Count == 0)
+            //)
+            //.Select(stylistWorkship => stylistWorkship.StylistId)
+            //.ToListAsync();
 
             int countTimeslot = (int)Math.Ceiling((decimal)durationService / 60);
 
             List<Guid?> bookingSlotStylists = [];
+            List<Guid?> stylistWorkships = [];
 
             for (int i = 0; i < countTimeslot; i++)
             {
@@ -157,7 +158,25 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                 .ToListAsync();
 
                 bookingSlotStylist.ForEach(x => bookingSlotStylists.Add(x.Value));
+
+                // danh sach stylist da dang ki lam viec
+                var stylistWorkshipIds = await _context.StylistWorkships.AsNoTracking()
+                .Where(stylistWorkship =>
+                    stylistWorkship.RegisterDate.Equals(bookingDate)
+                    && stylistWorkship.Workship!.StartTime <= timeSlotNext!.StartTime
+                    && stylistWorkship.Workship!.EndTime > timeSlotNext!.StartTime
+                    && (stylistWorkship.DayOffs.Count > 0 ? !stylistWorkship.DayOffs.Any(x => x.IsApprove == true) : stylistWorkship.DayOffs.Count == 0)
+                )
+                .Select(stylistWorkship => stylistWorkship.StylistId)
+                .ToListAsync();
+
+                stylistWorkshipIds.ForEach(x => stylistWorkships.Add(x.Value));
             }
+            stylistWorkships = stylistWorkships
+                .GroupBy(x => x)
+                .Where(g => g.Count() == countTimeslot)
+                .Select(x => x.Key)
+                .ToList();
 
             // danh sach stylist freetime
             var stylistsFreetime = stylistWorkships.Except(bookingSlotStylists).ToList();
