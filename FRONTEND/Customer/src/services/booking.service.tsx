@@ -4,7 +4,10 @@ import { ENDPOINTS } from 'configurations/constants/globalConstants';
 class BookingServices {
   async listTimeSlots(params = {}) {
     try {
-      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/TimeSlots`, {
+      // const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/TimeSlots`, {
+      //   params,
+      // });
+      const resData = await axios.get(`${ENDPOINTS.ApiPrefix}/BookingSlotStylists/ListTimeSlot`, {
         params,
       });
       return resData;

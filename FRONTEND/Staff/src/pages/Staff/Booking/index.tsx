@@ -205,31 +205,58 @@ export default function Booking() {
   useEffect(() => {
     getListStylistFreeTime();
   }, [getListStylistFreeTime]);
-  const getListTimeSlot = useCallback(() => {
-    const isActiveTime = times.some((time) => time.isActive);
-    if (currentStep === 1 && !isActiveTime) {
-      dispatch(setLoading(true));
-      bookingServices
-        .listTimeSlots()
-        .then((res) => {
-          const currentHours = new Date().getHours();
-          let timeSlots = res.data
-            .map((item) => ({
+  const getListTimeSlot = useCallback(
+    (newDate?) => {
+      const isActiveTime = times.some((time) => time.isActive);
+      if (currentStep === 1 && !isActiveTime) {
+        const bookingDate = formatDate(
+          new Date(newDate ? newDate.toString() : date.toString()),
+          'yyyy-MM-dd',
+        );
+        const serviceChecked = Object.entries(services)
+          .filter(([, option]: any) => option.checked)
+          .map(([id, option]: any) => ({ id, ...option }));
+        const combos = serviceChecked
+          .filter((item) => item.categoryId === categories[0].id)
+          .map((item) => item.id);
+        const servicesResult = serviceChecked
+          .filter((item) => item.categoryId !== categories[0].id)
+          .map((item) => item.id);
+
+        dispatch(setLoading(true));
+        bookingServices
+          .listTimeSlots({ bookingDate, serviceIds: [...combos, ...servicesResult] })
+          .then((res) => {
+            // const currentHours = new Date().getHours();
+            // let timeSlots = res.data
+            //   .map((item) => ({
+            //     ...item,
+            //     startTime: item.startTime.split(':').slice(0, 2).join(':'),
+            //     endTime: item.endTime.split(':').slice(0, 2).join(':'),
+            //     isActive: false,
+            //     disabled: item.startTime < currentHours,
+            //   }))
+            //   .sort((a, b) => a.startTime.localeCompare(b.startTime));
+            // setTimes(timeSlots);
+
+            let timeSlots = res.data.map((item) => ({
               ...item,
-              startTime: item.startTime.split(':').slice(0, 2).join(':'),
-              endTime: item.endTime.split(':').slice(0, 2).join(':'),
+              id: item.timeSlot.id,
+              startTime: item.timeSlot.startTime.split(':').slice(0, 2).join(':'),
+              endTime: item.timeSlot.endTime.split(':').slice(0, 2).join(':'),
               isActive: false,
-              disabled: item.startTime < currentHours,
-            }))
-            .sort((a, b) => a.startTime.localeCompare(b.startTime));
-          setTimes(timeSlots);
-        })
-        .catch((err) => {})
-        .finally(() => {
-          dispatch(setLoading(false));
-        });
-    }
-  }, [currentStep]);
+              disabled: item.stylists.length === 0,
+            }));
+            setTimes(timeSlots);
+          })
+          .catch((err) => {})
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+      }
+    },
+    [currentStep],
+  );
 
   useEffect(() => {
     getListTimeSlot();
@@ -560,7 +587,10 @@ export default function Booking() {
                   disablePast
                   showDaysOutsideCurrentMonth
                   value={date}
-                  onChange={(newValue) => setDate(newValue)}
+                  onChange={(newValue) => {
+                    setDate(newValue);
+                    getListTimeSlot(newValue);
+                  }}
                 />
               </LocalizationProvider>
               {!isLoading ? (
@@ -834,7 +864,7 @@ export default function Booking() {
                   <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
                     <Box>
                       <Typography variant="h5" fontWeight={700}>
-                        Thợ cắt
+                        Stylist
                       </Typography>
                       <Typography variant="subtitle1" color={colors.grey2} fontWeight={400}>
                         {`${stylistActive?.fullName} - ${stylistActive?.level}`}
