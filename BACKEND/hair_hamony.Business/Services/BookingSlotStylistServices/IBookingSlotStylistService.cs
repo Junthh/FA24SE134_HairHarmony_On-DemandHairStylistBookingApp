@@ -16,5 +16,6 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
         Task<GetBookingSlotStylistModel> Update(Guid id, UpdateBookingSlotStylistModel requestBody);
         Task Delete(Guid id);
         Task<IList<GetStylistModel>> GetListStylistFreetime(DateOnly bookingDate, Guid timeSlotId, List<Guid> serviceIds);
+        Task<IList<GetListTimeSlotModel>> GetListTimeSlot(DateOnly bookingDate, List<Guid> serviceIds);
     }
 }

@@ -8,6 +8,7 @@ using hair_hamony.Business.Utilities;
 using hair_hamony.Business.Utilities.ErrorHandling;
 using hair_hamony.Business.ViewModels.BookingSlotStylists;
 using hair_hamony.Business.ViewModels.Stylists;
+using hair_hamony.Business.ViewModels.TimeSlots;
 using hair_hamony.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -141,11 +142,12 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
 
                 if (timeSlotNext == null)
                 {
-                    throw new CException
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
-                    };
+                    //throw new CException
+                    //{
+                    //    StatusCode = StatusCodes.Status400BadRequest,
+                    //    ErrorMessage = "Thời gian thực hiện quá thời gian làm việc, vui lòng chọn thời gian sớm hơn"
+                    //};
+                    return [];
                 }
 
                 // danh sach stylist da co booking
@@ -238,6 +240,24 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                                 select stylist;
 
             return stylistSorted.ToList();
+        }
+
+        public async Task<IList<GetListTimeSlotModel>> GetListTimeSlot(DateOnly bookingDate, List<Guid> serviceIds)
+        {
+            var timeSlots = await _context.TimeSlots.AsNoTracking().OrderBy(x => x.StartTime).ToListAsync();
+            var results = new List<GetListTimeSlotModel>();
+
+            foreach (var timeSlot in timeSlots)
+            {
+                var stylists = await GetListStylistFreetime(bookingDate, timeSlot.Id, serviceIds);
+                results.Add(new GetListTimeSlotModel
+                {
+                    TimeSlot = _mapper.Map<GetTimeSlotModel>(timeSlot),
+                    Stylists = stylists
+                });
+            }
+
+            return results;
         }
 
         public async Task<GetBookingSlotStylistModel> Update(Guid id, UpdateBookingSlotStylistModel requestBody)

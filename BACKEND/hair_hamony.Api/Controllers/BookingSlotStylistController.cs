@@ -80,6 +80,31 @@ namespace home_travel.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint for get list time slot
+        /// </summary>
+        /// <returns>List of timeslot and stylist</returns>
+        /// <response code="200">Returns the list of timeslot and stylist</response>
+        [HttpGet("ListTimeSlot")]
+        [ProducesResponseType(typeof(ModelsResponse<GetListTimeSlotModel>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetListTimeSlot(
+            [FromQuery] DateOnly bookingDate,
+            [FromQuery] List<Guid> serviceIds)
+        {
+            var results = await _bookingSlotStylistService.GetListTimeSlot(bookingDate, serviceIds);
+
+            return Ok(new ModelsResponse<GetListTimeSlotModel>(
+                    paging: new PagingResponse()
+                    {
+                        Page = 1,
+                        Size = results.Count,
+                        Total = results.Count
+                    },
+                    data: results
+                ));
+        }
+
+        /// <summary>
         /// Endpoint for get bookingSlotStylist by Id
         /// </summary>
         /// <param name="id">Id of bookingSlotStylist</param>
