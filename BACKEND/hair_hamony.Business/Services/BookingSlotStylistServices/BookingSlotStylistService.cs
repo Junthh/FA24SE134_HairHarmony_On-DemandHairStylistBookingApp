@@ -248,42 +248,39 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                 .AsNoTracking()
                 .FirstOrDefaultAsync(timeSlot => timeSlot.Id == timeSlotId);
 
-            var durationService = 0;
-            for (int i = 0; i < serviceIds.Count; i++)
+            if (timeSlot == null)
             {
-                var service = await _context.Services
-                .AsNoTracking()
-                .FirstOrDefaultAsync(service => service.Id == serviceIds[i]);
-                if (service == null)
-                {
-                    var combo = await _context.Combos
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(combo => combo.Id == serviceIds[i]);
-                    durationService = combo.Duration!.Value;
-                }
-                else
-                {
-                    durationService = service.Duration!.Value;
-                }
+                return new List<GetStylistModel>();
             }
+
+            var services = await _context.Services
+                .AsNoTracking()
+                .Where(service => serviceIds.Contains(service.Id))
+                .ToListAsync();
+
+            var combos = await _context.Combos
+                .AsNoTracking()
+                .Where(combo => serviceIds.Contains(combo.Id))
+                .ToListAsync();
+
+            var durationService = services.Sum(service => service.Duration) + combos.Sum(combo => combo.Duration);
 
             int countTimeslot = (int)Math.Ceiling((decimal)durationService / 60);
 
-            List<Guid?> bookingSlotStylists = [];
-            List<Guid?> stylistWorkships = [];
+            var bookingSlotStylists = new List<Guid?>();
+            var stylistWorkships = new List<Guid?>();
 
             for (int i = 0; i < countTimeslot; i++)
             {
                 var timeSlotNext = await _context.TimeSlots
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(x => x.StartTime == timeSlot!.StartTime!.Value.AddHours(i));
+                    .FirstOrDefaultAsync(x => x.StartTime == timeSlot.StartTime!.Value.AddHours(i));
 
                 if (timeSlotNext == null)
                 {
-                    return [];
+                    return new List<GetStylistModel>();
                 }
 
-                // danh sach stylist da co booking
                 var bookingSlotStylist = await _context.BookingSlotStylists
                     .AsNoTracking()
                     .Where(bookingSlotStylist =>
@@ -293,88 +290,35 @@ namespace hair_hamony.Business.Services.BookingSlotStylistServices
                     .Select(bookingSlotStylist => bookingSlotStylist.StylistId)
                     .ToListAsync();
 
-                bookingSlotStylist.ForEach(x => bookingSlotStylists.Add(x.Value));
+                bookingSlotStylists.AddRange(bookingSlotStylist);
 
-                // danh sach stylist da dang ki lam viec
-                var stylistWorkshipIds = await _context.StylistWorkships.AsNoTracking()
-                .Where(stylistWorkship =>
-                    stylistWorkship.RegisterDate.Equals(bookingDate)
-                    && stylistWorkship.Workship!.StartTime <= timeSlotNext!.StartTime
-                    && stylistWorkship.Workship!.EndTime > timeSlotNext!.StartTime
-                    && (stylistWorkship.DayOffs.Count > 0 ? !stylistWorkship.DayOffs.Any(x => x.IsApprove == true) : stylistWorkship.DayOffs.Count == 0)
-                )
-                .Select(stylistWorkship => stylistWorkship.StylistId)
-                .ToListAsync();
+                var stylistWorkshipIds = await _context.StylistWorkships
+                    .AsNoTracking()
+                    .Where(stylistWorkship =>
+                        stylistWorkship.RegisterDate.Equals(bookingDate)
+                        && stylistWorkship.Workship!.StartTime <= timeSlotNext.StartTime
+                        && stylistWorkship.Workship!.EndTime > timeSlotNext.StartTime
+                        && (stylistWorkship.DayOffs.Count == 0 || !stylistWorkship.DayOffs.Any(x => x.IsApprove == true)))
+                    .Select(stylistWorkship => stylistWorkship.StylistId)
+                    .ToListAsync();
 
-                stylistWorkshipIds.ForEach(x => stylistWorkships.Add(x.Value));
+                stylistWorkships.AddRange(stylistWorkshipIds);
             }
+
             stylistWorkships = stylistWorkships
                 .GroupBy(x => x)
                 .Where(g => g.Count() == countTimeslot)
                 .Select(x => x.Key)
                 .ToList();
 
-            // danh sach stylist freetime
             var stylistsFreetime = stylistWorkships.Except(bookingSlotStylists).ToList();
 
             var stylists = await _context.Stylists
                 .AsNoTracking()
-                .Where(stylist =>
-                    stylistsFreetime.Contains(stylist.Id) && stylist.Status == "Active"
-                ).ToListAsync();
+                .Where(stylist => stylistsFreetime.Contains(stylist.Id) && stylist.Status == "Active")
+                .ToListAsync();
 
-            var results = _mapper.Map<IList<GetStylistModel>>(stylists);
-
-            //var monthCurrent = UtilitiesHelper.DatetimeNowUTC7().Month;
-            //var yearCurrent = UtilitiesHelper.DatetimeNowUTC7().Year;
-            //foreach (var item in results)
-            //{
-            //    var systemConfig = await _context.SystemConfigs
-            //        .FirstOrDefaultAsync(systemConfig => systemConfig.Name == "EXPERT_FEE");
-            //    if (item.Level == "Expert")
-            //    {
-            //        item.ExpertFee = systemConfig.Value;
-            //    }
-
-            //    var stylistSalary = await _context.StylistSalarys
-            //        .FirstOrDefaultAsync(stylistSalary =>
-            //            stylistSalary.StylistId == item.Id
-            //            && stylistSalary.Month == monthCurrent
-            //            && stylistSalary.Year == yearCurrent
-            //        );
-
-            //    var stylist = await _context.Stylists
-            //            .FirstOrDefaultAsync(stylist => stylist.Id == item.Id);
-            //    // nếu trong tháng này chưa có booking thì tạo để có dữ liệu so sánh tổng booking trong tháng
-            //    if (stylistSalary == null)
-            //    {
-            //        var kpi = _context.Kpis.FirstOrDefault(x =>
-            //                    x.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
-            //                    && x.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()
-            //                    )
-            //                );
-            //        await _stylistSalaryService.Create(new ViewModels.StylistSalarys.CreateStylistSalaryModel
-            //        {
-            //            Month = monthCurrent,
-            //            Year = yearCurrent,
-            //            StylistId = item.Id,
-            //            TotalBooking = 0,
-            //            TotalCommission = 0,
-            //            TotalSalary = 0,
-            //            Kpi = kpi.Value.Value
-            //        });
-            //    }
-            //}
-
-            // sắp xếp theo stylist có tổng booking thấp nhất
-            //var stylistSorted = from stylist in results
-            //                    join stylistSalary in _context.StylistSalarys on stylist.Id equals stylistSalary.StylistId
-            //                    where stylistSalary.Month == monthCurrent && stylistSalary.Year == yearCurrent
-            //                    orderby stylistSalary.TotalBooking
-            //                    select stylist;
-
-            //return stylistSorted.ToList();
-            return results;
+            return _mapper.Map<IList<GetStylistModel>>(stylists);
         }
 
         public async Task<IList<GetListTimeSlotModel>> GetListTimeSlot(DateOnly bookingDate, List<Guid> serviceIds)
