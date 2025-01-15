@@ -151,6 +151,10 @@ export default function ScheduleList() {
       size: paging.size,
       page: paging.page,
       status: tabValue,
+      bookingDate: getValues('bookingDate')
+        ? moment(getValues('bookingDate')).format('YYYY-MM-DD')
+        : null,
+      customerPhoneNumber: getValues('customerPhoneNumber'),
     });
   }, [paging.size, paging.page, tabValue, isReloadData]);
 
@@ -303,7 +307,7 @@ export default function ScheduleList() {
           textColor="inherit"
           value={tabValue}
           onChange={(_, value) => {
-            formSearch.reset();
+            // formSearch.reset();
             setTabValue(value);
           }}
         >
