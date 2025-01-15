@@ -89,8 +89,11 @@ const STATUS_COLOR = {
 export default function ScheduleList() {
   const { search } = useLocation();
   const dispatch = useDispatch();
+
+  const [isOpenModalFinished, setIsOpenModalFinished] = useState(false);
+
   const schema = Yup.object().shape<any>({
-    paymentType: Yup.string().required('Vui lòng chọn loại thanh toán'),
+    paymentType: isOpenModalFinished && Yup.string().required('Vui lòng chọn loại thanh toán'),
   });
   const formSearch = useForm<any>({
     defaultValues: {},
@@ -113,7 +116,6 @@ export default function ScheduleList() {
   });
   const [tabValue, setTabValue] = useState('');
   const [isOpenModalCancel, setIsOpenModalCancel] = useState(false);
-  const [isOpenModalFinished, setIsOpenModalFinished] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   const [isOpenModalChangeStylist, setIsOpenModalChangeStylist] = useState(false);
   const [isLoadingButton, setIsLoadingButton] = useState(false);
@@ -196,12 +198,11 @@ export default function ScheduleList() {
   }, []);
 
   const handleFilters = (value) => {
+    console.log(value);
     getBookingHistoryList({
       size: 10,
       page: 0,
-      bookingDate: value.bookingDate
-        ? moment(value.bookingDate).format('YYYY-MM-DD')
-        : value.bookingDate,
+      bookingDate: value.bookingDate ? moment(value.bookingDate).format('YYYY-MM-DD') : null,
       customerPhoneNumber: value.customerPhoneNumber,
       status: tabValue,
     });
