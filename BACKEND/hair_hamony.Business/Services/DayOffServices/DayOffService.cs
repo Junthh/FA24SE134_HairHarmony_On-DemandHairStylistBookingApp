@@ -105,59 +105,82 @@ namespace hair_hamony.Business.Services.DayOffServices
 
         public async Task<GetDayOffModel> Update(Guid id, UpdateDayOffModel requestBody)
         {
-            if (id != requestBody.Id)
+            var dbTransaction = _context.Database.BeginTransaction();
+            try
             {
-                throw new CException
+                if (id != requestBody.Id)
                 {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = "Id không trùng"
-                };
-            }
-
-            var dayOff = _mapper.Map<DayOff>(await GetById(id));
-            if (requestBody.IsApprove != null && requestBody.IsApprove != dayOff.IsApprove)
-            {
-                dayOff.ApprovalDate = UtilitiesHelper.DatetimeNowUTC7();
-
-                if (requestBody.IsApprove != dayOff.IsApprove && requestBody.IsApprove == true)
-                {
-                    int monthRegister = requestBody.Month.Value;
-                    int yearRegister = requestBody.Year.Value;
-
-                    var dayoffs = _context.DayOffs
-                        .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
-                        .ToList();
-
-                    if (dayoffs.Count == 2)
+                    throw new CException
                     {
-                        throw new CException
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = "Id không trùng"
+                    };
+                }
+
+                var dayOff = _mapper.Map<DayOff>(await GetById(id));
+                if (requestBody.IsApprove != null && requestBody.IsApprove != dayOff.IsApprove)
+                {
+                    dayOff.ApprovalDate = UtilitiesHelper.DatetimeNowUTC7();
+
+                    if (requestBody.IsApprove != dayOff.IsApprove && requestBody.IsApprove == true)
+                    {
+                        int monthRegister = requestBody.Month.Value;
+                        int yearRegister = requestBody.Year.Value;
+
+                        var dayoffs = _context.DayOffs
+                            .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
+                            .ToList();
+
+                        if (dayoffs.Count == 2)
                         {
-                            StatusCode = StatusCodes.Status400BadRequest,
-                            ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
-                        };
+                            throw new CException
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
+                            };
+                        }
+
+                        if (requestBody.Type == "KP")
+                        {
+                            var stylistSalary = await _context.StylistSalarys
+                                .FirstOrDefaultAsync(x => x.Year == requestBody.Year && x.Month == requestBody.Month && x.StylistId == requestBody.StylistId);
+
+                            var stylist = await _context.Stylists.FirstOrDefaultAsync(x => x.Id == requestBody.StylistId);
+
+                            var salaryOneDay = stylist!.Salary / 50;
+
+                            stylistSalary.TotalSalary -= salaryOneDay;
+                            _context.StylistSalarys.Update(stylistSalary);
+                        }
                     }
                 }
-            }
 
-            var dayOffExisted = await _context.DayOffs.AsNoTracking()
-                .Include(x => x.StylistWorkship)
-                .ThenInclude(stylistWorkship => stylistWorkship.Workship)
-                .FirstOrDefaultAsync(x => x.StylistId == requestBody.StylistId && x.StylistWorkshipId == requestBody.StylistWorkshipId);
-            if (dayOffExisted != null && dayOffExisted.IsApprove == true)
-            {
-                throw new CException
+                var dayOffExisted = await _context.DayOffs.AsNoTracking()
+                    .Include(x => x.StylistWorkship)
+                    .ThenInclude(stylistWorkship => stylistWorkship.Workship)
+                    .FirstOrDefaultAsync(x => x.StylistId == requestBody.StylistId && x.StylistWorkshipId == requestBody.StylistWorkshipId);
+                if (dayOffExisted != null && dayOffExisted.IsApprove == true)
                 {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Ca làm việc ngày {dayOffExisted.StylistWorkship.RegisterDate} {dayOffExisted.StylistWorkship.Workship.StartTime.Value.ToString("HH:mm")} - {dayOffExisted.StylistWorkship.Workship.EndTime.Value.ToString("HH:mm")} đã xin nghỉ phép"
-                };
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = $"Ca làm việc ngày {dayOffExisted.StylistWorkship.RegisterDate} {dayOffExisted.StylistWorkship.Workship.StartTime.Value.ToString("HH:mm")} - {dayOffExisted.StylistWorkship.Workship.EndTime.Value.ToString("HH:mm")} đã xin nghỉ phép"
+                    };
+                }
+
+                _mapper.Map(requestBody, dayOff);
+
+                _context.DayOffs.Update(dayOff);
+                await _context.SaveChangesAsync();
+                await dbTransaction.CommitAsync();
+
+                return _mapper.Map<GetDayOffModel>(dayOff);
             }
-
-            _mapper.Map(requestBody, dayOff);
-
-            _context.DayOffs.Update(dayOff);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<GetDayOffModel>(dayOff);
+            catch
+            {
+                await dbTransaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }
