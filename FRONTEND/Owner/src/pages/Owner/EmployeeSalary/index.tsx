@@ -466,7 +466,7 @@ export default function EmployeeSalary() {
             <Box width={'50%'}></Box>
           </Box>
           <Box className="search-right">
-            {!timekeeping?.isTimekeepping && (
+            {/* {!timekeeping?.isTimekeepping && (
               <ButtonPrimary
                 severity="primary"
                 padding={'7px 14px'}
@@ -474,7 +474,7 @@ export default function EmployeeSalary() {
               >
                 Chốt chấm công
               </ButtonPrimary>
-            )}
+            )} */}
             {/* <ButtonPrimary
               severity="primary"
               padding={'9px 14px'}

@@ -74,7 +74,7 @@ export default function EmployeeStaffList() {
       .required(`Vui lòng nhập số điện thoại.`),
     fullName: Yup.string().required(`Vui lòng nhập họ tên.`),
     username: Yup.string().required(`Vui lòng nhập username`),
-    salary: Yup.string().required(`Vui lòng nhập lương`),
+    // salary: Yup.string().required(`Vui lòng nhập lương`),
     status: Yup.string().required(`Vui lòng nhập trạng thái`),
     password: !selectedRow ? Yup.string().required(`Vui lòng nhập mật khẩu`) : null,
   });
@@ -83,7 +83,7 @@ export default function EmployeeStaffList() {
     phoneNumber: '',
     fullName: '',
     password: '',
-    salary: '',
+    // salary: '',
     status: '',
   };
   const formUser = useForm<any>({
@@ -269,14 +269,14 @@ export default function EmployeeStaffList() {
                 label={'Số điện thoại'}
                 //   onKeyUp={handleKeyup}
               />
-              <TextFieldElement
+              {/* <TextFieldElement
                 name="salary"
                 control={control}
                 type="number"
                 placeholder="Nhập lương"
                 label={'Lương'}
                 //   onKeyUp={handleKeyup}
-              />
+              /> */}
               {!selectedRow && (
                 <TextFieldElement
                   name="password"
@@ -355,9 +355,9 @@ export default function EmployeeStaffList() {
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Số điện thoại
               </StyledTableCell>
-              <StyledTableCell style={{ color: 'white' }} align="center">
+              {/* <StyledTableCell style={{ color: 'white' }} align="center">
                 Lương
-              </StyledTableCell>
+              </StyledTableCell> */}
               <StyledTableCell style={{ color: 'white' }} align="center">
                 Trạng thái
               </StyledTableCell>
@@ -395,7 +395,7 @@ export default function EmployeeStaffList() {
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.fullName}</StyledTableCell>
                 <StyledTableCell align="center">{row.phoneNumber}</StyledTableCell>
-                <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell>
+                {/* <StyledTableCell align="center">{currencyFormat(row.salary)}</StyledTableCell> */}
                 <StyledTableCell align="center">{row.status}</StyledTableCell>
                 <StyledTableCell align="center">{formatDateTime(row.createdDate)}</StyledTableCell>
                 <StyledTableCell align="center">

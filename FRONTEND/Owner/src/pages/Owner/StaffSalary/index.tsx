@@ -191,7 +191,7 @@ export default function StaffSalary() {
             </ButtonPrimary>
             <Box width={'50%'}></Box>
             <Box className="search-right">
-              {rows.length === 0 && (
+              {/* {rows.length === 0 && (
                 <ButtonPrimary
                   severity="primary"
                   padding={'7px 14px'}
@@ -199,7 +199,7 @@ export default function StaffSalary() {
                 >
                   Chốt chấm công
                 </ButtonPrimary>
-              )}
+              )} */}
             </Box>
           </Box>
         </BoxHeaderSearch>
