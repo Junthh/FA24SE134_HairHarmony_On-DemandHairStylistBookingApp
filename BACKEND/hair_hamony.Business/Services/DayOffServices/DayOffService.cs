@@ -49,7 +49,7 @@ namespace hair_hamony.Business.Services.DayOffServices
                 .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
                 .ToList();
 
-            if (dayoffs.Count == 2)
+            if (dayoffs.Count == 2 && requestBody.Type == "P")
             {
                 throw new CException
                 {
@@ -149,8 +149,34 @@ namespace hair_hamony.Business.Services.DayOffServices
 
                             var salaryOneDay = stylist!.Salary / 50;
 
-                            stylistSalary.TotalSalary -= salaryOneDay;
-                            _context.StylistSalarys.Update(stylistSalary);
+                            if (stylistSalary == null)
+                            {
+                                var kpi = _context.Kpis.FirstOrDefault(x =>
+                                    x.StartDate <= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7()) &&
+                                    x.EndDate >= DateOnly.FromDateTime(UtilitiesHelper.DatetimeNowUTC7())
+                                );
+
+                                var stylistSalaryId = Guid.NewGuid();
+                                var totalKpi = kpi!.Value;
+
+                                _context.StylistSalarys.Add(new StylistSalary
+                                {
+                                    Id = stylistSalaryId,
+                                    Month = requestBody.Month,
+                                    Year = requestBody.Year,
+                                    StylistId = requestBody.StylistId,
+                                    TotalBooking = 0,
+                                    TotalCommission = 0,
+                                    Kpi = totalKpi,
+                                    TotalSalary = 0 - salaryOneDay,
+                                    CreatedDate = UtilitiesHelper.DatetimeNowUTC7(),
+                                });
+                            }
+                            else
+                            {
+                                stylistSalary.TotalSalary -= salaryOneDay;
+                                _context.StylistSalarys.Update(stylistSalary);
+                            }
                         }
                     }
                 }
