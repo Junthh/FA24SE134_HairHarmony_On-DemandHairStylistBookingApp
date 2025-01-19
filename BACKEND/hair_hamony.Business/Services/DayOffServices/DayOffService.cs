@@ -39,14 +39,15 @@ namespace hair_hamony.Business.Services.DayOffServices
 
             var dayOff = _mapper.Map<DayOff>(requestBody);
 
-            if (requestBody.Type == "P")
-            {
-                var stylistWorkship = await _context.StylistWorkships
+            var stylistWorkship = await _context.StylistWorkships
                 .FirstOrDefaultAsync(x => x.Id == requestBody.StylistWorkshipId);
 
-                int monthRegister = stylistWorkship.RegisterDate.Value.Month;
-                int yearRegister = stylistWorkship.RegisterDate.Value.Year;
+            int monthRegister = stylistWorkship.RegisterDate.Value.Month;
+            int yearRegister = stylistWorkship.RegisterDate.Value.Year;
 
+
+            if (requestBody.Type == "P")
+            {
                 var dayoffs = _context.DayOffs
                 .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
                 .ToList();
