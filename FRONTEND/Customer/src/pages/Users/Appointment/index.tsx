@@ -451,11 +451,13 @@ export default function Appointment() {
                     Tổng tiền:{' '}
                     <span style={{ fontWeight: 700 }}>{currencyFormat(item?.totalPrice)}</span>
                   </Typography>
-                  {item?.loyaltyPoints && (
+                  {item?.loyaltyPoints !== null ? (
                     <Typography variant="h5" fontWeight={600}>
                       Điểm tích luỹ đã sử dụng:{' '}
                       <span style={{ fontWeight: 700 }}>{item?.loyaltyPoints}</span>
                     </Typography>
+                  ) : (
+                    ''
                   )}
                   {item?.status === 'Finished' && (
                     <Typography variant="h5" fontWeight={600}>

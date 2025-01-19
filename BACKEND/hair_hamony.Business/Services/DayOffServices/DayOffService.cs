@@ -127,17 +127,20 @@ namespace hair_hamony.Business.Services.DayOffServices
                         int monthRegister = requestBody.Month.Value;
                         int yearRegister = requestBody.Year.Value;
 
-                        var dayoffs = _context.DayOffs
+                        if (requestBody.Type == "P")
+                        {
+                            var dayoffs = _context.DayOffs
                             .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
                             .ToList();
 
-                        if (dayoffs.Count == 2)
-                        {
-                            throw new CException
+                            if (dayoffs.Count == 4)
                             {
-                                StatusCode = StatusCodes.Status400BadRequest,
-                                ErrorMessage = $"Stylist đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
-                            };
+                                throw new CException
+                                {
+                                    StatusCode = StatusCodes.Status400BadRequest,
+                                    ErrorMessage = $"Stylist đã đăng kí 4 ngày nghỉ phép có lương cho tháng này"
+                                };
+                            }
                         }
 
                         if (requestBody.Type == "KP")
