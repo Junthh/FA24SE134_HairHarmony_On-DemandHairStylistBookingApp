@@ -39,23 +39,26 @@ namespace hair_hamony.Business.Services.DayOffServices
 
             var dayOff = _mapper.Map<DayOff>(requestBody);
 
-            var stylistWorkship = await _context.StylistWorkships
+            if (requestBody.Type == "P")
+            {
+                var stylistWorkship = await _context.StylistWorkships
                 .FirstOrDefaultAsync(x => x.Id == requestBody.StylistWorkshipId);
 
-            int monthRegister = stylistWorkship.RegisterDate.Value.Month;
-            int yearRegister = stylistWorkship.RegisterDate.Value.Year;
+                int monthRegister = stylistWorkship.RegisterDate.Value.Month;
+                int yearRegister = stylistWorkship.RegisterDate.Value.Year;
 
-            var dayoffs = _context.DayOffs
+                var dayoffs = _context.DayOffs
                 .Where(x => x.Month == monthRegister && x.Year == yearRegister && x.StylistId == requestBody.StylistId && x.IsApprove == true && x.Type == "P")
                 .ToList();
 
-            if (dayoffs.Count == 2 && requestBody.Type == "P")
-            {
-                throw new CException
+                if (dayoffs.Count == 4 && requestBody.Type == "P")
                 {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    ErrorMessage = $"Bạn đã đăng kí 2 ngày nghỉ phép có lương cho tháng này"
-                };
+                    throw new CException
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        ErrorMessage = $"Bạn đã đăng kí 4 ngày nghỉ phép có lương cho tháng này"
+                    };
+                }
             }
 
             dayOff.Month = monthRegister;
